@@ -1,5 +1,8 @@
 
 # Game caption
+from grid import Playfield
+
+
 caption = 'Snake game'
 
 # Screen
@@ -18,3 +21,8 @@ white = (255,255,255)
 # Game colors
 hitboxColor = red
 wallColor = white
+
+# Playfield
+dims = (30,20)
+    # percentages
+playfieldSize = (.8,.85)

@@ -2,9 +2,11 @@ from turtle import back
 import pygame as pg
 from settings import *
 from assets import gameIcon
+from grid import Playfield
+
 
 class Game:
-    def __init__(self, caption, icon, resolution, font):
+    def __init__(self, caption, icon, resolution, font, playfield):
         pg.init()
         pg.display.set_caption(caption)
         # Main fields
@@ -19,10 +21,14 @@ class Game:
         # State fields
         self.active = True
         # Rects
-        self.topBorder = pg.Rect(self.SCREEN_WIDTH*.1,self.SCREEN_HEIGHT*.1,self.SCREEN_WIDTH*.8,1)
-        self.bottomBorder = pg.Rect(self.SCREEN_WIDTH*.1,self.SCREEN_HEIGHT*.9,self.SCREEN_WIDTH*.8,1)
-        self.leftBorder = pg.Rect(self.SCREEN_WIDTH*.1,self.SCREEN_HEIGHT*.1,1,self.SCREEN_HEIGHT*.8)
-        self.rightBorder = pg.Rect(self.SCREEN_WIDTH*.9,self.SCREEN_HEIGHT*.1,1,self.SCREEN_HEIGHT*.8)
+        sidePadding = round((1-playfieldSize[0])/2, 3)
+        topPadding = round((1-playfieldSize[1])/2, 3)
+        self.topBorder = pg.Rect(self.SCREEN_WIDTH*sidePadding,self.SCREEN_HEIGHT*(topPadding),self.SCREEN_WIDTH*playfieldSize[0],1)
+        self.bottomBorder = pg.Rect(self.SCREEN_WIDTH*sidePadding,self.SCREEN_HEIGHT*(playfieldSize[1]+topPadding),self.SCREEN_WIDTH*playfieldSize[0],1)
+        self.leftBorder = pg.Rect(self.SCREEN_WIDTH*sidePadding,self.SCREEN_HEIGHT*topPadding,1,self.SCREEN_HEIGHT*(playfieldSize[1]))
+        self.rightBorder = pg.Rect(self.SCREEN_WIDTH*(playfieldSize[0]+sidePadding),self.SCREEN_HEIGHT*topPadding,1,self.SCREEN_HEIGHT*playfieldSize[1])
+        # Playfield
+        self.playfield = playfield
     def setBackground(self):
         if type(self.background).__name__ == 'tuple':
             self.screen.fill(self.background)
@@ -34,4 +40,10 @@ class Game:
         return pg.event.get()
 
 # Game initialization
-game = Game(caption, gameIcon, res, font)
+playfieldWidth = res[0] * playfieldSize[0]
+playfieldHeight = res[1] * playfieldSize[1]
+
+
+rects = []
+playfield = Playfield(rects, (playfieldWidth, playfieldHeight))
+game = Game(caption, gameIcon, res, font,playfield)
