@@ -23,8 +23,14 @@ def main():
 
         # Draw the rects
         rects = game.playfield.rects
-        for rect in rects:
-            pg.draw.rect(game.screen, wallColor,rect, 1)
+        for col in rects:
+            for rect in col:
+                pg.draw.rect(game.screen, wallColor,rect, 1)
+
+        # Draw snake parts
+        for snakePart in game.snakeParts:
+            pg.draw.rect(game.screen, wallColor,snakePart, 5)
+
 
         game.update()
 main()

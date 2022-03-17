@@ -1,10 +1,20 @@
-from turtle import back, screensize
 import pygame as pg
 from settings import *
 from assets import gameIcon
 from grid import Playfield
-import time
+import time as t
+import random as rd
 
+
+class SnakePart():
+    def __init__(self, type, direction=False, speed=False):
+        self.pos = (rd.randint(1,rectDims[0]-1),rd.randint(1,rectDims[1]-1))
+        self.type = type
+        self.direction = pg.Vector2(1,0) if not direction else direction
+        self.speed = pg.Vector2(1,0) if not speed else speed
+        x = game.getSnakePartCoords(self.pos)[0]
+        y = game.getSnakePartCoords(self.pos)[1]
+        self.rect = pg.Rect(x,y,game.playfield.rectSize[0],game.playfield.rectSize[1])
 
 class Game:
     def __init__(self, caption, icon, resolution, font, playfield):
@@ -21,7 +31,7 @@ class Game:
         self.hitboxColor = hitboxColor
         # Clock
         self.clock = pg.time.Clock()
-        self.prevTime = time.time()
+        self.prevTime = t.time()
         self.now = False
         self.fps = fps
         self.dt = False
@@ -36,6 +46,8 @@ class Game:
         self.rightBorder = pg.Rect(self.SCREEN_WIDTH*(playfieldSize[0]+self.sidePadding),self.SCREEN_HEIGHT*self.topPadding,1,self.SCREEN_HEIGHT*playfieldSize[1])
         # Playfield
         self.playfield = playfield
+        # Snake parts
+        self.snakeParts = []
     def setBackground(self):
         if type(self.background).__name__ == 'tuple':
             self.screen.fill(self.background)
@@ -48,9 +60,13 @@ class Game:
     def onUpdate(self):
         self.setBackground()
         self.clock.tick(self.fps)
-        self.now = time.time()
+        self.now = t.time()
         self.dt = (self.now - self.prevTime) * 1000
         self.prevTime = self.now
+    def moveSnakePart(self,snakePart,pos):
+        (snakePart.x, snakePart.y) = self.getSnakePartCoords(pos)
+    def getSnakePartCoords(self, pos):
+        return (self.playfield.rects[pos[0]][pos[1]].x,self.playfield.rects[pos[0]][pos[1]].y)
 
 # Game initialization
 playfieldWidth = res[0] * playfieldSize[0]
@@ -58,3 +74,8 @@ playfieldHeight = res[1] * playfieldSize[1]
 
 playfield = Playfield(rectDims, (playfieldWidth, playfieldHeight), playfieldSize, res)
 game = Game(caption,gameIcon,res,font,playfield)
+
+snakeHead = SnakePart('head')
+game.snakeParts.append(snakeHead)
+for snakePart in game.snakeParts:
+    game.moveSnakePart(snakePart,snakePart.pos)
