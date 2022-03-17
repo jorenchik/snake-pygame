@@ -21,6 +21,10 @@ def main():
         pg.draw.rect(game.screen, wallColor,game.leftBorder)
         pg.draw.rect(game.screen, wallColor,game.rightBorder)
 
+        # Draw the rects
+        rects = game.playfield.rects
+        for rect in rects:
+            pg.draw.rect(game.screen, wallColor,rect, 1)
         game.update()
 main()
 

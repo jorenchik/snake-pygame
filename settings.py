@@ -23,6 +23,6 @@ hitboxColor = red
 wallColor = white
 
 # Playfield
-dims = (30,20)
+rectDims = (30,20)
     # percentages
 playfieldSize = (.8,.85)
