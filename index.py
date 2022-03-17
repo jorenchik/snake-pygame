@@ -5,7 +5,7 @@ import pygame as pg
 def main():
     # Active action loop
     while game.active:
-        game.setBackground()
+        game.onUpdate()
 
         # Events
         for event in game.getEvents():
@@ -25,6 +25,7 @@ def main():
         rects = game.playfield.rects
         for rect in rects:
             pg.draw.rect(game.screen, wallColor,rect, 1)
+
         game.update()
 main()
 

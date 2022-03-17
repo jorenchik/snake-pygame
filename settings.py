@@ -9,6 +9,9 @@ caption = 'Snake game'
 res = (1920,1080)
 fullscreen = True
 
+# Fps and time
+fps = 60
+
 # Font
 fontSize = 20
 font = 'Arial'

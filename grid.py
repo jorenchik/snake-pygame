@@ -4,6 +4,7 @@ class Rect(pg.Rect):
     def __init__(self, pos, left, top, width, height):
         self.pos = pos
         super().__init__(left, top,width, height)
+        
 class Playfield:
     def __init__(self,rectDims,size,playfieldSize,res):
         self.rectDims = rectDims

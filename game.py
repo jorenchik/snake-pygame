@@ -3,6 +3,7 @@ import pygame as pg
 from settings import *
 from assets import gameIcon
 from grid import Playfield
+import time
 
 
 class Game:
@@ -18,6 +19,12 @@ class Game:
         self.SCREEN_HEIGHT = pg.display.get_window_size()[1]
         self.background = background
         self.hitboxColor = hitboxColor
+        # Clock
+        self.clock = pg.time.Clock()
+        self.prevTime = time.time()
+        self.now = False
+        self.fps = fps
+        self.dt = False
         # State fields
         self.active = True
         # Rects
@@ -38,6 +45,12 @@ class Game:
         pg.display.update()
     def getEvents(self):
         return pg.event.get()
+    def onUpdate(self):
+        self.setBackground()
+        self.clock.tick(self.fps)
+        self.now = time.time()
+        self.dt = (self.now - self.prevTime) * 1000
+        self.prevTime = self.now
 
 # Game initialization
 playfieldWidth = res[0] * playfieldSize[0]
