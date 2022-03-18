@@ -20,15 +20,17 @@ class Food():
         self.color = foodColor
 
 class SnakePart():
-    def __init__(self,type,pos=False,velocity=False):
+    def __init__(self,type,prevMoveMoment=False,pos=False,velocity=False):
         # General props
         self.type = type
         # Physical props
         self.pos = (pos[0] if pos else rd.randint(1,rectDims[0]-1),pos[1] if pos else rd.randint(1,rectDims[1]-1))
+        self.prevPos = pos
+        self.prevVelocity = velocity
         self.x = game.getCoords(self.pos)[0]
         self.y = game.getCoords(self.pos)[1]
         self.velocity = pg.Vector2(4,0) if not velocity else velocity
-        self.prevMoveMoment = False
+        self.prevMoveMoment = False if not prevMoveMoment else prevMoveMoment
         if self.velocity.length() > 0:
             self.movementPeriod = 1/self.velocity.length()
         else:
@@ -146,8 +148,12 @@ class Game:
         return (self.playfield.rects[pos[0]][pos[1]].x,self.playfield.rects[pos[0]][pos[1]].y)
     def createFood(self):
         self.foods.append(Food())
-    def createSnakePart(self, type, pos=False, velocity=False):
-        self.snakeParts.append(SnakePart(type, pos if pos else False, velocity if velocity else False))
+    def createSnakePart(self, type, prevMoveMoment, pos=False, velocity=False):
+        self.snakeParts.append(SnakePart(type,prevMoveMoment, pos if pos else False, velocity if velocity else False))
+    def checkRectalCollision(self, pos1,pos2):
+        if pos1[0] == pos2[0] and pos1[1] == pos2[1]: return True
+        else: return False
+
 
 
 # Game initialization
@@ -157,7 +163,7 @@ playfieldHeight = res[1] * playfieldSize[1]
 playfield = Playfield(rectDims, (playfieldWidth, playfieldHeight), playfieldSize, res)
 game = Game(caption,gameIcon,res,font,playfield)
 
-game.createSnakePart('head')
+game.createSnakePart('head', False)
 for snakePart in game.snakeParts:
     game.moveSnakePart(snakePart,snakePart.pos)
 

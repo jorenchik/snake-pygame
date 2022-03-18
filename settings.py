@@ -7,7 +7,7 @@ caption = 'Snake game'
 
 # Screen
 res = (1920,1080)
-fullscreen = True
+fullscreen = False
 
 # Fps and time
 fps = 60

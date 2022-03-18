@@ -20,11 +20,27 @@ def main():
         if game.isKey(pg.K_RIGHT):
             headPart.moveRight()
 
-        if headPart.movementPeriod:
-            if headPart.prevMoveMoment:
-                if (game.now - headPart.prevMoveMoment) >= headPart.movementPeriod: 
-                    game.moveSnakePart(game.snakeParts[0],game.snakeParts[0].pos,game.snakeParts[0].velocity)
-        else: game.moveSnakePart(game.snakeParts[0],game.snakeParts[0].pos,game.snakeParts[0].velocity)
+        for part in game.snakeParts:
+            for food in game.foods:
+                if game.checkRectalCollision(part.pos, food.pos):
+                    lastSnakePart = game.snakeParts[-1]
+                    game.foods.remove(food)
+                    game.createSnakePart('body',lastSnakePart.prevMoveMoment, lastSnakePart.prevPos, lastSnakePart.prevVelocity)
+                
+        for i, part in enumerate(game.snakeParts):
+            if part.movementPeriod:
+                part.prevPos = part.pos
+                part.prevVelocity = part.velocity
+                if part.prevMoveMoment:
+                    if (game.now - part.prevMoveMoment) >= part.movementPeriod:
+                        game.moveSnakePart(part,part.pos,part.velocity)
+                else:
+                    game.moveSnakePart(part,part.pos,part.velocity)
+            else: game.moveSnakePart(part,part.pos,part.velocity)
+            
+            
+        # for part in game.snakeParts:
+        #     print(part.velocity)
 
         # Draw the walls
         pg.draw.rect(game.screen, wallColor,game.topBorder)
@@ -45,7 +61,10 @@ def main():
         # Draw foods
         for food in game.foods:
             pg.draw.rect(game.screen, foodColor, food.rect, 5)
+    
 
+        # for part in game.snakeParts:
+        #     print(part.prevMoveMoment)
         game.update()
 main()
 
