@@ -2,6 +2,8 @@ from game import game
 from settings import *
 import pygame as pg
 
+# Test
+
 def main():
     # Active action loop
     while game.active:
