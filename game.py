@@ -7,14 +7,17 @@ import random as rd
 
 
 class SnakePart():
-    def __init__(self, type, direction=False, speed=False):
-        self.pos = (rd.randint(1,rectDims[0]-1),rd.randint(1,rectDims[1]-1))
+    def __init__(self, type, velocity=False):
+        # General props
         self.type = type
-        self.direction = pg.Vector2(1,0) if not direction else direction
-        self.speed = pg.Vector2(1,0) if not speed else speed
-        x = game.getSnakePartCoords(self.pos)[0]
-        y = game.getSnakePartCoords(self.pos)[1]
-        self.rect = pg.Rect(x,y,game.playfield.rectSize[0],game.playfield.rectSize[1])
+        # Physical props
+        self.pos = (rd.randint(1,rectDims[0]-1),rd.randint(1,rectDims[1]-1))
+        self.x = game.getSnakePartCoords(self.pos)[0]
+        self.y = game.getSnakePartCoords(self.pos)[1]
+        self.velocity = pg.Vector2(1,0) if not velocity else velocity
+        # Appearance
+        self.rect = pg.Rect(self.x,self.y,game.playfield.rectSize[0],game.playfield.rectSize[1])
+        self.color = snakeColor
 
 class Game:
     def __init__(self, caption, icon, resolution, font, playfield):
