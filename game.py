@@ -43,7 +43,7 @@ class SnakePart():
             return
         self.velocity.y = -self.velocity.length()
         self.velocity.x = 0
-        print(self.velocity)
+        
     def moveDown(self):
         if self.velocity.y < 0:
             return
@@ -81,6 +81,7 @@ class Game:
         self.now = False
         self.fps = fps
         self.dt = False
+        self.previousDirChange = False
         # State fields
         self.active = True
         # Rects

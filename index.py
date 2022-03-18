@@ -11,17 +11,22 @@ def main():
         headPart = game.snakeParts[0]
         # Events
         if game.isQuit(): quit()
-        if game.isKey(pg.K_UP):
-            headPart.moveUp()
-        if game.isKey(pg.K_DOWN):
-            headPart.moveDown()
-        if game.isKey(pg.K_LEFT):
-            headPart.moveLeft()
-        if game.isKey(pg.K_RIGHT):
-            headPart.moveRight()
+        if (not game.previousDirChange or game.now - game.previousDirChange >= headPart.movementPeriod/2):
+            if game.isKey(pg.K_UP):
+                headPart.moveUp()
+                game.previousDirChange = game.now
+            if game.isKey(pg.K_DOWN):
+                headPart.moveDown()
+                game.previousDirChange = game.now
+            if game.isKey(pg.K_LEFT):
+                headPart.moveLeft()
+                game.previousDirChange = game.now
+            if game.isKey(pg.K_RIGHT):
+                headPart.moveRight()
+                game.previousDirChange = game.now
+            
 
         for i, part in enumerate(game.snakeParts):
-            print(part.velocity)
             if part.movementPeriod:
                 part.prevPos = part.pos
                 part.prevVelocity = part.velocity
@@ -29,10 +34,9 @@ def main():
                     if (game.now - part.prevMoveMoment) >= part.movementPeriod:
                         game.moveSnakePart(part,part.pos,part.velocity)
                         if part.type != 'head':
-                            part.velocity = pg.Vector2(game.snakeParts[i-1].velocity)
+                            part.velocity = pg.Vector2(game.snakeParts[i-1].prevVelocity)
                 else:
                     game.moveSnakePart(part,part.pos,part.velocity)
-                
             else: game.moveSnakePart(part,part.pos,part.velocity)
         
         for part in game.snakeParts:
@@ -40,8 +44,8 @@ def main():
                 if game.checkRectalCollision(part.pos, food.pos):
                     lastSnakePart = game.snakeParts[-1]
                     game.foods.remove(food)
-                    game.createSnakePart('body',lastSnakePart.prevMoveMoment, lastSnakePart.prevPos, pg.Vector2(lastSnakePart.prevVelocity))    
-
+                    game.createSnakePart('body',lastSnakePart.prevMoveMoment, lastSnakePart.prevPos, pg.Vector2(lastSnakePart.prevVelocity))
+                    game.createFood()
 
         # Draw the walls
         pg.draw.rect(game.screen, wallColor,game.topBorder)
@@ -51,9 +55,9 @@ def main():
 
         # Draw the rects
         rects = game.playfield.rects
-        for col in rects:
-            for rect in col:
-                pg.draw.rect(game.screen, wallColor,rect, 1)
+        # for col in rects:
+        #     for rect in col:
+        #         pg.draw.rect(game.screen, wallColor,rect, 1)
 
         # Draw snake parts
         for snakePart in game.snakeParts:
@@ -62,10 +66,7 @@ def main():
         # Draw foods
         for food in game.foods:
             pg.draw.rect(game.screen, foodColor, food.rect, 5)
-    
 
-        # for part in game.snakeParts:
-        #     print(part.prevMoveMoment)
         game.update()
 main()
 
