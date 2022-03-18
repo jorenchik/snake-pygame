@@ -8,12 +8,9 @@ def main():
         game.onUpdate()
 
         # Events
-        for event in game.getEvents():
-            if event.type == pg.QUIT:
-                exit()
-            if event.type == pg.KEYDOWN:
-                if event.key == pg.K_ESCAPE:
-                    exit()
+        game.events = game.getEvents()
+        # print(game.events)
+        if game.isQuit(): quit()
 
         # Draw the walls
         pg.draw.rect(game.screen, wallColor,game.topBorder)
@@ -30,7 +27,6 @@ def main():
         # Draw snake parts
         for snakePart in game.snakeParts:
             pg.draw.rect(game.screen, wallColor,snakePart, 5)
-
 
         game.update()
 main()

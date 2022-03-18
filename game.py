@@ -5,6 +5,10 @@ from grid import Playfield
 import time as t
 import random as rd
 
+# Helper funtion (Die and dump)
+def dd(var):
+    print(var)
+    exit()
 
 class SnakePart():
     def __init__(self, type, velocity=False):
@@ -15,6 +19,8 @@ class SnakePart():
         self.x = game.getSnakePartCoords(self.pos)[0]
         self.y = game.getSnakePartCoords(self.pos)[1]
         self.velocity = pg.Vector2(1,0) if not velocity else velocity
+        self.prevMoveMoment = False
+        self.movementPeriod = (1/self.velocity.length())
         # Appearance
         self.rect = pg.Rect(self.x,self.y,game.playfield.rectSize[0],game.playfield.rectSize[1])
         self.color = snakeColor
@@ -27,7 +33,7 @@ class Game:
         self.font = pg.font.SysFont(font, fontSize)
         pg.font.init()
         self.gameIcon = pg.image.load(icon)
-        self.screen = pg.display.set_mode(resolution, pg.FULLSCREEN if fullscreen else None)
+        self.screen = pg.display.set_mode(resolution, pg.FULLSCREEN if fullscreen else 0)
         self.SCREEN_WIDTH = pg.display.get_window_size()[0]
         self.SCREEN_HEIGHT = pg.display.get_window_size()[1]
         self.background = background
@@ -51,6 +57,8 @@ class Game:
         self.playfield = playfield
         # Snake parts
         self.snakeParts = []
+        # Events
+        self.events = []
     def setBackground(self):
         if type(self.background).__name__ == 'tuple':
             self.screen.fill(self.background)
@@ -60,13 +68,24 @@ class Game:
         pg.display.update()
     def getEvents(self):
         return pg.event.get()
+    def isQuit(self):
+        for event in self.events:
+            if event.type == pg.QUIT: return True
+            if hasattr(event, 'key'):
+                if self.isKey(event.key): return True
+        return False
+    def isKey(self, key):
+        for event in self.events:
+            if event.type == pg.KEYDOWN:
+                if event.key == key: return True
+        return False
     def onUpdate(self):
         self.setBackground()
         self.clock.tick(self.fps)
         self.now = t.time()
         self.dt = (self.now - self.prevTime) * 1000
         self.prevTime = self.now
-    def moveSnakePart(self,snakePart,pos):
+    def moveSnakePart(self,snakePart,pos,direction=False,step=False):
         (snakePart.x, snakePart.y) = self.getSnakePartCoords(pos)
     def getSnakePartCoords(self, pos):
         return (self.playfield.rects[pos[0]][pos[1]].x,self.playfield.rects[pos[0]][pos[1]].y)
