@@ -7,9 +7,18 @@ def main():
     while game.active:
         game.onUpdate()
 
+        headPart = game.snakeParts[0]
         # Events
         if game.isQuit(): quit()
-        headPart = game.snakeParts[0]
+        if game.isKey(pg.K_UP):
+            headPart.moveUp()
+        if game.isKey(pg.K_DOWN):
+            headPart.moveDown()
+        if game.isKey(pg.K_LEFT):
+            headPart.moveLeft()
+        if game.isKey(pg.K_RIGHT):
+            headPart.moveRight()
+
         if headPart.movementPeriod:
             if headPart.prevMoveMoment:
                 if (game.now - headPart.prevMoveMoment) >= headPart.movementPeriod: 

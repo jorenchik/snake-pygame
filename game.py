@@ -18,7 +18,7 @@ class SnakePart():
         self.pos = (rd.randint(1,rectDims[0]-1),rd.randint(1,rectDims[1]-1))
         self.x = game.getSnakePartCoords(self.pos)[0]
         self.y = game.getSnakePartCoords(self.pos)[1]
-        self.velocity = pg.Vector2(1,0) if not velocity else velocity
+        self.velocity = pg.Vector2(4,0) if not velocity else velocity
         self.prevMoveMoment = False
         if self.velocity.length() > 0:
             self.movementPeriod = 1/self.velocity.length()
@@ -27,6 +27,27 @@ class SnakePart():
         # Appearance
         self.rect = pg.Rect(self.x,self.y,game.playfield.rectSize[0],game.playfield.rectSize[1])
         self.color = snakeColor
+    def moveUp(self):
+        if self.velocity.y > 0:
+            return
+        self.velocity.y = -self.velocity.length()
+        self.velocity.x = 0
+    def moveDown(self):
+        if self.velocity.y < 0:
+            return
+        self.velocity.y = self.velocity.length()
+        self.velocity.x = 0
+    def moveLeft(self):
+        if self.velocity.x > 0:
+            return
+        self.velocity.x = -self.velocity.length()
+        self.velocity.y = 0
+    def moveRight(self):
+        if self.velocity.x < 0:
+            return
+        self.velocity.x = self.velocity.length()
+        self.velocity.y = 0
+        
 
 class Game:
     def __init__(self, caption, icon, resolution, font, playfield):
@@ -77,12 +98,13 @@ class Game:
         for event in self.events:
             if event.type == pg.QUIT: return True
             if hasattr(event, 'key'):
-                if self.isKey(event.key): return True
+                if self.isKey(pg.K_ESCAPE): return True
         return False
     def isKey(self, key):
         for event in self.events:
             if event.type == pg.KEYDOWN:
-                if event.key == key: return True
+                if event.key == key: 
+                    return True
         return False
     def onUpdate(self):
         # Deltatime
