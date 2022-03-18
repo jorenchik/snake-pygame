@@ -20,7 +20,10 @@ class SnakePart():
         self.y = game.getSnakePartCoords(self.pos)[1]
         self.velocity = pg.Vector2(1,0) if not velocity else velocity
         self.prevMoveMoment = False
-        self.movementPeriod = (1/self.velocity.length())
+        if self.velocity.length() > 0:
+            self.movementPeriod = 1/self.velocity.length()
+        else:
+            self.movementPeriod = False
         # Appearance
         self.rect = pg.Rect(self.x,self.y,game.playfield.rectSize[0],game.playfield.rectSize[1])
         self.color = snakeColor
@@ -59,6 +62,8 @@ class Game:
         self.snakeParts = []
         # Events
         self.events = []
+        # State
+        self.snakeAlive = True
     def setBackground(self):
         if type(self.background).__name__ == 'tuple':
             self.screen.fill(self.background)
@@ -80,13 +85,30 @@ class Game:
                 if event.key == key: return True
         return False
     def onUpdate(self):
+        # Deltatime
         self.setBackground()
         self.clock.tick(self.fps)
         self.now = t.time()
         self.dt = (self.now - self.prevTime) * 1000
         self.prevTime = self.now
-    def moveSnakePart(self,snakePart,pos,direction=False,step=False):
-        (snakePart.x, snakePart.y) = self.getSnakePartCoords(pos)
+        # Get events
+        self.events = self.getEvents()
+    def moveSnakePart(self,snakePart,pos,velocity=False):
+        if velocity:
+            if velocity.x > 0: xMove = 1
+            elif velocity.x < 0: xMove = -1
+            else: xMove = 0
+            if velocity.y > 0: yMove = 1
+            elif velocity.y < 0: yMove = -1
+            else: yMove = 0
+            snakePart.pos = (int(pos[0]+xMove), int(pos[1]+yMove))
+        if snakePart.pos[0] >= rectDims[0] or snakePart.pos[1] >= rectDims[0] or snakePart.pos[0] < 0 or snakePart.pos[1] < 0:
+            self.snakeAlive = False
+        else:
+            snakeCoords = self.getSnakePartCoords(snakePart.pos)
+            (snakePart.x, snakePart.y) = snakeCoords
+            (snakePart.rect.x, snakePart.rect.y) = snakeCoords
+            snakePart.prevMoveMoment = t.time()
     def getSnakePartCoords(self, pos):
         return (self.playfield.rects[pos[0]][pos[1]].x,self.playfield.rects[pos[0]][pos[1]].y)
 

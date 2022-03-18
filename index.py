@@ -8,9 +8,13 @@ def main():
         game.onUpdate()
 
         # Events
-        game.events = game.getEvents()
-        # print(game.events)
         if game.isQuit(): quit()
+        headPart = game.snakeParts[0]
+        if headPart.movementPeriod:
+            if headPart.prevMoveMoment:
+                if (game.now - headPart.prevMoveMoment) >= headPart.movementPeriod: 
+                    game.moveSnakePart(game.snakeParts[0],game.snakeParts[0].pos,game.snakeParts[0].velocity)
+        else: game.moveSnakePart(game.snakeParts[0],game.snakeParts[0].pos,game.snakeParts[0].velocity)
 
         # Draw the walls
         pg.draw.rect(game.screen, wallColor,game.topBorder)
