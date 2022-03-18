@@ -10,14 +10,23 @@ def dd(var):
     print(var)
     exit()
 
+class Food():
+    def __init__(self):
+        self.pos = (rd.randint(1,rectDims[0]-1),rd.randint(1,rectDims[1]-1))
+        self.x = game.getCoords(self.pos)[0]
+        self.y = game.getCoords(self.pos)[1]
+        # Appearance
+        self.rect = pg.Rect(self.x,self.y,game.playfield.rectSize[0],game.playfield.rectSize[1])
+        self.color = foodColor
+
 class SnakePart():
-    def __init__(self, type, velocity=False):
+    def __init__(self,type,pos=False,velocity=False):
         # General props
         self.type = type
         # Physical props
-        self.pos = (rd.randint(1,rectDims[0]-1),rd.randint(1,rectDims[1]-1))
-        self.x = game.getSnakePartCoords(self.pos)[0]
-        self.y = game.getSnakePartCoords(self.pos)[1]
+        self.pos = (pos[0] if pos else rd.randint(1,rectDims[0]-1),pos[1] if pos else rd.randint(1,rectDims[1]-1))
+        self.x = game.getCoords(self.pos)[0]
+        self.y = game.getCoords(self.pos)[1]
         self.velocity = pg.Vector2(4,0) if not velocity else velocity
         self.prevMoveMoment = False
         if self.velocity.length() > 0:
@@ -81,6 +90,8 @@ class Game:
         self.playfield = playfield
         # Snake parts
         self.snakeParts = []
+        # Foods
+        self.foods = []
         # Events
         self.events = []
         # State
@@ -127,12 +138,17 @@ class Game:
         if snakePart.pos[0] >= rectDims[0] or snakePart.pos[1] >= rectDims[0] or snakePart.pos[0] < 0 or snakePart.pos[1] < 0:
             self.snakeAlive = False
         else:
-            snakeCoords = self.getSnakePartCoords(snakePart.pos)
+            snakeCoords = self.getCoords(snakePart.pos)
             (snakePart.x, snakePart.y) = snakeCoords
             (snakePart.rect.x, snakePart.rect.y) = snakeCoords
             snakePart.prevMoveMoment = t.time()
-    def getSnakePartCoords(self, pos):
+    def getCoords(self, pos):
         return (self.playfield.rects[pos[0]][pos[1]].x,self.playfield.rects[pos[0]][pos[1]].y)
+    def createFood(self):
+        self.foods.append(Food())
+    def createSnakePart(self, type, pos=False, velocity=False):
+        self.snakeParts.append(SnakePart(type, pos if pos else False, velocity if velocity else False))
+
 
 # Game initialization
 playfieldWidth = res[0] * playfieldSize[0]
@@ -141,7 +157,9 @@ playfieldHeight = res[1] * playfieldSize[1]
 playfield = Playfield(rectDims, (playfieldWidth, playfieldHeight), playfieldSize, res)
 game = Game(caption,gameIcon,res,font,playfield)
 
-snakeHead = SnakePart('head')
-game.snakeParts.append(snakeHead)
+game.createSnakePart('head')
 for snakePart in game.snakeParts:
     game.moveSnakePart(snakePart,snakePart.pos)
+
+# Adding first food
+game.createFood()

@@ -2,7 +2,6 @@ from game import game
 from settings import *
 import pygame as pg
 
-# Test
 
 def main():
     # Active action loop
@@ -42,6 +41,10 @@ def main():
         # Draw snake parts
         for snakePart in game.snakeParts:
             pg.draw.rect(game.screen, wallColor,snakePart, 5)
+
+        # Draw foods
+        for food in game.foods:
+            pg.draw.rect(game.screen, foodColor, food.rect, 5)
 
         game.update()
 main()

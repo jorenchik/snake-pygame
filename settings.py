@@ -21,11 +21,13 @@ background = (37,38,33)
 red = (210,27,27)
 white = (255,255,255)
 grey = (31,31,47)
+red = (255,0,0)
 
 # Game colors
 hitboxColor = red
 wallColor = white
 snakeColor = grey
+foodColor = red
 
 # Playfield
 rectDims = (30,20)
