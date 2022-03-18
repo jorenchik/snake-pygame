@@ -43,6 +43,7 @@ class SnakePart():
             return
         self.velocity.y = -self.velocity.length()
         self.velocity.x = 0
+        print(self.velocity)
     def moveDown(self):
         if self.velocity.y < 0:
             return
@@ -58,6 +59,7 @@ class SnakePart():
             return
         self.velocity.x = self.velocity.length()
         self.velocity.y = 0
+       
         
 
 class Game:

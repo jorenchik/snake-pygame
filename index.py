@@ -20,27 +20,28 @@ def main():
         if game.isKey(pg.K_RIGHT):
             headPart.moveRight()
 
-        for part in game.snakeParts:
-            for food in game.foods:
-                if game.checkRectalCollision(part.pos, food.pos):
-                    lastSnakePart = game.snakeParts[-1]
-                    game.foods.remove(food)
-                    game.createSnakePart('body',lastSnakePart.prevMoveMoment, lastSnakePart.prevPos, lastSnakePart.prevVelocity)
-                
         for i, part in enumerate(game.snakeParts):
+            print(part.velocity)
             if part.movementPeriod:
                 part.prevPos = part.pos
                 part.prevVelocity = part.velocity
                 if part.prevMoveMoment:
                     if (game.now - part.prevMoveMoment) >= part.movementPeriod:
                         game.moveSnakePart(part,part.pos,part.velocity)
+                        if part.type != 'head':
+                            part.velocity = pg.Vector2(game.snakeParts[i-1].velocity)
                 else:
                     game.moveSnakePart(part,part.pos,part.velocity)
+                
             else: game.moveSnakePart(part,part.pos,part.velocity)
-            
-            
-        # for part in game.snakeParts:
-        #     print(part.velocity)
+        
+        for part in game.snakeParts:
+            for food in game.foods:
+                if game.checkRectalCollision(part.pos, food.pos):
+                    lastSnakePart = game.snakeParts[-1]
+                    game.foods.remove(food)
+                    game.createSnakePart('body',lastSnakePart.prevMoveMoment, lastSnakePart.prevPos, pg.Vector2(lastSnakePart.prevVelocity))    
+
 
         # Draw the walls
         pg.draw.rect(game.screen, wallColor,game.topBorder)
