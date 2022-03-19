@@ -38,29 +38,11 @@ class SnakePart():
         # Appearance
         self.rect = pg.Rect(self.x,self.y,game.playfield.rectSize[0],game.playfield.rectSize[1])
         self.color = snakeColor
-    def moveUp(self):
-        if self.velocity.y > 0:
-            return
-        self.velocity.y = -self.velocity.length()
-        self.velocity.x = 0
-        
-    def moveDown(self):
-        if self.velocity.y < 0:
-            return
-        self.velocity.y = self.velocity.length()
-        self.velocity.x = 0
-    def moveLeft(self):
-        if self.velocity.x > 0:
-            return
-        self.velocity.x = -self.velocity.length()
-        self.velocity.y = 0
-    def moveRight(self):
-        if self.velocity.x < 0:
-            return
-        self.velocity.x = self.velocity.length()
-        self.velocity.y = 0
-       
-        
+    def changeDirToAnAngle(self, angle):
+        if angle == 0 and self.velocity.x >= 0: (self.velocity.y, self.velocity.x) = (0, self.velocity.length())
+        if angle == 90 and self.velocity.y <= 0: (self.velocity.y, self.velocity.x) = (-self.velocity.length(), 0)
+        if angle == 180 and self.velocity.x <= 0: (self.velocity.y, self.velocity.x) = (0, -self.velocity.length())
+        if angle == 270 and self.velocity.y >= 0: (self.velocity.y, self.velocity.x) = (self.velocity.length(), 0)
 
 class Game:
     def __init__(self, caption, icon, resolution, font, playfield):

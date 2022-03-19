@@ -2,7 +2,7 @@ from game import game, Game, Playfield, gameIcon
 from settings import *
 import pygame as pg
 
-
+# Game itself
 def main():
     game.createSnakePart('head', False)
     for snakePart in game.snakeParts:
@@ -13,25 +13,32 @@ def main():
     
     # Active action loop
     while game.active:
+        # Game state update
         game.onUpdate()
         if not game.snakeAlive: gameOver()
 
-        headPart = game.snakeParts[0]
         # Events
+        headPart = game.snakeParts[0]
+
+            # Quit
         if game.isQuit(): quit()
+
+            # Change snakes direction
         if (not game.previousDirChange or game.now - game.previousDirChange >= headPart.movementPeriod/2):
-            if game.isKey(pg.K_UP):
-                headPart.moveUp()
+            if game.isKey(pg.K_RIGHT):
+                headPart.changeDirToAnAngle(0)
                 game.previousDirChange = game.now
-            if game.isKey(pg.K_DOWN):
-                headPart.moveDown()
+            if game.isKey(pg.K_UP):
+                headPart.changeDirToAnAngle(90)
                 game.previousDirChange = game.now
             if game.isKey(pg.K_LEFT):
-                headPart.moveLeft()
+                headPart.changeDirToAnAngle(180)
                 game.previousDirChange = game.now
-            if game.isKey(pg.K_RIGHT):
-                headPart.moveRight()
+            if game.isKey(pg.K_DOWN):
+                headPart.changeDirToAnAngle(270)
                 game.previousDirChange = game.now
+            
+            
 
         for i, part in enumerate(game.snakeParts):
             if part.movementPeriod:
@@ -75,8 +82,10 @@ def main():
         for food in game.foods:
             pg.draw.rect(game.screen, foodColor, food.rect, 5)
 
+        # End of the update
         game.update()
 
+# Game restart/quit screen
 def gameOver():
     while not game.snakeAlive:
         game.onUpdate()
