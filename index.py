@@ -1,12 +1,20 @@
-from game import game
+from game import game, Game, Playfield, gameIcon
 from settings import *
 import pygame as pg
 
 
 def main():
+    game.createSnakePart('head', False)
+    for snakePart in game.snakeParts:
+        game.moveSnakePart(snakePart,snakePart.pos)
+
+    # Adding first food
+    game.createFood()
+    
     # Active action loop
     while game.active:
         game.onUpdate()
+        if not game.snakeAlive: gameOver()
 
         headPart = game.snakeParts[0]
         # Events
@@ -24,7 +32,6 @@ def main():
             if game.isKey(pg.K_RIGHT):
                 headPart.moveRight()
                 game.previousDirChange = game.now
-            
 
         for i, part in enumerate(game.snakeParts):
             if part.movementPeriod:
@@ -55,9 +62,10 @@ def main():
 
         # Draw the rects
         rects = game.playfield.rects
-        # for col in rects:
-        #     for rect in col:
-        #         pg.draw.rect(game.screen, wallColor,rect, 1)
+        if drawPlayfieldRects:
+            for col in rects:
+                for rect in col:
+                    pg.draw.rect(game.screen, wallColor,rect, 1)
 
         # Draw snake parts
         for snakePart in game.snakeParts:
@@ -68,5 +76,14 @@ def main():
             pg.draw.rect(game.screen, foodColor, food.rect, 5)
 
         game.update()
+
+def gameOver():
+    while not game.snakeAlive:
+        game.onUpdate()
+        game.setBackground()
+        if game.isQuit(): quit()
+        game.update()
+
+# Starting the game's main loop
 main()
 

@@ -132,21 +132,25 @@ class Game:
         # Get events
         self.events = self.getEvents()
     def moveSnakePart(self,snakePart,pos,velocity=False):
-        if velocity:
-            if velocity.x > 0: xMove = 1
-            elif velocity.x < 0: xMove = -1
-            else: xMove = 0
-            if velocity.y > 0: yMove = 1
-            elif velocity.y < 0: yMove = -1
-            else: yMove = 0
-            snakePart.pos = (int(pos[0]+xMove), int(pos[1]+yMove))
-        if snakePart.pos[0] >= rectDims[0] or snakePart.pos[1] >= rectDims[0] or snakePart.pos[0] < 0 or snakePart.pos[1] < 0:
-            self.snakeAlive = False
-        else:
-            snakeCoords = self.getCoords(snakePart.pos)
-            (snakePart.x, snakePart.y) = snakeCoords
-            (snakePart.rect.x, snakePart.rect.y) = snakeCoords
-            snakePart.prevMoveMoment = t.time()
+        if self.snakeAlive:
+            if velocity:
+                if velocity.x > 0: xMove = 1
+                elif velocity.x < 0: xMove = -1
+                else: xMove = 0
+                if velocity.y > 0: yMove = 1
+                elif velocity.y < 0: yMove = -1
+                else: yMove = 0
+            else:
+                yMove = 0
+                xMove = 0 
+            if snakePart.pos[0]+xMove not in range(0, rectDims[0]) or snakePart.pos[1]+yMove not in range(0, rectDims[1]):
+                self.snakeAlive = False
+            else:
+                snakePart.pos = (int(pos[0]+xMove), int(pos[1]+yMove))
+                snakeCoords = self.getCoords(snakePart.pos)
+                (snakePart.x, snakePart.y) = snakeCoords
+                (snakePart.rect.x, snakePart.rect.y) = snakeCoords
+                snakePart.prevMoveMoment = t.time()
     def getCoords(self, pos):
         return (self.playfield.rects[pos[0]][pos[1]].x,self.playfield.rects[pos[0]][pos[1]].y)
     def createFood(self):
@@ -158,17 +162,9 @@ class Game:
         else: return False
 
 
-
 # Game initialization
 playfieldWidth = res[0] * playfieldSize[0]
 playfieldHeight = res[1] * playfieldSize[1]
 
 playfield = Playfield(rectDims, (playfieldWidth, playfieldHeight), playfieldSize, res)
 game = Game(caption,gameIcon,res,font,playfield)
-
-game.createSnakePart('head', False)
-for snakePart in game.snakeParts:
-    game.moveSnakePart(snakePart,snakePart.pos)
-
-# Adding first food
-game.createFood()
