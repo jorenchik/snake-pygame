@@ -44,6 +44,12 @@ def main():
         headParts = [x for x in game.snakeParts if x.type == 'head']
             # Quit
         if game.isQuit(): quit()
+
+        # Dont move unsless movement button's been pressed
+        if (game.isKey(pg.K_RIGHT) or game.isKey(pg.K_UP) or game.isKey(pg.K_LEFT) or game.isKey(pg.K_DOWN)) and headParts[0].velocity.length() == 0: game.setBaseVelocity()
+        if multiplayer:
+            if (game.isKey(pg.K_d) or game.isKey(pg.K_w) or game.isKey(pg.K_a) or game.isKey(pg.K_s)) and headParts[0].velocity.length() == 0: game.setBaseVelocity()
+
             # Changes snakes direction
         if (not game.previousDirChange or game.now - game.previousDirChange >= headParts[0].movementPeriod/2):
             if game.isKey(pg.K_RIGHT):

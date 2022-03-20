@@ -36,10 +36,9 @@ class SnakePart():
         self.pos = (pos[0] if pos else rd.randint(1,rectDims[0]-1),pos[1] if pos else rd.randint(1,rectDims[1]-1))
         self.prevPos, self.prevVelocity = pos, velocity
         self.x, self.y = game.getCoords(self.pos)[0], game.getCoords(self.pos)[1]
-        self.velocity = pg.Vector2(4,0) if not velocity else velocity
+        self.velocity = pg.Vector2(0,0) if not velocity else velocity
         self.prevMoveMoment = False if not prevMoveMoment else prevMoveMoment
-        if self.velocity.length() > 0: self.movementPeriod = 1/self.velocity.length()
-        else: self.movementPeriod = False
+        self.getMovementPeriod()
         # Appearance
         self.rect = pg.Rect(self.x,self.y,game.playfield.rectSize[0],game.playfield.rectSize[1])
         self.color = color
@@ -52,6 +51,9 @@ class SnakePart():
         if angle == 270 and self.velocity.y >= 0: (self.velocity.y, self.velocity.x) = (self.velocity.length(), 0)
     def getRelatedSnakeParts(self):
         return [x for x in game.snakeParts if x.snakeIndex == self.snakeIndex]
+    def getMovementPeriod(self):
+        if self.velocity.length() > 0: self.movementPeriod = 1/self.velocity.length()
+        else: self.movementPeriod = False
 
 class Game:
     def __init__(self, caption, icon, resolution, font, playfield):
@@ -169,7 +171,10 @@ class Game:
     def getPlayersScore(self):
         self.player1Score = len([x for x in self.snakeParts if x.snakeIndex == 0])-1
         self.player2Score = len([x for x in self.snakeParts if x.snakeIndex == 1])-1
-
+    def setBaseVelocity(self):
+        for part in game.snakeParts: 
+            part.velocity = pg.Vector2(snakeBaseVelocity)
+            part.getMovementPeriod()  
 
 # Game initialization
 playfieldWidth = res[0] * playfieldSize[0]

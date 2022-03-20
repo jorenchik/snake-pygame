@@ -10,6 +10,8 @@ selfRectalCollisionAllowed = False
 otherRectalCollisionAllowed = False
 multiplayer = True
 
+snakeBaseVelocity = (4,0)
+
 # Screen
 res = (1920,1080)
 fullscreen = True
