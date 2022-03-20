@@ -1,9 +1,10 @@
-from game import game, Game, Playfield, gameIcon
+from game import game
 from settings import *
 import pygame as pg
 
 # Game itself
 def main():
+    # Creates Snake #1
     game.createSnakePart('head', False)
     for snakePart in game.snakeParts:
         game.moveSnakePart(snakePart,snakePart.pos)
@@ -13,7 +14,7 @@ def main():
     
     # Active action loop
     while game.active:
-        # Game state update
+        # Updates game state
         game.onUpdate()
         if not game.snakeAlive: gameOver()
 
@@ -23,7 +24,7 @@ def main():
             # Quit
         if game.isQuit(): quit()
 
-            # Change snakes direction
+            # Changes snakes direction
         if (not game.previousDirChange or game.now - game.previousDirChange >= headPart.movementPeriod/2):
             if game.isKey(pg.K_RIGHT):
                 headPart.changeDirToAnAngle(0)
@@ -38,8 +39,7 @@ def main():
                 headPart.changeDirToAnAngle(270)
                 game.previousDirChange = game.now
             
-            
-
+        # Snakes' constant movement
         for i, part in enumerate(game.snakeParts):
             if part.movementPeriod:
                 part.prevPos = part.pos
@@ -53,6 +53,8 @@ def main():
                     game.moveSnakePart(part,part.pos,part.velocity)
             else: game.moveSnakePart(part,part.pos,part.velocity)
         
+
+        # Checks whether snakes are about to hit a wall
         for part in game.snakeParts:
             for food in game.foods:
                 if game.checkRectalCollision(part.pos, food.pos):
@@ -61,26 +63,30 @@ def main():
                     game.createSnakePart('body',lastSnakePart.prevMoveMoment, lastSnakePart.prevPos, pg.Vector2(lastSnakePart.prevVelocity))
                     game.createFood()
 
-        # Draw the walls
+        # Draws elements
+            # Draws the walls
         pg.draw.rect(game.screen, wallColor,game.topBorder)
         pg.draw.rect(game.screen, wallColor,game.bottomBorder)
         pg.draw.rect(game.screen, wallColor,game.leftBorder)
         pg.draw.rect(game.screen, wallColor,game.rightBorder)
 
-        # Draw the rects
+            # Draws the rects if the setting is enabled
         rects = game.playfield.rects
         if drawPlayfieldRects:
             for col in rects:
                 for rect in col:
                     pg.draw.rect(game.screen, wallColor,rect, 1)
 
-        # Draw snake parts
+            # Draws snakes' parts
         for snakePart in game.snakeParts:
             pg.draw.rect(game.screen, wallColor,snakePart, 5)
 
-        # Draw foods
+            # Draws foods
+                # Draws regular foods
         for food in game.foods:
             pg.draw.rect(game.screen, foodColor, food.rect, 5)
+                # Draws poisonous foods
+
 
         # End of the update
         game.update()

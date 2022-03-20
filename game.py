@@ -1,9 +1,12 @@
+from matplotlib.style import available
+from pandas import array
 import pygame as pg
 from settings import *
 from assets import gameIcon
 from grid import Playfield
 import time as t
 import random as rd
+import numpy as np
 
 # Helper funtion (Die and dump)
 def dd(var):
@@ -11,10 +14,16 @@ def dd(var):
     exit()
 
 class Food():
-    def __init__(self):
-        self.pos = (rd.randint(1,rectDims[0]-1),rd.randint(1,rectDims[1]-1))
+    def __init__(self, isPoisonous:bool=False):
+        pos = game.getRandomAvailablePos()
+        if pos:
+            self.pos = (pos[0],pos[1])
+        else:
+            game.gameWon = True
+            self.pos = (rd.randint(1,rectDims[0]-1),rd.randint(1,rectDims[1]-1))
         self.x = game.getCoords(self.pos)[0]
         self.y = game.getCoords(self.pos)[1]
+        self.poisonous = isPoisonous
         # Appearance
         self.rect = pg.Rect(self.x,self.y,game.playfield.rectSize[0],game.playfield.rectSize[1])
         self.color = foodColor
@@ -75,6 +84,9 @@ class Game:
         self.rightBorder = pg.Rect(self.SCREEN_WIDTH*(playfieldSize[0]+self.sidePadding),self.SCREEN_HEIGHT*self.topPadding,1,self.SCREEN_HEIGHT*playfieldSize[1])
         # Playfield
         self.playfield = playfield
+        self.occupiedPositions = []
+        self.availablePositions = []
+        self.getAvailablePositions()
         # Snake parts
         self.snakeParts = []
         # Foods
@@ -83,6 +95,7 @@ class Game:
         self.events = []
         # State
         self.snakeAlive = True
+        self.gameWon = False
     def setBackground(self):
         if type(self.background).__name__ == 'tuple':
             self.screen.fill(self.background)
@@ -113,6 +126,13 @@ class Game:
         self.prevTime = self.now
         # Get events
         self.events = self.getEvents()
+        # Determines occupied positions on the playfield
+        self.occupiedPositions = []
+        for snakePart in self.snakeParts:
+            self.occupiedPositions.append(snakePart.pos)
+        for food in self.foods:
+            self.occupiedPositions.append(food.pos)
+        self.getAvailablePositions()
     def moveSnakePart(self,snakePart,pos,velocity=False):
         if self.snakeAlive:
             if velocity:
@@ -142,7 +162,17 @@ class Game:
     def checkRectalCollision(self, pos1,pos2):
         if pos1[0] == pos2[0] and pos1[1] == pos2[1]: return True
         else: return False
-
+    def getAvailablePositions(self):
+        self.availablePositions = []
+        i = 0
+        for col in self.playfield.rects:
+            for rect in col:
+                if rect.pos not in self.occupiedPositions:
+                    self.availablePositions.append(rect.pos)
+        
+    def getRandomAvailablePos(self):
+        if len(self.availablePositions) == 0: return False
+        return rd.choice(self.availablePositions)
 
 # Game initialization
 playfieldWidth = res[0] * playfieldSize[0]

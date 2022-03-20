@@ -2,7 +2,6 @@
 # Game caption
 from grid import Playfield
 
-
 caption = 'Snake game'
 
 # Screen
@@ -23,12 +22,14 @@ red = (210,27,27)
 white = (255,255,255)
 grey = (31,31,47)
 red = (255,0,0)
+green = (41,159,32)
 
 # Game colors
 hitboxColor = red
 wallColor = white
 snakeColor = grey
-foodColor = red
+foodColor = green
+poisonousFoodColor = red
 
 # Playfield
 rectDims = (30,20)
