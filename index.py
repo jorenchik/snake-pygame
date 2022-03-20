@@ -10,7 +10,9 @@ def main():
         game.moveSnakePart(snakePart,snakePart.pos)
 
     # Adding first food
-    game.createFood()
+    game.createFood(False)
+    # Adding first poisonous food
+    game.createFood(True)
     
     # Active action loop
     while game.active:
@@ -72,7 +74,7 @@ def main():
                     lastSnakePart = game.snakeParts[-1]
                     game.foods.remove(food)
                     game.createSnakePart('body',lastSnakePart.prevMoveMoment, lastSnakePart.prevPos, pg.Vector2(lastSnakePart.prevVelocity))
-                    game.createFood()
+                    game.createFood(False)
 
         # Checks whether any part of a snake hits itself
         for part in game.snakeParts:
@@ -102,7 +104,10 @@ def main():
             # Draws foods
                 # Draws regular foods
         for food in game.foods:
-            pg.draw.rect(game.screen, foodColor, food.rect, 5)
+            if food.type == 'food':
+                pg.draw.rect(game.screen, foodColor, food.rect, 5)
+            else:
+                pg.draw.rect(game.screen, poisonousFoodColor, food.rect, 5)
                 # Draws poisonous foods
 
 

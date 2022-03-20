@@ -17,6 +17,7 @@ def dd(var):
 class Food():
     def __init__(self, isPoisonous:bool=False):
         pos = game.getRandomAvailablePos()
+        self.type = 'food' if not isPoisonous else 'poison'
         if pos:
             self.pos = (pos[0],pos[1])
         else:
@@ -168,8 +169,8 @@ class Game:
                 snakePart.prevMoveMoment = t.time()
     def getCoords(self, pos):
         return (self.playfield.rects[pos[0]][pos[1]].x,self.playfield.rects[pos[0]][pos[1]].y+game.SCREEN_HEIGHT*playfieldYOffset)
-    def createFood(self):
-        self.foods.append(Food())
+    def createFood(self, isPoisonous):
+        self.foods.append(Food(isPoisonous))
     def createSnakePart(self, type, prevMoveMoment, pos=False, velocity=False):
         self.snakeParts.append(SnakePart(type,prevMoveMoment, pos if pos else False, velocity if velocity else False))
     def checkRectalCollision(self,pos1,pos2):
