@@ -17,10 +17,8 @@ def main():
         # Updates game state
         game.onUpdate()
         if not game.snakeAlive:
-            for part in game.snakeParts:
-                game.snakeParts.remove(part)
-            for food in game.foods:
-                game.foods.remove(food)
+            game.snakeParts.clear()
+            game.foods.clear()
             gameOver()
 
         # Events
