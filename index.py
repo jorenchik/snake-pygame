@@ -157,13 +157,11 @@ def main():
 # Game restart/quit screen
 def gameOver():
     while True:
-        game.onUpdate()
-        game.setBackground()
+        game.onUpdate().setBackground()
         text = game.gameOverFont.render('GAME OVER | PRESS SPACE TO RESTART | PRESS ESCAPE TO EXIT', True, white)
         game.screen.blit(text, (game.SCREEN_WIDTH/2-text.get_width()/2, game.SCREEN_HEIGHT/2-text.get_height()/2))
         if game.isQuit(): quit()
-        if game.isKey(pg.K_SPACE):
-            break
+        if game.isKey(pg.K_SPACE): break
         game.update()
 # Starting the game's main loop
 while True: main()
