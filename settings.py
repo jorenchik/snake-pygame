@@ -6,7 +6,7 @@ caption = 'Snake game'
 
 # Gameplay
 portalWalls = False
-# selfRectalCollisionAllowed = False
+selfRectalCollisionAllowed = False
 
 # Screen
 res = (1920,1080)

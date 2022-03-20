@@ -59,7 +59,7 @@ def main():
             else: game.moveSnakePart(part,part.pos,part.velocity)
         
 
-        # Checks whether snakes are about to hit a wall
+        # Checks if snake's head has the same position with a food
         for part in game.snakeParts:
             for food in game.foods:
                 if game.checkRectalCollision(part.pos, food.pos):
@@ -67,6 +67,13 @@ def main():
                     game.foods.remove(food)
                     game.createSnakePart('body',lastSnakePart.prevMoveMoment, lastSnakePart.prevPos, pg.Vector2(lastSnakePart.prevVelocity))
                     game.createFood()
+
+        # Checks whether any part of a snake hits itself
+        for part in game.snakeParts:
+            # Passes if it is a head part
+            if game.snakeParts.index(part) == 0: continue
+            if game.checkRectalCollision(headPart.pos, part.pos):
+                game.snakeAlive = False
 
         # Draws elements
             # Draws the walls
