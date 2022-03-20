@@ -35,7 +35,6 @@ def main():
         # Add score text
         score1Text = game.gameOverFont.render(f'P1 SCORE: {game.player1Score}', True, player1Color)
         game.screen.blit(score1Text, game.score1Pos)
-
         if multiplayer:
             score2Text = game.gameOverFont.render(f'P2 SCORE: {game.player2Score}', True, player2Color)
             game.screen.blit(score2Text, (game.score2Pos[0]-score2Text.get_width(), game.score2Pos[1]))
@@ -45,7 +44,6 @@ def main():
         headParts = [x for x in game.snakeParts if x.type == 'head']
             # Quit
         if game.isQuit(): quit()
-
             # Changes snakes direction
         if (not game.previousDirChange or game.now - game.previousDirChange >= headParts[0].movementPeriod/2):
             if game.isKey(pg.K_RIGHT):
@@ -73,7 +71,6 @@ def main():
                 if game.isKey(pg.K_s):
                     headParts[1].changeDirToAnAngle(270)
                     game.previousDirChange = game.now
-                
         # Snakes' constant movement
         for headPart in headParts:
             relatedSnakeParts = headPart.getRelatedSnakeParts()
@@ -90,7 +87,6 @@ def main():
                         game.moveSnakePart(part,part.pos,part.velocity)
                 else: game.moveSnakePart(part,part.pos,part.velocity)
         
-
         # Checks if snake's head has the same position with a food
         for headPart in headParts:
             relatedSnakeParts = headPart.getRelatedSnakeParts()
@@ -98,12 +94,19 @@ def main():
                 for food in game.foods:
                     if game.checkRectalCollision(part.pos, food.pos):
                         relatedSnakeParts = [x for x in game.snakeParts if x.snakeIndex == part.snakeIndex]
-                        lastSnakePart = relatedSnakeParts[-1]
-                        game.foods.remove(food)
-                        game.createSnakePart('body',part.snakeIndex,part.color,lastSnakePart.prevMoveMoment, lastSnakePart.prevPos, pg.Vector2(lastSnakePart.prevVelocity))
-                        game.createFood(False)
-
-
+                        if food.type == 'food':
+                            lastSnakePart = relatedSnakeParts[-1]
+                            game.foods.remove(food)
+                            game.createSnakePart('body',part.snakeIndex,part.color,lastSnakePart.prevMoveMoment, lastSnakePart.prevPos, pg.Vector2(lastSnakePart.prevVelocity))
+                        if food.type == 'poison':
+                            lastSnakePart = relatedSnakeParts[-1]
+                            game.foods.remove(food)
+                            if len(relatedSnakeParts) > 1:
+                                game.snakeParts.remove(lastSnakePart)
+                        if len([x for x in game.foods if x.type == 'food']) > 0:
+                            game.createFood(True)
+                        else:
+                            game.createFood(False)
         # Checks whether any part of a snake hits another
         if not otherRectalCollisionAllowed:      
             for headPart in headParts:
@@ -114,7 +117,6 @@ def main():
                         if game.checkRectalCollision(part.pos,unrelatedPart.pos):
                             part.alive = False
                             unrelatedPart.alive = False
-
         # Checks whether any part of a snake hits itself
         if not selfRectalCollisionAllowed:
             for headPart in headParts:
@@ -124,7 +126,6 @@ def main():
                     if part.type == 'head': continue
                     if game.checkRectalCollision(headPart.pos, part.pos):
                         part.alive = False
-                
 
         # Draws elements
             # Draws the walls
@@ -132,18 +133,15 @@ def main():
         pg.draw.rect(game.screen, wallColor,game.bottomBorder)
         pg.draw.rect(game.screen, wallColor,game.leftBorder)
         pg.draw.rect(game.screen, wallColor,game.rightBorder)
-
             # Draws the rects if the setting is enabled
         rects = game.playfield.rects
         if drawPlayfieldRects:
             for col in rects:
                 for rect in col:
                     pg.draw.rect(game.screen, wallColor,rect, 1)
-
             # Draws snakes' parts
         for part in game.snakeParts:
             pg.draw.rect(game.screen, part.color,part, 5)
-
             # Draws foods
                 # Draws regular foods
         for food in game.foods:
@@ -152,7 +150,6 @@ def main():
             else:
                 pg.draw.rect(game.screen, poisonousFoodColor, food.rect, 5)
                 # Draws poisonous foods
-
 
         # End of the update
         game.update()
