@@ -31,6 +31,7 @@ def main():
             gameOver()
             break
 
+        game.getPlayersScore()
         # Add score text
         score1Text = game.gameOverFont.render(f'P1 SCORE: {game.player1Score}', True, player1Color)
         game.screen.blit(score1Text, game.score1Pos)
@@ -101,6 +102,7 @@ def main():
                         game.foods.remove(food)
                         game.createSnakePart('body',part.snakeIndex,part.color,lastSnakePart.prevMoveMoment, lastSnakePart.prevPos, pg.Vector2(lastSnakePart.prevVelocity))
                         game.createFood(False)
+
 
         # Checks whether any part of a snake hits another
         if not otherRectalCollisionAllowed:      

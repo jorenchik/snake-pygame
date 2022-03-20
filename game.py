@@ -193,6 +193,9 @@ class Game:
         return rd.choice(self.availablePositions)
     def isSnakeDead(self):
         return True if len([x for x in self.snakeParts if x.alive == False]) > 0 else False
+    def getPlayersScore(self):
+        self.player1Score = len([x for x in self.snakeParts if x.snakeIndex == 0])-1
+        self.player2Score = len([x for x in self.snakeParts if x.snakeIndex == 1])-1
 
 
 # Game initialization
