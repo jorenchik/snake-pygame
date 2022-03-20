@@ -17,7 +17,8 @@ drawPlayfieldRects = False
 fps = 60
 
 # Font
-fontSize = 50
+scoreFontSize = 20
+gameOverFontSize = 50
 font = 'Arial'
 
 # Colors
@@ -27,6 +28,9 @@ white = (255,255,255)
 grey = (31,31,47)
 red = (255,0,0)
 green = (41,159,32)
+magenta = (255,0,255)
+player1Color = white
+player2Color = magenta
 
 # Game colors
 hitboxColor = red
@@ -38,4 +42,5 @@ poisonousFoodColor = red
 # Playfield
 rectDims = (30,20)
     # percentages
-playfieldSize = (.8,.85)
+playfieldSize = (.78,.8)
+playfieldYOffset = (.03)

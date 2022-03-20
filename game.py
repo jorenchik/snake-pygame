@@ -59,7 +59,8 @@ class Game:
         pg.init()
         pg.display.set_caption(caption)
         # Main fields
-        self.font = pg.font.SysFont(font, fontSize)
+        self.gameOverFont = pg.font.SysFont(font, gameOverFontSize)
+        self.scoreFont = pg.font.SysFont(font, scoreFontSize)
         pg.font.init()
         self.gameIcon = pg.image.load(icon)
         self.screen = pg.display.set_mode(resolution, pg.FULLSCREEN if fullscreen else 0)
@@ -79,10 +80,10 @@ class Game:
         # Rects
         self.sidePadding = round((1-playfieldSize[0])/2, 3)
         self.topPadding = round((1-playfieldSize[1])/2, 3)
-        self.topBorder = pg.Rect(self.SCREEN_WIDTH*self.sidePadding,self.SCREEN_HEIGHT*(self.topPadding),self.SCREEN_WIDTH*playfieldSize[0],1)
-        self.bottomBorder = pg.Rect(self.SCREEN_WIDTH*self.sidePadding,self.SCREEN_HEIGHT*(playfieldSize[1]+self.topPadding),self.SCREEN_WIDTH*playfieldSize[0],1)
-        self.leftBorder = pg.Rect(self.SCREEN_WIDTH*self.sidePadding,self.SCREEN_HEIGHT*self.topPadding,1,self.SCREEN_HEIGHT*(playfieldSize[1]))
-        self.rightBorder = pg.Rect(self.SCREEN_WIDTH*(playfieldSize[0]+self.sidePadding),self.SCREEN_HEIGHT*self.topPadding,1,self.SCREEN_HEIGHT*playfieldSize[1])
+        self.topBorder = pg.Rect(self.SCREEN_WIDTH*self.sidePadding,self.SCREEN_HEIGHT*(self.topPadding)+self.SCREEN_HEIGHT*playfieldYOffset,self.SCREEN_WIDTH*playfieldSize[0],1)
+        self.bottomBorder = pg.Rect(self.SCREEN_WIDTH*self.sidePadding,self.SCREEN_HEIGHT*(playfieldSize[1]+self.topPadding)+self.SCREEN_HEIGHT*playfieldYOffset,self.SCREEN_WIDTH*playfieldSize[0],1)
+        self.leftBorder = pg.Rect(self.SCREEN_WIDTH*self.sidePadding,self.SCREEN_HEIGHT*self.topPadding+self.SCREEN_HEIGHT*playfieldYOffset,1,self.SCREEN_HEIGHT*(playfieldSize[1]))
+        self.rightBorder = pg.Rect(self.SCREEN_WIDTH*(playfieldSize[0]+self.sidePadding),self.SCREEN_HEIGHT*self.topPadding+self.SCREEN_HEIGHT*playfieldYOffset,1,self.SCREEN_HEIGHT*playfieldSize[1])
         # Playfield
         self.playfield = playfield
         self.occupiedPositions = []
@@ -97,6 +98,11 @@ class Game:
         # State
         self.snakeAlive = True
         self.gameWon = False
+        # Score
+        self.score1Pos = (self.SCREEN_WIDTH*self.sidePadding,(self.SCREEN_HEIGHT*(self.topPadding)+self.SCREEN_HEIGHT*playfieldYOffset)/2)
+        self.score2Pos = (self.SCREEN_WIDTH-self.SCREEN_WIDTH*self.sidePadding,(self.SCREEN_HEIGHT*(self.topPadding)+self.SCREEN_HEIGHT*playfieldYOffset)/2)
+        self.player1Score = 0
+        self.player2Score = 0
     def setBackground(self):
         if type(self.background).__name__ == 'tuple':
             self.screen.fill(self.background)
@@ -161,7 +167,7 @@ class Game:
                 (snakePart.rect.x, snakePart.rect.y) = snakeCoords
                 snakePart.prevMoveMoment = t.time()
     def getCoords(self, pos):
-        return (self.playfield.rects[pos[0]][pos[1]].x,self.playfield.rects[pos[0]][pos[1]].y)
+        return (self.playfield.rects[pos[0]][pos[1]].x,self.playfield.rects[pos[0]][pos[1]].y+game.SCREEN_HEIGHT*playfieldYOffset)
     def createFood(self):
         self.foods.append(Food())
     def createSnakePart(self, type, prevMoveMoment, pos=False, velocity=False):

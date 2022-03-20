@@ -21,6 +21,14 @@ def main():
             game.foods.clear()
             gameOver()
 
+        # Add score text
+        score1Text = game.gameOverFont.render(f'SCORE: {game.player1Score}', True, player1Color)
+        game.screen.blit(score1Text, game.score1Pos)
+
+        score2Text = game.gameOverFont.render(f'SCORE: {game.player2Score}', True, player2Color)
+        game.screen.blit(score2Text, (game.score2Pos[0]-score2Text.get_width(), game.score2Pos[1]))
+
+
         # Events
         headPart = game.snakeParts[0]
 
@@ -106,7 +114,7 @@ def gameOver():
     while not game.snakeAlive:
         game.onUpdate()
         game.setBackground()
-        text = game.font.render('GAME OVER | PRESS SPACE TO RESTART | PRESS ESCAPE TO EXIT', True, white)
+        text = game.gameOverFont.render('GAME OVER | PRESS SPACE TO RESTART | PRESS ESCAPE TO EXIT', True, white)
         game.screen.blit(text, (game.SCREEN_WIDTH/2-text.get_width()/2, game.SCREEN_HEIGHT/2-text.get_height()/2))
         if game.isQuit(): quit()
         if game.isKey(pg.K_SPACE):
