@@ -31,9 +31,10 @@ class Food():
         self.color = foodColor
 
 class SnakePart():
-    def __init__(self,type,prevMoveMoment=False,pos=False,velocity=False):
+    def __init__(self,type,snakeIndex,color,prevMoveMoment=False,pos=False,velocity=False):
         # General props
         self.type = type
+        self.snakeIndex = snakeIndex
         # Physical props
         self.pos = (pos[0] if pos else rd.randint(1,rectDims[0]-1),pos[1] if pos else rd.randint(1,rectDims[1]-1))
         self.prevPos = pos
@@ -48,7 +49,9 @@ class SnakePart():
             self.movementPeriod = False
         # Appearance
         self.rect = pg.Rect(self.x,self.y,game.playfield.rectSize[0],game.playfield.rectSize[1])
-        self.color = snakeColor
+        self.color = color
+        # State
+        self.alive = True
     def changeDirToAnAngle(self, angle):
         if angle == 0 and self.velocity.x >= 0: (self.velocity.y, self.velocity.x) = (0, self.velocity.length())
         if angle == 90 and self.velocity.y <= 0: (self.velocity.y, self.velocity.x) = (-self.velocity.length(), 0)
@@ -135,14 +138,16 @@ class Game:
         # Get events
         self.events = self.getEvents()
         # Determines occupied positions on the playfield
-        self.occupiedPositions = []
-        for snakePart in self.snakeParts:
-            self.occupiedPositions.append(snakePart.pos)
-        for food in self.foods:
-            self.occupiedPositions.append(food.pos)
-        self.getAvailablePositions()
+        if self.active:
+            self.occupiedPositions = []
+            for snakePart in self.snakeParts:
+                self.occupiedPositions.append(snakePart.pos)
+            for food in self.foods:
+                self.occupiedPositions.append(food.pos)
+            self.getAvailablePositions()
     def moveSnakePart(self,snakePart,pos,velocity=False):
-        if self.snakeAlive:
+        snakeDead = True if len([x for x in self.snakeParts if x.alive == False]) > 0 else False
+        if not snakeDead:
             if velocity:
                 if velocity.x > 0: xMove = 1
                 elif velocity.x < 0: xMove = -1
@@ -154,10 +159,9 @@ class Game:
                 yMove = 0
                 xMove = 0 
             if (snakePart.pos[0]+xMove not in range(0, rectDims[0]) or snakePart.pos[1]+yMove not in range(0, rectDims[1])) and not portalWalls:
-                self.snakeAlive = False
+                snakePart.alive = False
             else:
                 (newXPos, newYPos) = (int(pos[0]+xMove), int(pos[1]+yMove))
-                
                 if newXPos >= rectDims[0]: newXPos -= rectDims[0]
                 if newXPos < 0: newXPos += rectDims[0]
                 if newYPos >= rectDims[1]: newYPos -= rectDims[1]
@@ -171,8 +175,8 @@ class Game:
         return (self.playfield.rects[pos[0]][pos[1]].x,self.playfield.rects[pos[0]][pos[1]].y+game.SCREEN_HEIGHT*playfieldYOffset)
     def createFood(self, isPoisonous):
         self.foods.append(Food(isPoisonous))
-    def createSnakePart(self, type, prevMoveMoment, pos=False, velocity=False):
-        self.snakeParts.append(SnakePart(type,prevMoveMoment, pos if pos else False, velocity if velocity else False))
+    def createSnakePart(self,type,snakeIndex,color,prevMoveMoment,pos=False,velocity=False):
+        self.snakeParts.append(SnakePart(type,snakeIndex,color,prevMoveMoment,pos if pos else False, velocity if velocity else False))
     def checkRectalCollision(self,pos1,pos2):
         if pos1[0] == pos2[0] and pos1[1] == pos2[1]: return True
         else: return False
