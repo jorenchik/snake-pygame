@@ -1,3 +1,4 @@
+from typing import NewType
 from matplotlib.style import available
 from pandas import array
 import pygame as pg
@@ -145,10 +146,16 @@ class Game:
             else:
                 yMove = 0
                 xMove = 0 
-            if snakePart.pos[0]+xMove not in range(0, rectDims[0]) or snakePart.pos[1]+yMove not in range(0, rectDims[1]):
+            if (snakePart.pos[0]+xMove not in range(0, rectDims[0]) or snakePart.pos[1]+yMove not in range(0, rectDims[1])) and not portalWalls:
                 self.snakeAlive = False
             else:
-                snakePart.pos = (int(pos[0]+xMove), int(pos[1]+yMove))
+                (newXPos, newYPos) = (int(pos[0]+xMove), int(pos[1]+yMove))
+                
+                if newXPos >= rectDims[0]: newXPos -= rectDims[0]
+                if newXPos < 0: newXPos += rectDims[0]
+                if newYPos >= rectDims[1]: newYPos -= rectDims[1]
+                if newYPos < 0: newYPos += rectDims[1]
+                snakePart.pos = (newXPos, newYPos)
                 snakeCoords = self.getCoords(snakePart.pos)
                 (snakePart.x, snakePart.y) = snakeCoords
                 (snakePart.rect.x, snakePart.rect.y) = snakeCoords
@@ -159,12 +166,11 @@ class Game:
         self.foods.append(Food())
     def createSnakePart(self, type, prevMoveMoment, pos=False, velocity=False):
         self.snakeParts.append(SnakePart(type,prevMoveMoment, pos if pos else False, velocity if velocity else False))
-    def checkRectalCollision(self, pos1,pos2):
+    def checkRectalCollision(self,pos1,pos2):
         if pos1[0] == pos2[0] and pos1[1] == pos2[1]: return True
         else: return False
     def getAvailablePositions(self):
         self.availablePositions = []
-        i = 0
         for col in self.playfield.rects:
             for rect in col:
                 if rect.pos not in self.occupiedPositions:

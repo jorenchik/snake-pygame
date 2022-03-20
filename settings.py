@@ -4,6 +4,9 @@ from grid import Playfield
 
 caption = 'Snake game'
 
+# Gameplay
+portalWalls = True
+
 # Screen
 res = (1920,1080)
 fullscreen = True
