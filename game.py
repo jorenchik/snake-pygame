@@ -175,7 +175,6 @@ class Game:
             for rect in col:
                 if rect.pos not in self.occupiedPositions:
                     self.availablePositions.append(rect.pos)
-        
     def getRandomAvailablePos(self):
         if len(self.availablePositions) == 0: return False
         return rd.choice(self.availablePositions)

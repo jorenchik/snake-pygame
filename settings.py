@@ -5,7 +5,8 @@ from grid import Playfield
 caption = 'Snake game'
 
 # Gameplay
-portalWalls = True
+portalWalls = False
+# selfRectalCollisionAllowed = False
 
 # Screen
 res = (1920,1080)
@@ -16,7 +17,7 @@ drawPlayfieldRects = False
 fps = 60
 
 # Font
-fontSize = 20
+fontSize = 50
 font = 'Arial'
 
 # Colors

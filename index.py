@@ -16,7 +16,12 @@ def main():
     while game.active:
         # Updates game state
         game.onUpdate()
-        if not game.snakeAlive: gameOver()
+        if not game.snakeAlive:
+            for part in game.snakeParts:
+                game.snakeParts.remove(part)
+            for food in game.foods:
+                game.foods.remove(food)
+            gameOver()
 
         # Events
         headPart = game.snakeParts[0]
@@ -96,9 +101,13 @@ def gameOver():
     while not game.snakeAlive:
         game.onUpdate()
         game.setBackground()
+        text = game.font.render('GAME OVER | PRESS SPACE TO RESTART | PRESS ESCAPE TO EXIT', True, white)
+        game.screen.blit(text, (game.SCREEN_WIDTH/2-text.get_width()/2, game.SCREEN_HEIGHT/2-text.get_height()/2))
         if game.isQuit(): quit()
+        if game.isKey(pg.K_SPACE):
+            game.snakeAlive = True
         game.update()
-
+    main()
 # Starting the game's main loop
 main()
 
