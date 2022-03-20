@@ -25,8 +25,7 @@ def main():
     while game.active:
         # Updates game state
         game.onUpdate()
-        snakeDead = True if len([x for x in game.snakeParts if x.alive == False]) > 0 else False
-        if snakeDead:
+        if game.isSnakeDead():
             game.snakeParts.clear()
             game.foods.clear()
             gameOver()
@@ -76,7 +75,7 @@ def main():
                 
         # Snakes' constant movement
         for headPart in headParts:
-            relatedSnakeParts = [x for x in game.snakeParts if x.snakeIndex == headPart.snakeIndex]
+            relatedSnakeParts = headPart.getRelatedSnakeParts()
             for i, part in enumerate(relatedSnakeParts):
                 if part.movementPeriod:
                     part.prevPos = part.pos
@@ -93,7 +92,7 @@ def main():
 
         # Checks if snake's head has the same position with a food
         for headPart in headParts:
-            relatedSnakeParts = [x for x in game.snakeParts if x.snakeIndex == headPart.snakeIndex]
+            relatedSnakeParts = headPart.getRelatedSnakeParts()
             for i, part in enumerate(relatedSnakeParts):
                 for food in game.foods:
                     if game.checkRectalCollision(part.pos, food.pos):
@@ -105,7 +104,7 @@ def main():
 
         # Checks whether any part of a snake hits itself
         for headPart in headParts:
-            relatedSnakeParts = [x for x in game.snakeParts if x.snakeIndex == headPart.snakeIndex]
+            relatedSnakeParts = headPart.getRelatedSnakeParts()
             for i, part in enumerate(relatedSnakeParts):
                 # Passes if it is a head part
                 if part.type == 'head': continue

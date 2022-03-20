@@ -57,6 +57,8 @@ class SnakePart():
         if angle == 90 and self.velocity.y <= 0: (self.velocity.y, self.velocity.x) = (-self.velocity.length(), 0)
         if angle == 180 and self.velocity.x <= 0: (self.velocity.y, self.velocity.x) = (0, -self.velocity.length())
         if angle == 270 and self.velocity.y >= 0: (self.velocity.y, self.velocity.x) = (self.velocity.length(), 0)
+    def getRelatedSnakeParts(self):
+        return [x for x in game.snakeParts if x.snakeIndex == self.snakeIndex]
 
 class Game:
     def __init__(self, caption, icon, resolution, font, playfield):
@@ -189,6 +191,9 @@ class Game:
     def getRandomAvailablePos(self):
         if len(self.availablePositions) == 0: return False
         return rd.choice(self.availablePositions)
+    def isSnakeDead(self):
+        return True if len([x for x in self.snakeParts if x.alive == False]) > 0 else False
+
 
 # Game initialization
 playfieldWidth = res[0] * playfieldSize[0]
