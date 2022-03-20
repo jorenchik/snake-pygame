@@ -102,14 +102,27 @@ def main():
                         game.createSnakePart('body',part.snakeIndex,part.color,lastSnakePart.prevMoveMoment, lastSnakePart.prevPos, pg.Vector2(lastSnakePart.prevVelocity))
                         game.createFood(False)
 
+        # Checks whether any part of a snake hits another
+        if not otherRectalCollisionAllowed:      
+            for headPart in headParts:
+                relatedSnakeParts = headPart.getRelatedSnakeParts()
+                for i, part in enumerate(relatedSnakeParts):
+                    unrelatedSnakeParts = [x for x in game.snakeParts if x not in relatedSnakeParts]
+                    for unrelatedPart in unrelatedSnakeParts:
+                        if game.checkRectalCollision(part.pos,unrelatedPart.pos):
+                            part.alive = False
+                            unrelatedPart.alive = False
+
         # Checks whether any part of a snake hits itself
-        for headPart in headParts:
-            relatedSnakeParts = headPart.getRelatedSnakeParts()
-            for i, part in enumerate(relatedSnakeParts):
-                # Passes if it is a head part
-                if part.type == 'head': continue
-                if game.checkRectalCollision(headPart.pos, part.pos):
-                    part.alive = False
+        if not selfRectalCollisionAllowed:
+            for headPart in headParts:
+                relatedSnakeParts = headPart.getRelatedSnakeParts()
+                for i, part in enumerate(relatedSnakeParts):
+                    # Passes if it is a head part
+                    if part.type == 'head': continue
+                    if game.checkRectalCollision(headPart.pos, part.pos):
+                        part.alive = False
+                
 
         # Draws elements
             # Draws the walls

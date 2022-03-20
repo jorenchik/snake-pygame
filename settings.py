@@ -7,6 +7,7 @@ caption = 'Snake game'
 # Gameplay
 portalWalls = False
 selfRectalCollisionAllowed = False
+otherRectalCollisionAllowed = False
 multiplayer = True
 
 # Screen
