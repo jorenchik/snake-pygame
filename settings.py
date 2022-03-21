@@ -1,7 +1,5 @@
 
 # Game caption
-from grid import Playfield
-
 caption = 'Snake game'
 
 # Gameplay
