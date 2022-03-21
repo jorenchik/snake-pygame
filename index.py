@@ -201,12 +201,13 @@ def settingsMenu():
     while True:
         game.onUpdate().setBackground()
         menuItems = []
+        wallMode = game.createMenuItem(f'WALL MODE: {"PORTAL" if game.portalWalls else "REGULAR"}')
         multiplayerOn = game.createMenuItem(f'MODE: {"1 PLAYER" if not game.multiplayer else "2 PLAEYRS"}')
         colorPlayer1Btn = game.createMenuItem(f'PLAYER 1 COLOR: {get_key(game.player1Color, colors).upper()}')
         if game.multiplayer:
             colorPlayer2Btn = game.createMenuItem(f'PLAYER 2 COLOR: {get_key(game.player2Color, colors).upper()}')
         backBtn = game.createMenuItem('BACK')
-        menuItems.extend([multiplayerOn,colorPlayer1Btn])
+        menuItems.extend([wallMode, multiplayerOn,colorPlayer1Btn])
         if game.multiplayer:
             menuItems.append(colorPlayer2Btn)
         menuItems.append(backBtn)
@@ -234,6 +235,8 @@ def settingsMenu():
                 game.player1ColorIndex += 1
             game.player1Color = nextColor
                     
+        if game.isKey(pg.K_RETURN) and game.menuPointingTo == menuItems.index(wallMode): 
+            game.portalWalls = not game.multiplayer
         if game.multiplayer:
             if game.isKey(pg.K_RETURN) and game.menuPointingTo == menuItems.index(colorPlayer2Btn): 
                 availableColors = game.getAvailablePlayerColors()

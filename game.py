@@ -99,6 +99,7 @@ class Game:
         self.background = background
         self.hitboxColor = hitboxColor
         self.multiplayer = multiplayer
+        self.portalWalls = portalWalls
         # Clock
         self.clock = pg.time.Clock()
         self.prevTime = t.time()
@@ -177,7 +178,7 @@ class Game:
                 else: yMove = 0
             else:
                 yMove, xMove = 0, 0
-            if (snakePart.pos[0]+xMove not in range(0, rectDims[0]) or snakePart.pos[1]+yMove not in range(0, rectDims[1])) and not portalWalls:
+            if (snakePart.pos[0]+xMove not in range(0, rectDims[0]) or snakePart.pos[1]+yMove not in range(0, rectDims[1])) and not self.portalWalls:
                 snakePart.alive = False
             else:
                 newXPos, newYPos = int(pos[0]+xMove), int(pos[1]+yMove)
