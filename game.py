@@ -84,6 +84,7 @@ class Game:
         # Main fields
         self.gameOverFont = pg.font.SysFont(font, gameOverFontSize)
         self.scoreFont = pg.font.SysFont(font, scoreFontSize)
+        self.scoreFont = pg.font.SysFont(font, menuFontSize)
         pg.font.init()
         self.gameIcon = pg.image.load(icon)
         self.screen = pg.display.set_mode(resolution, pg.FULLSCREEN if fullscreen else 0)
@@ -115,6 +116,8 @@ class Game:
         self.score1Pos = (self.SCREEN_WIDTH*self.sidePadding,(self.SCREEN_HEIGHT*(self.topPadding)+self.SCREEN_HEIGHT*playfieldYOffset)/2)
         self.score2Pos = (self.SCREEN_WIDTH-self.SCREEN_WIDTH*self.sidePadding,(self.SCREEN_HEIGHT*(self.topPadding)+self.SCREEN_HEIGHT*playfieldYOffset)/2)
         self.player1Score, self.player2Score = 0, 0
+        # Menu state
+        self.menuPointingTo = 0
     def setBackground(self):
         if type(self.background).__name__ == 'tuple': self.screen.fill(self.background)
         if type(self.background).__name__ == 'PosixPath': self.screen.blit(pg.transform.scale(pg.image.load(background), (self.SCREEN_WIDTH,self.SCREEN_HEIGHT)),(0,0))
@@ -134,6 +137,11 @@ class Game:
             if event.type == pg.KEYDOWN:
                 if event.key == key: 
                     return True
+        return False
+    def isAnyKey(self):
+        for event in self.events:
+            if event.type == pg.KEYDOWN:
+                return True
         return False
     def onUpdate(self):
         # Deltatime
@@ -197,6 +205,22 @@ class Game:
         for part in game.snakeParts: 
             part.velocity = pg.Vector2(snakeBaseVelocity)
             part.getMovementPeriod()  
+    def createMenuItem(self, text, color=menuFontColor):
+        return game.gameOverFont.render(text, True, color)
+    def showMenuItems(self, items):
+        heights, margins = 0, 0
+        for i,it in enumerate(items):
+            heights += it.get_height()
+            if i != 0: margins += 1
+        height = heights + margins*menuItemMargin
+        topMargin = (game.SCREEN_HEIGHT-height)/2
+        for i,it in enumerate(items):
+            offset = (menuItemMargin * i) + (it.get_height()*i) if i != 0 else 0
+            if game.menuPointingTo == i:
+                pointerCoords = (game.SCREEN_WIDTH/2-it.get_width()/2-pointerSize[0]- pointerLeftMargin, topMargin+offset+pointerSize[1]/4)
+                pg.draw.polygon(self.screen,menuFontColor,[(pointerCoords[0],pointerCoords[1]), (pointerCoords[0]+pointerSize[0]*pointerSizeMult,pointerCoords[1]+pointerSize[0]*pointerSizeMult), (pointerCoords[0],pointerCoords[1]+pointerSize[1]*pointerSizeMult)])
+            self.screen.blit(it, (game.SCREEN_WIDTH/2-it.get_width()/2, topMargin+offset))
+        return self
 
 # Game initialization
 playfieldWidth = res[0] * playfieldSize[0]

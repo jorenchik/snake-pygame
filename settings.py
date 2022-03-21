@@ -46,3 +46,11 @@ rectDims = (30,20)
     # percentages
 playfieldSize = (.78,.8)
 playfieldYOffset = (.03)
+
+# Menu
+menuFontSize = 15
+menuFontColor = white
+menuItemMargin = 40
+pointerSizeMult = 1
+pointerSize = (15,30)
+pointerLeftMargin = 20
