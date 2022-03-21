@@ -9,6 +9,12 @@ def dd(var):
     print(var)
     exit()
 
+def get_key(val, dict):
+    for key, value in dict.items():
+         if val == value:
+             return key
+    
+
 class Rect(pg.Rect):
     def __init__(self, pos, left, top, width, height):
         self.pos = pos
@@ -92,6 +98,7 @@ class Game:
         self.SCREEN_HEIGHT = pg.display.get_window_size()[1]
         self.background = background
         self.hitboxColor = hitboxColor
+        self.multiplayer = multiplayer
         # Clock
         self.clock = pg.time.Clock()
         self.prevTime = t.time()
@@ -112,10 +119,12 @@ class Game:
         self.snakeParts, self.foods, self.events = [],[],[]
         # State
         self.snakeAlive, self.gameWon = True, False
-        # Score
+        # Players
         self.score1Pos = (self.SCREEN_WIDTH*self.sidePadding,(self.SCREEN_HEIGHT*(self.topPadding)+self.SCREEN_HEIGHT*playfieldYOffset)/2)
         self.score2Pos = (self.SCREEN_WIDTH-self.SCREEN_WIDTH*self.sidePadding,(self.SCREEN_HEIGHT*(self.topPadding)+self.SCREEN_HEIGHT*playfieldYOffset)/2)
         self.player1Score, self.player2Score = 0, 0
+        self.player1Color, self.player2Color = white, magenta
+        self.setPlayerColorIndex()
         # Menu state
         self.menuPointingTo = 0
     def setBackground(self):
@@ -154,6 +163,8 @@ class Game:
         if self.active:
             self.occupiedPositions = [self.snakeParts, self.foods]
             self.getAvailablePositions()
+        # Sets players index
+        self.setPlayerColorIndex()
         return self
     def moveSnakePart(self,snakePart,pos,velocity=False):
         if not self.isSnakeDead():
@@ -221,6 +232,12 @@ class Game:
                 pg.draw.polygon(self.screen,menuFontColor,[(pointerCoords[0],pointerCoords[1]), (pointerCoords[0]+pointerSize[0]*pointerSizeMult,pointerCoords[1]+pointerSize[0]*pointerSizeMult), (pointerCoords[0],pointerCoords[1]+pointerSize[1]*pointerSizeMult)])
             self.screen.blit(it, (game.SCREEN_WIDTH/2-it.get_width()/2, topMargin+offset))
         return self
+    def getAvailablePlayerColors(self):
+        if self.multiplayer: return [x for x in colors.values() if x != self.player1Color and x != self.player2Color]
+        else: return [x for x in colors.values() if x != self.player1Color]
+    def setPlayerColorIndex(self):
+        self.player1ColorIndex = list(colors.values()).index(self.player1Color)
+        self.player2ColorIndex = list(colors.values()).index(self.player2Color)
 
 # Game initialization
 playfieldWidth = res[0] * playfieldSize[0]

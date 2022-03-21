@@ -1,17 +1,20 @@
-from game import game
+from turtle import back
+
+from matplotlib.style import available
+from game import game, get_key
 from settings import *
 import pygame as pg
 
 # Game itself
 def main():
     # Creates Snake #1
-    game.createSnakePart('head',0,player1Color,False)
+    game.createSnakePart('head',0,game.player1Color,False)
     for snakePart in game.snakeParts:
         game.moveSnakePart(snakePart,snakePart.pos)
 
     # Creates Snake #2
-    if multiplayer:
-        game.createSnakePart('head',1,player2Color,False)
+    if game.multiplayer:
+        game.createSnakePart('head',1,game.player2Color,False)
         for snakePart in game.snakeParts:
             game.moveSnakePart(snakePart,snakePart.pos)
 
@@ -35,7 +38,7 @@ def main():
         # Add score text
         score1Text = game.gameOverFont.render(f'P1 SCORE: {game.player1Score}', True, player1Color)
         game.screen.blit(score1Text, game.score1Pos)
-        if multiplayer:
+        if game.multiplayer:
             score2Text = game.gameOverFont.render(f'P2 SCORE: {game.player2Score}', True, player2Color)
             game.screen.blit(score2Text, (game.score2Pos[0]-score2Text.get_width(), game.score2Pos[1]))
 
@@ -47,7 +50,7 @@ def main():
 
         # Dont move unsless movement button's been pressed
         if (game.isKey(pg.K_RIGHT) or game.isKey(pg.K_UP) or game.isKey(pg.K_LEFT) or game.isKey(pg.K_DOWN)) and headParts[0].velocity.length() == 0: game.setBaseVelocity()
-        if multiplayer:
+        if game.multiplayer:
             if (game.isKey(pg.K_d) or game.isKey(pg.K_w) or game.isKey(pg.K_a) or game.isKey(pg.K_s)) and headParts[0].velocity.length() == 0: game.setBaseVelocity()
 
             # Changes snakes direction
@@ -64,7 +67,7 @@ def main():
             if game.isKey(pg.K_DOWN):
                 headParts[0].changeDirToAnAngle(270)
                 game.previousDirChange = game.now
-            if multiplayer:
+            if game.multiplayer:
                 if game.isKey(pg.K_d):
                     headParts[1].changeDirToAnAngle(0)
                     game.previousDirChange = game.now
@@ -171,6 +174,7 @@ def gameOver():
         game.update()
 
 def gameMenu():
+    game.menuPointingTo = 0
     while True:
         game.onUpdate().setBackground()
         menuItems = []
@@ -186,7 +190,71 @@ def gameMenu():
             if game.menuPointingTo == len(menuItems)-1: game.menuPointingTo = 0
             else: game.menuPointingTo += 1
         if game.isKey(pg.K_RETURN) and game.menuPointingTo == menuItems.index(startBtn): break
+        if game.isKey(pg.K_RETURN) and game.menuPointingTo == menuItems.index(settingsBtn): 
+            settingsMenu()
+            game.menuPointingTo = 0
         if game.isKey(pg.K_RETURN) and game.menuPointingTo == menuItems.index(exitBtn): exit()
+        game.update()
+
+def settingsMenu():
+    game.menuPointingTo = 0
+    while True:
+        game.onUpdate().setBackground()
+        menuItems = []
+        multiplayerOn = game.createMenuItem(f'MODE: {"1 PLAYER" if not game.multiplayer else "2 PLAEYRS"}')
+        colorPlayer1Btn = game.createMenuItem(f'PLAYER 1 COLOR: {get_key(game.player1Color, colors).upper()}')
+        if game.multiplayer:
+            colorPlayer2Btn = game.createMenuItem(f'PLAYER 2 COLOR: {get_key(game.player2Color, colors).upper()}')
+        backBtn = game.createMenuItem('BACK')
+        menuItems.extend([multiplayerOn,colorPlayer1Btn])
+        if game.multiplayer:
+            menuItems.append(colorPlayer2Btn)
+        menuItems.append(backBtn)
+        game.showMenuItems(menuItems)
+        if game.isKey(pg.K_UP):
+            if game.menuPointingTo == 0: game.menuPointingTo = len(menuItems)-1
+            else: game.menuPointingTo -= 1
+        if game.isKey(pg.K_DOWN):
+            if game.menuPointingTo == len(menuItems)-1: game.menuPointingTo = 0
+            else: game.menuPointingTo += 1
+        if game.isKey(pg.K_RETURN) and game.menuPointingTo == menuItems.index(colorPlayer1Btn):
+            availableColors = game.getAvailablePlayerColors()
+            nextColor = False
+            while not nextColor:
+                allColors = list(colors.values())
+                if len(allColors) > game.player1ColorIndex+1:
+                    color = allColors[game.player1ColorIndex+1]
+                    if color in availableColors:
+                        nextColor = color
+                elif allColors[0] not in availableColors:
+                    nextColor = allColors[1]
+                    print(nextColor)
+                else:
+                    nextColor = allColors[0]
+                game.player1ColorIndex += 1
+            game.player1Color = nextColor
+                    
+        if game.multiplayer:
+            if game.isKey(pg.K_RETURN) and game.menuPointingTo == menuItems.index(colorPlayer2Btn): 
+                availableColors = game.getAvailablePlayerColors()
+                nextColor = False
+                while not nextColor:
+                    allColors = list(colors.values())
+                    if len(allColors) > game.player2ColorIndex+1:
+                        color = allColors[game.player2ColorIndex+1]
+                        if color in availableColors:
+                            nextColor = color
+                    elif allColors[0] not in availableColors:
+                        nextColor = allColors[1]
+                        print(nextColor)
+                    else:
+                        nextColor = allColors[0]
+                    game.player2ColorIndex += 1
+                game.player2Color = nextColor
+
+        if game.isKey(pg.K_RETURN) and game.menuPointingTo == menuItems.index(multiplayerOn): 
+            game.multiplayer = not game.multiplayer
+        if game.isKey(pg.K_RETURN) and game.menuPointingTo == menuItems.index(backBtn): break
         game.update()
 
 # Starting the game's main loop

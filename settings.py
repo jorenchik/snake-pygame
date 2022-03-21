@@ -6,7 +6,7 @@ caption = 'Snake game'
 portalWalls = False
 selfRectalCollisionAllowed = False
 otherRectalCollisionAllowed = False
-multiplayer = True
+multiplayer = False
 
 snakeBaseVelocity = (4,0)
 
@@ -31,6 +31,8 @@ grey = (31,31,47)
 red = (255,0,0)
 green = (41,159,32)
 magenta = (255,0,255)
+colors = {'white':white,'magenta':magenta,'grey':grey}
+colorKeys = colors.keys()
 player1Color = white
 player2Color = magenta
 
