@@ -36,10 +36,10 @@ def main():
 
         game.getPlayersScore()
         # Add score text
-        score1Text = game.gameOverFont.render(f'P1 SCORE: {game.player1Score}', True, player1Color)
+        score1Text = game.gameOverFont.render(f'P1 SCORE: {game.player1Score}', True, game.player1Color)
         game.screen.blit(score1Text, game.score1Pos)
         if game.multiplayer:
-            score2Text = game.gameOverFont.render(f'P2 SCORE: {game.player2Score}', True, player2Color)
+            score2Text = game.gameOverFont.render(f'P2 SCORE: {game.player2Score}', True, game.player2Color)
             game.screen.blit(score2Text, (game.score2Pos[0]-score2Text.get_width(), game.score2Pos[1]))
 
 
