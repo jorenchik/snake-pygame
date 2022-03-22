@@ -236,7 +236,7 @@ def settingsMenu():
             game.player1Color = nextColor
                     
         if game.isKey(pg.K_RETURN) and game.menuPointingTo == menuItems.index(wallMode): 
-            game.portalWalls = not game.multiplayer
+            game.portalWalls = not game.portalWalls
         if game.multiplayer:
             if game.isKey(pg.K_RETURN) and game.menuPointingTo == menuItems.index(colorPlayer2Btn): 
                 availableColors = game.getAvailablePlayerColors()
