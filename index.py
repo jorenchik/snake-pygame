@@ -219,42 +219,12 @@ def settingsMenu():
             if game.menuPointingTo == len(menuItems)-1: game.menuPointingTo = 0
             else: game.menuPointingTo += 1
         if game.isKey(pg.K_RETURN) and game.menuPointingTo == menuItems.index(colorPlayer1Btn):
-            availableColors = game.getAvailablePlayerColors()
-            nextColor = False
-            while not nextColor:
-                allColors = list(colors.values())
-                if len(allColors) > game.player1ColorIndex+1:
-                    color = allColors[game.player1ColorIndex+1]
-                    if color in availableColors:
-                        nextColor = color
-                elif allColors[0] not in availableColors:
-                    nextColor = allColors[1]
-                    print(nextColor)
-                else:
-                    nextColor = allColors[0]
-                game.player1ColorIndex += 1
-            game.player1Color = nextColor
-                    
+            game.getPlayerNextColor(0)
         if game.isKey(pg.K_RETURN) and game.menuPointingTo == menuItems.index(wallMode): 
             game.portalWalls = not game.portalWalls
         if game.multiplayer:
             if game.isKey(pg.K_RETURN) and game.menuPointingTo == menuItems.index(colorPlayer2Btn): 
-                availableColors = game.getAvailablePlayerColors()
-                nextColor = False
-                while not nextColor:
-                    allColors = list(colors.values())
-                    if len(allColors) > game.player2ColorIndex+1:
-                        color = allColors[game.player2ColorIndex+1]
-                        if color in availableColors:
-                            nextColor = color
-                    elif allColors[0] not in availableColors:
-                        nextColor = allColors[1]
-                        print(nextColor)
-                    else:
-                        nextColor = allColors[0]
-                    game.player2ColorIndex += 1
-                game.player2Color = nextColor
-
+                game.getPlayerNextColor(1)
         if game.isKey(pg.K_RETURN) and game.menuPointingTo == menuItems.index(multiplayerOn): 
             game.multiplayer = not game.multiplayer
         if game.isKey(pg.K_RETURN) and game.menuPointingTo == menuItems.index(backBtn): break

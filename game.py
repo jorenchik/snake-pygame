@@ -303,6 +303,25 @@ class Game:
         self.player1ColorIndex = list(colors.values()).index(self.player1Color)
         self.player2ColorIndex = list(colors.values()).index(self.player2Color)
         return self
+    def getPlayerNextColor(self, playerIndex:int in range(0,2)):
+        availableColors = game.getAvailablePlayerColors()
+        playerColorIndex = game.player1ColorIndex if playerIndex == 0 else game.player2ColorIndex
+        nextColor = False
+        while not nextColor:
+            allColors = list(colors.values())
+            if len(allColors) > playerColorIndex+1:
+                color = allColors[playerColorIndex+1]
+                if color in availableColors:
+                    nextColor = color
+            elif allColors[0] not in availableColors:
+                nextColor = allColors[1]
+            else:
+                nextColor = allColors[0]
+            playerColorIndex += 1
+        if playerIndex == 0: game.player1Color = nextColor
+        else: game.player2Color = nextColor
+        return self
+
 
 # Game initialization
 playfieldWidth, playfieldHeight = res[0] * playfieldSize[0], res[1] * playfieldSize[1]
