@@ -1,49 +1,73 @@
+from pathlib import Path
+import string
+from typing import List
 import pygame as pg
 from settings import *
 from assets import *
 import time as t
 import random as rd
 
-# Helper funtion (Die and dump)
+# Helper funtions
 def dd(var):
+    """
+    Prints the variable and dies.
+    """
     print(var)
     exit()
 
 def get_key(val, dict):
+    """
+    Gets the key of the given value in the dictionary.
+    """
     for key, value in dict.items():
          if val == value:
              return key
     
-
 class Rect(pg.Rect):
-    def __init__(self, pos, left, top, width, height):
+    """
+    Represents a rectangle that has particular position on the playfield.
+    """
+    def __init__(self, pos:tuple, left:int, top:int, width:int, height:int):
         self.pos = pos
         super().__init__(left, top,width, height)
 
 class Playfield:
-    def __init__(self,rectDims,size,playfieldSize,res):
+    """
+    Consists of rectangles that makes the playfield itself.
+    """
+    def __init__(self,rectDims:tuple,size:tuple,playfieldSize:tuple):
         self.rectDims = rectDims
         self.size = size
-        self.rectSize = self.calculateRectSizes()
         self.sidePaddingPx = res[0] * round((1-playfieldSize[0])/2, 3)
         self.topPaddingPx = res[1] * round((1-playfieldSize[1])/2, 3)
-        self.rects = self.createRects()
+        self.calculateRectSizes().createRects()
     def calculateRectSizes(self):
-        width = self.size[0] / self.rectDims[0]
-        height = self.size[1] / self.rectDims[1]
-        return (width, height)
+        """
+        Calculates the width and height of a single rectangle with the given size and dimensions of the playfield.
+        """
+        self.rectSize = (self.size[0] / self.rectDims[0], self.size[1] / self.rectDims[1])
+        return self
     def createRects(self):
+        """
+        Fills the playfield with rects according to its dimensions.
+        """
         (cols, rows) = (self.rectDims[0], self.rectDims[1])
         rects = [[0 for x in range(rows)] for y in range(cols)]
         for col in range(0, cols):
             for row in range(0, rows):
                 rect = Rect((col,row),self.sidePaddingPx+(col*self.rectSize[0]),self.topPaddingPx+(row*self.rectSize[1]),self.rectSize[0], self.rectSize[1])
                 rects[col][row] = rect
-        return rects
+        self.rects = rects
+        return self
 
 
 class Food():
     def __init__(self, isPoisonous:bool=False):
+        """
+        Represents a food entity that occupies one rectangle of the playfield.
+        It can be of the type 'food' meaning that it adds one point and one part to a snake once gets hit hit or of the type 'poisonous' meaning it removes one point and one part of a snake once gets hit either.
+        """
+        # Position
         pos = game.getRandomAvailablePos()
         self.type = 'food' if not isPoisonous else 'poison'
         if pos: self.pos = (pos[0],pos[1])
@@ -51,16 +75,22 @@ class Food():
             game.gameWon = True
             self.pos = (rd.randint(1,rectDims[0]-1),rd.randint(1,rectDims[1]-1))
         self.x, self.y = game.getCoords(self.pos)[0], game.getCoords(self.pos)[1]
+        # Type
         self.poisonous = isPoisonous
         # Appearance
         self.rect = pg.Rect(self.x,self.y,game.playfield.rectSize[0],game.playfield.rectSize[1])
         self.color = foodColor
 
 class SnakePart():
-    def __init__(self,type,snakeIndex,color,prevMoveMoment=False,pos=False,velocity=False):
-        # General props
+    """
+    Represents a part of a snake that can be either alive or not.
+    The class has two types - the 'head' and the 'body'.
+    """
+    def __init__(self,type:string,snakeIndex:int,color:tuple,prevMoveMoment:bool=False,pos:tuple=False,velocity:pg.Vector2=False):
+        # General fields
         self.type, self.snakeIndex = type, snakeIndex
-        # Physical props
+        self.getRelatedSnakeParts()
+        # Physical fields
         self.pos = (pos[0] if pos else rd.randint(1,rectDims[0]-1),pos[1] if pos else rd.randint(1,rectDims[1]-1))
         self.prevPos, self.prevVelocity = pos, velocity
         self.x, self.y = game.getCoords(self.pos)[0], game.getCoords(self.pos)[1]
@@ -72,30 +102,38 @@ class SnakePart():
         self.color = color
         # State
         self.alive = True
-    def changeDirToAnAngle(self, angle):
+    def changeDirToAnAngle(self, angle:int in range(0,361)):
+        """
+        Changes the velocity of the head to an absolute angle.
+        """
         if angle == 0 and self.velocity.x >= 0: (self.velocity.y, self.velocity.x) = (0, self.velocity.length())
         if angle == 90 and self.velocity.y <= 0: (self.velocity.y, self.velocity.x) = (-self.velocity.length(), 0)
         if angle == 180 and self.velocity.x <= 0: (self.velocity.y, self.velocity.x) = (0, -self.velocity.length())
         if angle == 270 and self.velocity.y >= 0: (self.velocity.y, self.velocity.x) = (self.velocity.length(), 0)
+        return self
     def getRelatedSnakeParts(self):
-        return [x for x in game.snakeParts if x.snakeIndex == self.snakeIndex]
+        self.relatedSnakeParts = [x for x in game.snakeParts if x.snakeIndex == self.snakeIndex]
+        return self
     def getMovementPeriod(self):
         if self.velocity.length() > 0: self.movementPeriod = 1/self.velocity.length()
         else: self.movementPeriod = False
+        return self
 
 class Game:
-    def __init__(self, caption, icon, resolution, font, playfield):
+    def __init__(self, caption:string, icon:Path, resolution:tuple, font:string, playfield:Playfield):
+        """
+        Represents the game.
+        """
         pg.init()
         pg.display.set_caption(caption)
         # Main fields
-        self.gameOverFont = pg.font.SysFont(font, gameOverFontSize)
-        self.scoreFont = pg.font.SysFont(font, scoreFontSize)
-        self.scoreFont = pg.font.SysFont(font, menuFontSize)
+        self.gameOverFont, self.scoreFont, self.menuFont  = pg.font.SysFont(font, gameOverFontSize), pg.font.SysFont(font, scoreFontSize), pg.font.SysFont(font, menuFontSize)
+        # self.scoreFont = pg.font.SysFont(font, scoreFontSize)
+        # self.menuFont = pg.font.SysFont(font, menuFontSize)
         pg.font.init()
         self.gameIcon = pg.image.load(icon)
         self.screen = pg.display.set_mode(resolution, pg.FULLSCREEN if fullscreen else 0)
-        self.SCREEN_WIDTH = pg.display.get_window_size()[0]
-        self.SCREEN_HEIGHT = pg.display.get_window_size()[1]
+        self.SCREEN_WIDTH, self.SCREEN_HEIGHT = pg.display.get_window_size()[0], pg.display.get_window_size()[1]
         self.background = background
         self.hitboxColor = hitboxColor
         self.multiplayer = multiplayer
@@ -129,45 +167,60 @@ class Game:
         # Menu state
         self.menuPointingTo = 0
     def setBackground(self):
+        """
+        Sets the background as either an icon or a color.
+        """
         if type(self.background).__name__ == 'tuple': self.screen.fill(self.background)
         if type(self.background).__name__ == 'PosixPath': self.screen.blit(pg.transform.scale(pg.image.load(background), (self.SCREEN_WIDTH,self.SCREEN_HEIGHT)),(0,0))
         return self
     def update(self):
         pg.display.update()
     def getEvents(self):
-        return pg.event.get()
+        self.events = pg.event.get()
+        return self
     def isQuit(self):
+        """
+        Checks if the player wants to exit or not by checking whether esc of exit button is pressed.
+        """
         for event in self.events:
             if event.type == pg.QUIT: return True
             if hasattr(event, 'key'):
                 if self.isKey(pg.K_ESCAPE): return True
         return False
-    def isKey(self, key):
+    def isKey(self, key:pg.key):
+        """
+        Checks whether the given key is pressed.
+        """
         for event in self.events:
             if event.type == pg.KEYDOWN:
                 if event.key == key: 
                     return True
         return False
     def isAnyKey(self):
+        """
+        Checks whether any key is pressed.
+        """
         for event in self.events:
             if event.type == pg.KEYDOWN:
                 return True
         return False
     def onUpdate(self):
-        # Deltatime
+        """
+        Does the provided things at the start of a update cycle iteration.
+        """
         self.setBackground().clock.tick(self.fps)
         self.now = t.time()
         self.prevTime, self.dt = self.now, (self.now - self.prevTime) * 1000
-        # Get events
-        self.events = self.getEvents()
-        # Determines occupied positions on the playfield
         if self.active:
             self.occupiedPositions = [self.snakeParts, self.foods]
             self.getAvailablePositions()
-        # Sets players index
-        self.setPlayerColorIndex()
+        self.getEvents().setPlayerColorIndex()
         return self
-    def moveSnakePart(self,snakePart,pos,velocity=False):
+    def moveSnakePart(self,snakePart:SnakePart,pos:tuple,velocity:pg.Vector2=False):
+        """
+        Moves snake part to the given position.
+        It can also set the velocity of the snake part if provided.        
+        """
         if not self.isSnakeDead():
             if velocity:
                 if velocity.x > 0: xMove = 1
@@ -195,9 +248,11 @@ class Game:
         return (self.playfield.rects[pos[0]][pos[1]].x,self.playfield.rects[pos[0]][pos[1]].y+game.SCREEN_HEIGHT*playfieldYOffset)
     def createFood(self, isPoisonous):
         self.foods.append(Food(isPoisonous))
+        return self
     def createSnakePart(self,type,snakeIndex,color,prevMoveMoment,pos=False,velocity=False):
         self.snakeParts.append(SnakePart(type,snakeIndex,color,prevMoveMoment,pos if pos else False, velocity if velocity else False))
-    def checkRectalCollision(self,pos1,pos2):
+        return self
+    def checkRectalCollision(self,pos1:tuple,pos2:tuple):
         if pos1[0] == pos2[0] and pos1[1] == pos2[1]: return True
         else: return False
     def getAvailablePositions(self):
@@ -205,6 +260,7 @@ class Game:
             for rect in col:
                 if rect.pos not in self.occupiedPositions:
                     self.availablePositions.append(rect.pos)
+        return self
     def getRandomAvailablePos(self):
         if len(self.availablePositions) == 0: return False
         return rd.choice(self.availablePositions)
@@ -213,13 +269,20 @@ class Game:
     def getPlayersScore(self):
         self.player1Score = len([x for x in self.snakeParts if x.snakeIndex == 0])-1
         self.player2Score = len([x for x in self.snakeParts if x.snakeIndex == 1])-1
+        return self
     def setBaseVelocity(self):
+        """
+        Sets the starting velocity of all starting parts of snakes.
+        """
         for part in game.snakeParts: 
             part.velocity = pg.Vector2(snakeBaseVelocity)
             part.getMovementPeriod()  
-    def createMenuItem(self, text, color=menuFontColor):
-        return game.gameOverFont.render(text, True, color)
-    def showMenuItems(self, items):
+    def createMenuItem(self, text:string, color:tuple=menuFontColor):
+        return game.menuFont.render(text, True, color)
+    def showMenuItems(self, items:List[pg.Surface]):
+        """
+        Displays the given menu items.
+        """
         heights, margins = 0, 0
         for i,it in enumerate(items):
             heights += it.get_height()
@@ -239,10 +302,9 @@ class Game:
     def setPlayerColorIndex(self):
         self.player1ColorIndex = list(colors.values()).index(self.player1Color)
         self.player2ColorIndex = list(colors.values()).index(self.player2Color)
+        return self
 
 # Game initialization
-playfieldWidth = res[0] * playfieldSize[0]
-playfieldHeight = res[1] * playfieldSize[1]
-
-playfield = Playfield(rectDims, (playfieldWidth, playfieldHeight), playfieldSize, res)
+playfieldWidth, playfieldHeight = res[0] * playfieldSize[0], res[1] * playfieldSize[1]
+playfield = Playfield(rectDims, (playfieldWidth, playfieldHeight), playfieldSize)
 game = Game(caption,gameIcon,res,font,playfield)

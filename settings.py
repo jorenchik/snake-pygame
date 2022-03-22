@@ -19,7 +19,7 @@ drawPlayfieldRects = False
 fps = 60
 
 # Font
-scoreFontSize = 20
+scoreFontSize = 50
 gameOverFontSize = 50
 font = 'Arial'
 
@@ -50,11 +50,11 @@ poisonousFoodColor = red
 # Playfield
 rectDims = (30,20)
     # percentages
-playfieldSize = (.78,.8)
+playfieldSize = (.8,.8)
 playfieldYOffset = (.03)
 
 # Menu
-menuFontSize = 15
+menuFontSize = 50
 menuFontColor = white
 menuItemMargin = 40
 pointerSizeMult = 1
