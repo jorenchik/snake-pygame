@@ -8,10 +8,11 @@ selfRectalCollisionAllowed = False
 otherRectalCollisionAllowed = False
 multiplayer = False
 
-snakeBaseVelocity = (4,0)
+snakeBaseVelocity = (80,0)
 
 # Screen
 res = (1920,1080)
+# res = (800,600)
 fullscreen = True
 drawPlayfieldRects = False
 

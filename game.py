@@ -100,16 +100,36 @@ class SnakePart():
         # Appearance
         self.rect = pg.Rect(self.x,self.y,game.playfield.rectSize[0],game.playfield.rectSize[1])
         self.color = color
+        self.rotateSprite(0)
+        self.angle = 0
         # State
         self.alive = True
     def changeDirToAnAngle(self, angle:int in range(0,361)):
         """
         Changes the velocity of the head to an absolute angle.
         """
-        if angle == 0 and self.velocity.x >= 0: (self.velocity.y, self.velocity.x) = (0, self.velocity.length())
-        if angle == 90 and self.velocity.y <= 0: (self.velocity.y, self.velocity.x) = (-self.velocity.length(), 0)
-        if angle == 180 and self.velocity.x <= 0: (self.velocity.y, self.velocity.x) = (0, -self.velocity.length())
-        if angle == 270 and self.velocity.y >= 0: (self.velocity.y, self.velocity.x) = (self.velocity.length(), 0)
+        if angle == 0 and self.velocity.x >= 0: (self.velocity.y, self.velocity.x, self.angle) = (0, self.velocity.length(),angle)
+        if angle == 90 and self.velocity.y <= 0: (self.velocity.y, self.velocity.x, self.angle) = (-self.velocity.length(), 0,angle)
+        if angle == 180 and self.velocity.x <= 0: (self.velocity.y, self.velocity.x, self.angle) = (0, -self.velocity.length(),angle)
+        if angle == 270 and self.velocity.y >= 0: (self.velocity.y, self.velocity.x, self.angle) = (self.velocity.length(), 0,angle)
+        return self
+    def rotateSprite(self,deg:int in range(0,361)):
+        if self.type == 'head':
+            if deg == 0: self.loadPartImage(rightHeadPart)
+            if deg == 90: self.loadPartImage(upHeadPart)
+            if deg == 180: self.loadPartImage(leftHeadPart)
+            if deg == 270: self.loadPartImage(downHeadPart)
+            return self
+        if self.isTurning():
+            print('here')
+            self.loadPartImage(turns[self.isTurning()-1])
+            return self
+        if self.type == 'body':
+            if deg == 0 or deg == 180: self.loadPartImage(straightHor)
+            if deg == 90 or deg == 270: self.loadPartImage(straightVer)
+        return self
+    def loadPartImage(self, img:Path):
+        self.sprite = pg.transform.scale(pg.image.load(img),(playfield.rectSize))
         return self
     def getRelatedSnakeParts(self):
         self.relatedSnakeParts = [x for x in game.snakeParts if x.snakeIndex == self.snakeIndex]
@@ -118,6 +138,25 @@ class SnakePart():
         if self.velocity.length() > 0: self.movementPeriod = 1/self.velocity.length()
         else: self.movementPeriod = False
         return self
+    def getAngle(self):
+        if(self.velocity.x > 0): self.angle = 0
+        if(self.velocity.x < 0): self.angle = 180
+        if(self.velocity.y < 0): self.angle = 90
+        if(self.velocity.y > 0): self.angle = 270
+        return self
+    def isTurning(self):
+        self.getRelatedSnakeParts()
+        relatedParts = self.relatedSnakeParts
+        if not self in relatedParts: relatedParts.append(self)
+        partIndex = relatedParts.index(self)
+        if partIndex == 0 or partIndex == len(self.relatedSnakeParts)-1: return False
+        nextPart, prevPart =  relatedParts[partIndex+1], relatedParts[partIndex-1]
+        # LEFT and TOP
+        if (prevPart.pos == (self.pos[0]+1, self.pos[1]) and nextPart.pos == (self.pos[0], self.pos[1]-1)) or (prevPart.pos ==(self.pos[0], self.pos[1]-1) and nextPart.pos == (self.pos[0]+1, self.pos[1])): return 1
+        if (prevPart.pos == (self.pos[0]+1, self.pos[1]) and nextPart.pos == (self.pos[0], self.pos[1]+1)) or (prevPart.pos ==(self.pos[0], self.pos[1]+1) and nextPart.pos == (self.pos[0]+1, self.pos[1])): return 2
+        if (prevPart.pos == (self.pos[0]-1, self.pos[1]) and nextPart.pos == (self.pos[0], self.pos[1]-1)) or (prevPart.pos ==(self.pos[0], self.pos[1]-1) and nextPart.pos == (self.pos[0]-1, self.pos[1])): return 3
+        if (prevPart.pos == (self.pos[0]-1, self.pos[1]) and nextPart.pos == (self.pos[0], self.pos[1]+1)) or (prevPart.pos ==(self.pos[0], self.pos[1]+1) and nextPart.pos == (self.pos[0]-1, self.pos[1])): return 4
+        return False
 
 class Game:
     def __init__(self, caption:string, icon:Path, resolution:tuple, font:string, playfield:Playfield):
@@ -128,8 +167,6 @@ class Game:
         pg.display.set_caption(caption)
         # Main fields
         self.gameOverFont, self.scoreFont, self.menuFont  = pg.font.SysFont(font, gameOverFontSize), pg.font.SysFont(font, scoreFontSize), pg.font.SysFont(font, menuFontSize)
-        # self.scoreFont = pg.font.SysFont(font, scoreFontSize)
-        # self.menuFont = pg.font.SysFont(font, menuFontSize)
         pg.font.init()
         self.gameIcon = pg.image.load(icon)
         self.screen = pg.display.set_mode(resolution, pg.FULLSCREEN if fullscreen else 0)

@@ -7,6 +7,7 @@ import pygame as pg
 
 # Game itself
 def main():
+
     # Creates Snake #1
     game.createSnakePart('head',0,game.player1Color,False)
     for snakePart in game.snakeParts:
@@ -88,10 +89,11 @@ def main():
                     part.prevPos = part.pos
                     part.prevVelocity = part.velocity
                     if part.prevMoveMoment:
-                        if (game.now - part.prevMoveMoment) >= part.movementPeriod:
+                        if (game.now - part.prevMoveMoment) >= part.movementPeriod*game.dt:
                             game.moveSnakePart(part,part.pos,part.velocity)
                             if part.type != 'head':
                                 part.velocity = pg.Vector2(headPart.relatedSnakeParts[i-1].prevVelocity)
+                            
                     else:
                         game.moveSnakePart(part,part.pos,part.velocity)
                 else: game.moveSnakePart(part,part.pos,part.velocity)
@@ -149,8 +151,10 @@ def main():
                 for rect in col:
                     pg.draw.rect(game.screen, wallColor,rect, 1)
             # Draws snakes' parts
-        for part in game.snakeParts:
-            pg.draw.rect(game.screen, part.color,part, 5)
+        # for part in game.snakeParts:
+        #     # pg.draw.rect(game.screen, part.color,part, 5)
+        #     game.screen.blit(part.sprite, (part.rect.x, part.rect.y))
+
             # Draws foods
                 # Draws regular foods
         for food in game.foods:
@@ -161,6 +165,10 @@ def main():
                 # Draws poisonous foods
 
         # End of the update
+        for headPart in headParts:
+            for i, part in enumerate(headPart.relatedSnakeParts):
+                part.getAngle().rotateSprite(part.angle)
+                game.screen.blit(part.sprite, (part.rect.x, part.rect.y))
         game.update()
 
 # Game restart/quit screen
