@@ -7,6 +7,11 @@ from assets import *
 import time as t
 import random as rd
 
+
+# keys -> angle
+keys = [pg.K_RIGHT,pg.K_UP,pg.K_LEFT,pg.K_DOWN]
+degrees = [0,90,180,270]
+
 # Helper funtions
 def dd(var):
     """
@@ -104,6 +109,7 @@ class SnakePart():
         self.angle = 0
         # State
         self.alive = True
+        self.timeSinceTurned = game.now
     def changeDirToAnAngle(self, angle:int in range(0,361)):
         """
         Changes the velocity of the head to an absolute angle.
@@ -121,7 +127,6 @@ class SnakePart():
             if deg == 270: self.loadPartImage(downHeadPart)
             return self
         if self.isTurning():
-            print('here')
             self.loadPartImage(turns[self.isTurning()-1])
             return self
         if self.type == 'body':

@@ -20,3 +20,6 @@ straightVer = pb.Path(assets/'parts/straight-2.png')
 turns = [] 
 for i in range(0,4):
     turns.append(pb.Path(assets/f'parts/turn-{i+1}.png'))
+
+
+invisible = pb.Path(assets/'parts/invisible.png')

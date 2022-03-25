@@ -7,6 +7,7 @@ portalWalls = False
 selfRectalCollisionAllowed = False
 otherRectalCollisionAllowed = False
 multiplayer = False
+hitboxesVisible = False
 
 snakeBaseVelocity = (80,0)
 
