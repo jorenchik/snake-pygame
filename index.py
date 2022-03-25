@@ -52,8 +52,10 @@ def main():
             for i,key in enumerate(keys):
                 if game.isKey(key):
                     headParts[0].changeDirToAnAngle(degrees[i])
+                    headParts[0].changedDirection = True
                 if game.multiplayer and game.isKey(key):
                     headParts[1].changeDirToAnAngle(degrees[i])
+                    headParts[0].changedDirection = True
 
         # Snakes' constant movement
         for headPart in headParts:
@@ -65,10 +67,14 @@ def main():
                         if (game.now - part.prevMoveMoment) >= part.movementPeriod*game.dt:
                             game.moveSnakePart(part,part.pos,part.velocity)
                             if part.type != 'head': part.velocity = pg.Vector2(headPart.relatedSnakeParts[i-1].prevVelocity)
+                            if part.type == 'head': part.changedDirection = False
                     else: game.moveSnakePart(part,part.pos,part.velocity)
                 else: game.moveSnakePart(part,part.pos,part.velocity)
         for headPart in headParts:
             for i, part in enumerate(headPart.relatedSnakeParts):
+                if part.type == 'head' and part.changedDirection == True: 
+                    game.screen.blit(part.sprite, (part.rect.x, part.rect.y))
+                    continue
                 part.getAngle().rotateSprite(part.angle)
                 game.screen.blit(part.sprite, (part.rect.x, part.rect.y))
 

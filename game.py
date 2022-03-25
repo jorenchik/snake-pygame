@@ -110,6 +110,7 @@ class SnakePart():
         # State
         self.alive = True
         self.timeSinceTurned = game.now
+        self.changedDirection = False
     def changeDirToAnAngle(self, angle:int in range(0,361)):
         """
         Changes the velocity of the head to an absolute angle.
