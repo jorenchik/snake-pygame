@@ -9,7 +9,8 @@ import random as rd
 
 
 # keys -> angle
-keys = [pg.K_RIGHT,pg.K_UP,pg.K_LEFT,pg.K_DOWN]
+pl1Keys = [pg.K_RIGHT,pg.K_UP,pg.K_LEFT,pg.K_DOWN]
+pl2Keys = [pg.K_d,pg.K_w,pg.K_a,pg.K_s]
 degrees = [0,90,180,270]
 
 # Helper funtions

@@ -1,4 +1,4 @@
-from game import game, get_key, keys, degrees
+from game import game, get_key, degrees, pl1Keys,pl2Keys
 from settings import *
 import pygame as pg
 
@@ -49,13 +49,15 @@ def main():
 
         # Changes snakes direction
         if (not game.previousDirChange or game.now - game.previousDirChange >= headParts[0].movementPeriod/2):
-            for i,key in enumerate(keys):
+            for i,key in enumerate(pl1Keys):
                 if game.isKey(key):
                     headParts[0].changeDirToAnAngle(degrees[i])
                     headParts[0].changedDirection = True
-                if game.multiplayer and game.isKey(key):
-                    headParts[1].changeDirToAnAngle(degrees[i])
-                    headParts[0].changedDirection = True
+            if game.multiplayer:
+                for i,key in enumerate(pl2Keys):
+                    if game.isKey(key):
+                        headParts[1].changeDirToAnAngle(degrees[i])
+                        headParts[1].changedDirection = True
 
         # Snakes' constant movement
         for headPart in headParts:
