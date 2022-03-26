@@ -113,7 +113,7 @@ class SnakePart():
         self.type, self.snakeIndex = type, snakeIndex
         self.getRelatedSnakeParts()
         # Physical fields
-        randomPos = game.getRandomAvailablePos()
+        randomPos = game.getRandomAvailablePos((1,playfield.rectDims[1]))
         self.pos = (pos[0] if pos else randomPos[0],pos[1] if pos else randomPos[1])
         self.prevPos, self.prevVelocity = pos, velocity
         self.x, self.y = game.getCoords(self.pos)[0], game.getCoords(self.pos)[1]
@@ -225,7 +225,7 @@ class Game:
         # Playfield
         self.snakeParts, self.foods, self.events, self.availablePositions = [],[],[],[]
         self.playfield = playfield
-        for col in playfield.rects:
+        for i, col in enumerate(playfield.rects):
             for rect in col:
                 self.availablePositions.append(rect.pos)
         # State
@@ -341,9 +341,11 @@ class Game:
     def checkRectalCollision(self,pos1:tuple,pos2:tuple):
         if pos1[0] == pos2[0] and pos1[1] == pos2[1]: return True
         else: return False
-    def getRandomAvailablePos(self):
+    def getRandomAvailablePos(self, xRange=False):
         if len(self.availablePositions) == 0: return False
-        return rd.choice(self.availablePositions)
+        if xRange: availablePositions = [x for x in self.availablePositions if x[0] in range(xRange[0],xRange[1])]
+        else: availablePositions = self.availablePositions
+        return rd.choice(availablePositions)
     def isSnakeDead(self):
         if self.multiplayer: 
             snake1Alive = True if len([x for x in self.snakeParts if x.alive == False and x.snakeIndex == 0]) > 0 else False
