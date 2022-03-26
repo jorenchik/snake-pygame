@@ -320,7 +320,7 @@ class Game:
                 if newYPos < 0: newYPos += rectDims[1]
                 self.availablePositions.append(snakePart.pos)
                 snakePart.pos = (newXPos, newYPos)
-                self.availablePositions.remove((snakePart.pos[0]-xMove,snakePart.pos[1]-yMove))
+                self.availablePositions.remove((pos[0],pos[1]))
                 snakeCoords = self.getCoords(snakePart.pos)
                 snakePart.x, snakePart.y = snakeCoords
                 (snakePart.rect.x, snakePart.rect.y) = snakeCoords
