@@ -1,6 +1,6 @@
-from game import game, get_key, degrees, pl1Keys,pl2Keys
-from settings import *
+from game import game,degrees,pl1Keys,pl2Keys,get_key
 import pygame as pg
+from settings import white, snakeColors
 
 # Game itself
 def main():
@@ -26,8 +26,8 @@ def main():
         # Updates game state
         game.onUpdate()
 
-        game.getPlayersScore()
         # Add score text
+        game.getPlayersScore()
         prePlayer1Text = 'P1' if game.multiplayer else ''
         score1Text = game.gameOverFont.render(f'{prePlayer1Text}SCORE: {game.player1Score-1}', True, game.player1Color)
         game.screen.blit(score1Text, game.score1Pos)
@@ -62,7 +62,7 @@ def main():
                     game.player2ChangedDir = True
 
 
-        # Snakes' constant movement
+        # Snakes' movement
         if not game.isSnakeDead():
             if game.isEvent(game.moveEvent):
                 for headPart in headParts:
@@ -113,41 +113,33 @@ def main():
 
                                 if len([x for x in game.foods if x.type == 'food']) > 0: game.createFood(True)
                                 else: game.createFood(False)
-                        if not selfRectalCollisionAllowed:
+                        if not game.selfRectalCollisionAllowed:
                             for i, part in enumerate(headPart.relatedSnakeParts):
                                 # Passes if it is a head part
                                 if part.type == 'head': continue
                                 if game.checkRectalCollision(headPart.pos, part.pos): part.alive = False
-                        if not otherRectalCollisionAllowed:  
+                        if not game.otherRectalCollisionAllowed:  
                             unrelatedSnakeParts = [x for x in game.snakeParts if x not in headPart.relatedSnakeParts]
                             for unrelatedPart in unrelatedSnakeParts:
                                 if game.checkRectalCollision(part.pos,unrelatedPart.pos): part.alive, unrelatedPart.alive = False, False
                 
-
-        
-
         if game.isSnakeDead():
             game.snakeParts.clear()
             game.foods.clear()
             gameOver()
             break
 
-
         # Draws elements
-        # Draws the walls
-        pg.draw.rect(game.screen, wallColor,game.topBorder)
-        pg.draw.rect(game.screen, wallColor,game.bottomBorder)
-        pg.draw.rect(game.screen, wallColor,game.leftBorder)
-        pg.draw.rect(game.screen, wallColor,game.rightBorder)
-        # Draws the rects if the setting is enabled
+        pg.draw.rect(game.screen, game.wallColor,game.topBorder)
+        pg.draw.rect(game.screen, game.wallColor,game.bottomBorder)
+        pg.draw.rect(game.screen, game.wallColor,game.leftBorder)
+        pg.draw.rect(game.screen, game.wallColor,game.rightBorder)
         rects = game.playfield.rects
-        if drawPlayfieldRects:
+        if game.drawPlayfieldRects:
             for col in rects:
-                for rect in col: pg.draw.rect(game.screen, wallColor,rect, 1)
-        # Draws snakes' part hitboxes if visible
-        if hitboxesVisible:
+                for rect in col: pg.draw.rect(game.screen, game.wallColor,rect, 1)
+        if game.hitboxesVisible:
             for part in game.snakeParts: pg.draw.rect(game.screen, part.color,part, 5)
-        # Draws foods
         for food in game.foods: game.screen.blit(food.sprite, (food.rect.x, food.rect.y))
         game.update()
 

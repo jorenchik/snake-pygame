@@ -195,27 +195,30 @@ class SnakePart():
 class Game:
     def __init__(self, caption:string, icon:Path, resolution:tuple, font:string, playfield:Playfield):
         """
-        Represents the game.
+        The game.
         """
         pg.init()
         pg.display.set_caption(caption)
-        # Main fields
         self.gameOverFont, self.scoreFont, self.menuFont  = pg.font.SysFont(font, gameOverFontSize), pg.font.SysFont(font, scoreFontSize), pg.font.SysFont(font, menuFontSize)
         pg.font.init()
         self.gameIcon = pg.image.load(icon)
         self.screen = pg.display.set_mode(resolution, pg.FULLSCREEN if fullscreen else 0)
         self.SCREEN_WIDTH, self.SCREEN_HEIGHT = pg.display.get_window_size()[0], pg.display.get_window_size()[1]
+        # Settings
         self.background = background
         self.hitboxColor = hitboxColor
         self.multiplayer = multiplayer
         self.portalWalls = portalWalls
+        self.selfRectalCollisionAllowed = selfRectalCollisionAllowed
+        self.otherRectalCollisionAllowed = otherRectalCollisionAllowed
+        self.wallColor = wallColor
+        self.hitboxesVisible = hitboxesVisible
+        self.drawPlayfieldRects = drawPlayfieldRects
         # Clock
         self.clock = pg.time.Clock()
         self.prevTime = t.time()
         self.fps = fps
         self.now,self.dt,self.previousDirChange = False,False,False
-        # State fields
-        self.active = True
         # Rects
         self.sidePadding, self.topPadding = round((1-playfieldSize[0])/2, 3), round((1-playfieldSize[1])/2, 3)
         self.topBorder = pg.Rect(self.SCREEN_WIDTH*self.sidePadding,self.SCREEN_HEIGHT*(self.topPadding)+self.SCREEN_HEIGHT*playfieldYOffset,self.SCREEN_WIDTH*playfieldSize[0],1)
@@ -229,8 +232,8 @@ class Game:
             for rect in col:
                 self.availablePositions.append(rect.pos)
         # State
-        self.snakeAlive, self.gameWon = True, False
-        # Players
+        self.snakeAlive, self.gameWon, self.active = True, False, True
+        # Player fields
         self.score1Pos = (self.SCREEN_WIDTH*self.sidePadding,(self.SCREEN_HEIGHT*(self.topPadding)+self.SCREEN_HEIGHT*playfieldYOffset)/2)
         self.score2Pos = (self.SCREEN_WIDTH-self.SCREEN_WIDTH*self.sidePadding,(self.SCREEN_HEIGHT*(self.topPadding)+self.SCREEN_HEIGHT*playfieldYOffset)/2)
         self.player1Score, self.player2Score = 0, 0
