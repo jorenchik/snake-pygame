@@ -1,5 +1,6 @@
 from pathlib import Path
 import string
+from turtle import position
 from typing import List
 from matplotlib.style import available
 import pygame as pg
@@ -217,10 +218,11 @@ class Game:
         self.leftBorder = pg.Rect(self.SCREEN_WIDTH*self.sidePadding,self.SCREEN_HEIGHT*self.topPadding+self.SCREEN_HEIGHT*playfieldYOffset,1,self.SCREEN_HEIGHT*(playfieldSize[1]))
         self.rightBorder = pg.Rect(self.SCREEN_WIDTH*(playfieldSize[0]+self.sidePadding),self.SCREEN_HEIGHT*self.topPadding+self.SCREEN_HEIGHT*playfieldYOffset,1,self.SCREEN_HEIGHT*playfieldSize[1])
         # Playfield
+        self.snakeParts, self.foods, self.events, self.availablePositions = [],[],[],[]
         self.playfield = playfield
-        self.occupiedPositions, self.availablePositions = [],[]
-        self.getAvailablePositions()
-        self.snakeParts, self.foods, self.events = [],[],[]
+        for col in playfield.rects:
+            for rect in col:
+                self.availablePositions.append(rect.pos)
         # State
         self.snakeAlive, self.gameWon = True, False
         # Players
@@ -276,9 +278,11 @@ class Game:
         self.setBackground().clock.tick(self.fps)
         self.now = t.time()
         self.prevTime, self.dt = self.now, (self.now - self.prevTime) * 1000
-        if self.active:
-            self.occupiedPositions = [self.snakeParts, self.foods]
-            self.getAvailablePositions()
+        # if self.active:
+        #     for pos in self.snakeParts:
+        #         self.occupiedPositions.append(pos)
+        #     for pos in self.foods:
+        #         self.occupiedPositions.append(pos)
         self.getEvents().setPlayerColorIndex()
         return self
     def moveSnakePart(self,snakePart:SnakePart,pos:tuple,velocity:pg.Vector2=False):
@@ -304,7 +308,9 @@ class Game:
                 if newXPos < 0: newXPos += rectDims[0]
                 if newYPos >= rectDims[1]: newYPos -= rectDims[1]
                 if newYPos < 0: newYPos += rectDims[1]
+                self.availablePositions.append(snakePart.pos)
                 snakePart.pos = (newXPos, newYPos)
+                self.availablePositions.remove((snakePart.pos[0]-xMove,snakePart.pos[1]-yMove))
                 snakeCoords = self.getCoords(snakePart.pos)
                 snakePart.x, snakePart.y = snakeCoords
                 (snakePart.rect.x, snakePart.rect.y) = snakeCoords
@@ -312,22 +318,19 @@ class Game:
     def getCoords(self, pos):
         return (self.playfield.rects[pos[0]][pos[1]].x,self.playfield.rects[pos[0]][pos[1]].y+game.SCREEN_HEIGHT*playfieldYOffset)
     def createFood(self, isPoisonous):
-        self.foods.append(Food(isPoisonous))
+        food = Food(isPoisonous)
+        self.foods.append(food)
+        self.availablePositions.remove(food.pos)
         return self
     def createSnakePart(self,type,snakeIndex,color,prevMoveMoment,pos=False,velocity=False):
-        self.snakeParts.append(SnakePart(type,snakeIndex,color,prevMoveMoment,pos if pos else False, velocity if velocity else False))
-        return self
+        snakePart = SnakePart(type,snakeIndex,color,prevMoveMoment,pos if pos else False, velocity if velocity else False)
+        self.snakeParts.append(snakePart)
+        self.availablePositions.remove(snakePart.pos)
+        return snakePart
     def checkRectalCollision(self,pos1:tuple,pos2:tuple):
         if pos1[0] == pos2[0] and pos1[1] == pos2[1]: return True
         else: return False
-    def getAvailablePositions(self):
-        for col in self.playfield.rects:
-            for rect in col:
-                if rect.pos not in self.occupiedPositions:
-                    self.availablePositions.append(rect.pos)
-        return self
     def getRandomAvailablePos(self):
-        self.getAvailablePositions()
         if len(self.availablePositions) == 0: return False
         return rd.choice(self.availablePositions)
     def isSnakeDead(self):

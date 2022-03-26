@@ -5,7 +5,8 @@ import pygame as pg
 # Game itself
 def main():
     # Creates Snake #1
-    game.createSnakePart('head',0,game.player1Color,False)
+    headPart = game.createSnakePart('head',0,game.player1Color,False)
+    game.createSnakePart('body',0,game.player1Color,False, (headPart.pos[0]-1,headPart.pos[1]))
     for snakePart in game.snakeParts: game.moveSnakePart(snakePart,snakePart.pos)
 
     # Creates Snake #2
