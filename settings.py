@@ -37,10 +37,12 @@ cyan = (0,255,255)
 yellow = (255,255,0)
 lime = (0,255,0)
 blue = (0,0,255)
-colors = {'white':white,'magenta':magenta,'blue':blue,'yellow':yellow,'cyan':cyan}
-colorKeys = colors.keys()
+snakeColors = {'white':white,'magenta':magenta,'blue':blue,'yellow':yellow,'cyan':cyan}
+foodColors = {'food':green, 'poison': red}
 player1Color = white
 player2Color = magenta
+snakeBaseColor = (91,123,249)
+foodBaseColor = (218,72,15)
 
 # Game colors
 hitboxColor = red

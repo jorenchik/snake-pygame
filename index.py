@@ -134,10 +134,11 @@ def main():
                 # game.screen.blit(part.sprite, (part.rect.x, part.rect.y))
         # Draws foods
         for food in game.foods:
-            if food.type == 'food':
-                pg.draw.rect(game.screen, foodColor, food.rect, 5)
-            if food.type == 'poison':
-                pg.draw.rect(game.screen, poisonousFoodColor, food.rect, 5)
+            game.screen.blit(food.sprite, (food.rect.x, food.rect.y))
+            # if food.type == 'food':
+            #     pg.draw.rect(game.screen, foodColor, food.rect, 5)
+            # if food.type == 'poison':
+            #     pg.draw.rect(game.screen, poisonousFoodColor, food.rect, 5)
         game.update()
 
 # Game restart/quit screen
@@ -180,10 +181,10 @@ def settingsMenu():
         menuItems = []
         wallMode = game.createMenuItem(f'WALL MODE: {"PORTAL" if game.portalWalls else "REGULAR"}')
         multiplayerOn = game.createMenuItem(f'MODE: {"1 PLAYER" if not game.multiplayer else "2 PLAEYRS"}')
-        colorPlayer1Btn = game.createMenuItem(f'PLAYER 1 COLOR: {get_key(game.player1Color, colors).upper()}')
+        colorPlayer1Btn = game.createMenuItem(f'PLAYER 1 COLOR: {get_key(game.player1Color, snakeColors).upper()}')
         if game.multiplayer:
             if(game.player1Color == game.player2Color): game.getPlayerNextColor(1)
-            colorPlayer2Btn = game.createMenuItem(f'PLAYER 2 COLOR: {get_key(game.player2Color, colors).upper()}')
+            colorPlayer2Btn = game.createMenuItem(f'PLAYER 2 COLOR: {get_key(game.player2Color, snakeColors).upper()}')
         backBtn = game.createMenuItem('BACK')
         menuItems.extend([wallMode, multiplayerOn,colorPlayer1Btn])
         if game.multiplayer:

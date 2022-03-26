@@ -96,7 +96,10 @@ class Food():
         self.poisonous = isPoisonous
         # Appearance
         self.rect = pg.Rect(self.x,self.y,game.playfield.rectSize[0],game.playfield.rectSize[1])
+        img = pilImageToSurface(foodColoredImgs[self.type])
+        self.sprite = pg.transform.scale(img,(playfield.rectSize[0]*1.02, playfield.rectSize[1]*1.02))
         self.color = foodColor
+
 
 class SnakePart():
     """
@@ -117,7 +120,7 @@ class SnakePart():
         # Appearance
         self.rect = pg.Rect(self.x,self.y,game.playfield.rectSize[0],game.playfield.rectSize[1])
         self.color = color
-        self.colorKey = get_key(color, colors)
+        self.colorKey = get_key(color, snakeColors)
         self.rotateSprite(0)
         self.angle = 0
         # State
@@ -361,18 +364,18 @@ class Game:
             self.screen.blit(it, (game.SCREEN_WIDTH/2-it.get_width()/2, topMargin+offset))
         return self
     def getAvailablePlayerColors(self):
-        if self.multiplayer: return [x for x in colors.values() if x != self.player1Color and x != self.player2Color]
-        else: return [x for x in colors.values() if x != self.player1Color]
+        if self.multiplayer: return [x for x in snakeColors.values() if x != self.player1Color and x != self.player2Color]
+        else: return [x for x in snakeColors.values() if x != self.player1Color]
     def setPlayerColorIndex(self):
-        self.player1ColorIndex = list(colors.values()).index(self.player1Color)
-        self.player2ColorIndex = list(colors.values()).index(self.player2Color)
+        self.player1ColorIndex = list(snakeColors.values()).index(self.player1Color)
+        self.player2ColorIndex = list(snakeColors.values()).index(self.player2Color)
         return self
     def getPlayerNextColor(self, playerIndex:int in range(0,2)):
         availableColors = game.getAvailablePlayerColors()
         playerColorIndex = game.player1ColorIndex if playerIndex == 0 else game.player2ColorIndex
         nextColor = False
         while not nextColor:
-            allColors = list(colors.values())
+            allColors = list(snakeColors.values())
             if len(allColors) > playerColorIndex+1:
                 color = allColors[playerColorIndex+1]
                 if color in availableColors:

@@ -1,8 +1,9 @@
 import pathlib as pb
 from PIL import Image
 import numpy as np
-from settings import colors, colorKeys
+from settings import snakeBaseColor, foodBaseColor, snakeColors, foodColors
 import pygame as pg
+
 
 absPath = pb.Path.cwd()
 # Assets path
@@ -24,11 +25,25 @@ partImgs = {
     'bottomLeft': pb.Path(assets/'parts/body_bottomleft.png')
 }
 
-# if (data[0]==91 and data[1]==123 and data[2]==249):
-                # img.putpixel((i,j),(44, 44, 44))
+foodImgs = {
+    'food': pb.Path(assets/'parts/apple.png'),
+    'poison': pb.Path(assets/'parts/apple.png'),
+}
 
-imgBaseColor = (91,123,249)
-def changeImgColor(img,colorTo,colorFrom=imgBaseColor):
+# img = foodImgs['food']
+# width = img.size[0] 
+# height = img.size[1] 
+# for i in range(0,width):
+#     for j in range(0,height):
+#         data = img.getpixel((i,j))
+#         if (data[0]==218 and data[1]==72 and data[2]==15):
+#             print('taken')
+#         else:
+#             print(data)
+
+
+
+def changeImgColor(img,colorTo,colorFrom):
     img = Image.open(img).convert('RGBA')
     width = img.size[0] 
     height = img.size[1] 
@@ -41,13 +56,15 @@ def changeImgColor(img,colorTo,colorFrom=imgBaseColor):
                 img.putpixel((i,j),colorTo)
     return img
 
-# changeImgColor(partImgs['headRight'],(255,0,0)).show()
-# exit()
-
 partColoredImgs = {}
 for k,img in partImgs.items():
     newDict={}
-    for key,col in colors.items():
-        newDict[key]=changeImgColor(img,col)
+    for key,col in snakeColors.items():
+        newDict[key]=changeImgColor(img,col,snakeBaseColor)
     partColoredImgs[k] = newDict
 
+foodColoredImgs = {}
+for k,img in foodImgs.items():
+    for key,col in foodColors.items():
+        color=changeImgColor(img,col,foodBaseColor)
+        foodColoredImgs[key] = color
