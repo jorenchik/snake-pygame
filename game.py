@@ -6,6 +6,10 @@ from settings import *
 from assets import *
 import time as t
 import random as rd
+from PIL import Image
+import numpy as np
+import ctypes
+
 
 
 # keys -> angle
@@ -28,7 +32,14 @@ def get_key(val, dict):
     for key, value in dict.items():
          if val == value:
              return key
-    
+
+def pilImageToSurface(img):
+    new_image = img.getdata()
+    flat_list = [e for c in new_image for e in c]
+    bute_array = (ctypes.c_ubyte * len(flat_list))(*flat_list)
+    surf = pg.image.frombuffer(bute_array, img.size, img.mode).convert_alpha()
+    return surf
+
 class Rect(pg.Rect):
     """
     Represents a rectangle that has particular position on the playfield.
@@ -106,6 +117,7 @@ class SnakePart():
         # Appearance
         self.rect = pg.Rect(self.x,self.y,game.playfield.rectSize[0],game.playfield.rectSize[1])
         self.color = color
+        self.colorKey = get_key(color, colors)
         self.rotateSprite(0)
         self.angle = 0
         # State
@@ -123,20 +135,24 @@ class SnakePart():
         return self
     def rotateSprite(self,deg:int in range(0,361)):
         if self.type == 'head':
-            if deg == 0: self.loadPartImage(rightHeadPart)
-            if deg == 90: self.loadPartImage(upHeadPart)
-            if deg == 180: self.loadPartImage(leftHeadPart)
-            if deg == 270: self.loadPartImage(downHeadPart)
+            if deg == 0: self.loadPartImage(pilImageToSurface(partColoredImgs['headRight'][self.colorKey]))
+            if deg == 90: self.loadPartImage(pilImageToSurface(partColoredImgs['headUp'][self.colorKey]))
+            if deg == 180: self.loadPartImage(pilImageToSurface(partColoredImgs['headLeft'][self.colorKey]))
+            if deg == 270: self.loadPartImage(pilImageToSurface(partColoredImgs['headDown'][self.colorKey]))
             return self
-        if self.isTurning():
-            self.loadPartImage(turns[self.isTurning()-1])
+        turn = self.isTurning()
+        if turn:
+            if turn == 1: self.loadPartImage(pilImageToSurface(partColoredImgs['topRight'][self.colorKey]))
+            if turn == 2: self.loadPartImage(pilImageToSurface(partColoredImgs['bottomRight'][self.colorKey]))
+            if turn == 3: self.loadPartImage(pilImageToSurface(partColoredImgs['topLeft'][self.colorKey]))
+            if turn == 4: self.loadPartImage(pilImageToSurface(partColoredImgs['bottomLeft'][self.colorKey]))
             return self
         if self.type == 'body':
-            if deg == 0 or deg == 180: self.loadPartImage(straightHor)
-            if deg == 90 or deg == 270: self.loadPartImage(straightVer)
+            if deg == 0 or deg == 180: self.loadPartImage(pilImageToSurface(partColoredImgs['bodyHor'][self.colorKey]))
+            if deg == 90 or deg == 270: self.loadPartImage(pilImageToSurface(partColoredImgs['bodyVer'][self.colorKey]))
         return self
-    def loadPartImage(self, img:Path):
-        self.sprite = pg.transform.scale(pg.image.load(img),(playfield.rectSize))
+    def loadPartImage(self, img):
+        self.sprite = pg.transform.scale(img,(playfield.rectSize))
         return self
     def getRelatedSnakeParts(self):
         self.relatedSnakeParts = [x for x in game.snakeParts if x.snakeIndex == self.snakeIndex]
