@@ -82,6 +82,9 @@ def main():
                                     game.foods.remove(food)
                                     if len(headPart.relatedSnakeParts) > 2:
                                         game.snakeParts.remove(lastSnakePart)
+                                        part.relatedSnakeParts.remove(lastSnakePart)
+                                        headPart.relatedSnakeParts[-1].type = 'tail'
+
                                 if len([x for x in game.foods if x.type == 'food']) > 0: game.createFood(True)
                                 else: game.createFood(False)
                         if not selfRectalCollisionAllowed:
