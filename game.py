@@ -1,6 +1,7 @@
 from pathlib import Path
 import string
 from typing import List
+from matplotlib.style import available
 import pygame as pg
 from settings import *
 from assets import *
@@ -111,7 +112,8 @@ class SnakePart():
         self.type, self.snakeIndex = type, snakeIndex
         self.getRelatedSnakeParts()
         # Physical fields
-        self.pos = (pos[0] if pos else rd.randint(1,rectDims[0]-1),pos[1] if pos else rd.randint(1,rectDims[1]-1))
+        randomPos = game.getRandomAvailablePos()
+        self.pos = (pos[0] if pos else randomPos[0],pos[1] if pos else randomPos[1])
         self.prevPos, self.prevVelocity = pos, velocity
         self.x, self.y = game.getCoords(self.pos)[0], game.getCoords(self.pos)[1]
         self.velocity = pg.Vector2(0,0) if not velocity else velocity
@@ -325,6 +327,7 @@ class Game:
                     self.availablePositions.append(rect.pos)
         return self
     def getRandomAvailablePos(self):
+        self.getAvailablePositions()
         if len(self.availablePositions) == 0: return False
         return rd.choice(self.availablePositions)
     def isSnakeDead(self):

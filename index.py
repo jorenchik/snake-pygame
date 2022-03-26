@@ -131,7 +131,6 @@ def main():
         if hitboxesVisible:
             for part in game.snakeParts:
                 pg.draw.rect(game.screen, part.color,part, 5)
-                # game.screen.blit(part.sprite, (part.rect.x, part.rect.y))
         # Draws foods
         for food in game.foods:
             game.screen.blit(food.sprite, (food.rect.x, food.rect.y))
