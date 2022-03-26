@@ -181,6 +181,7 @@ def settingsMenu():
         multiplayerOn = game.createMenuItem(f'MODE: {"1 PLAYER" if not game.multiplayer else "2 PLAEYRS"}')
         colorPlayer1Btn = game.createMenuItem(f'PLAYER 1 COLOR: {get_key(game.player1Color, colors).upper()}')
         if game.multiplayer:
+            if(game.player1Color == game.player2Color): game.getPlayerNextColor(1)
             colorPlayer2Btn = game.createMenuItem(f'PLAYER 2 COLOR: {get_key(game.player2Color, colors).upper()}')
         backBtn = game.createMenuItem('BACK')
         menuItems.extend([wallMode, multiplayerOn,colorPlayer1Btn])
