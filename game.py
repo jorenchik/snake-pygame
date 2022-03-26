@@ -152,7 +152,7 @@ class SnakePart():
             if deg == 90 or deg == 270: self.loadPartImage(pilImageToSurface(partColoredImgs['bodyVer'][self.colorKey]))
         return self
     def loadPartImage(self, img):
-        self.sprite = pg.transform.scale(img,(playfield.rectSize))
+        self.sprite = pg.transform.scale(img,(playfield.rectSize[0]*1.02, playfield.rectSize[1]*1.02))
         return self
     def getRelatedSnakeParts(self):
         self.relatedSnakeParts = [x for x in game.snakeParts if x.snakeIndex == self.snakeIndex]

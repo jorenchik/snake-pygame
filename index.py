@@ -105,7 +105,13 @@ def main():
                 if part.type == 'head' and part.changedDirection == True: 
                     game.screen.blit(part.sprite, (part.rect.x, part.rect.y))
                     continue
-                part.getAngle().rotateSprite(part.angle)
+                if part.type == 'head':
+                    part.getAngle().rotateSprite(part.angle)
+                else:
+                    prevAngle = part.angle
+                    part.getAngle()
+                    if part.angle != prevAngle: part.rotateSprite(part.angle)
+                    part.getAngle().rotateSprite(part.angle)
                 game.screen.blit(part.sprite, (part.rect.x, part.rect.y))
 
         # Draws elements
@@ -114,7 +120,7 @@ def main():
         pg.draw.rect(game.screen, wallColor,game.bottomBorder)
         pg.draw.rect(game.screen, wallColor,game.leftBorder)
         pg.draw.rect(game.screen, wallColor,game.rightBorder)
-        # Draws the rects if visible
+        # Draws the rects if the setting is enabled
         rects = game.playfield.rects
         if drawPlayfieldRects:
             for col in rects:
