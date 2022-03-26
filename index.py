@@ -59,20 +59,48 @@ def main():
                         headParts[1].changeDirToAnAngle(degrees[i])
                         headParts[1].changedDirection = True
 
+        for headPart in headParts:
+            for i, part in enumerate(headPart.relatedSnakeParts):
+                if part.movementPeriod and part.prevMoveMoment:
+                    if (game.now - part.prevMoveMoment) >= part.movementPeriod*game.dt:
+                        for food in game.foods:
+                            if game.checkRectalCollision(part.pos, food.pos):
+                                headPart.relatedSnakeParts = [x for x in game.snakeParts if x.snakeIndex == part.snakeIndex]
+                                if food.type == 'food':
+                                    lastSnakePart = headPart.relatedSnakeParts[-1]
+                                    game.foods.remove(food)
+                                    game.createSnakePart('body',part.snakeIndex,part.color,lastSnakePart.prevMoveMoment, lastSnakePart.prevPos, pg.Vector2(lastSnakePart.prevVelocity))
+                                if food.type == 'poison':
+                                    lastSnakePart = headPart.relatedSnakeParts[-1]
+                                    game.foods.remove(food)
+                                    if len(headPart.relatedSnakeParts) > 1:
+                                        game.snakeParts.remove(lastSnakePart)
+                                if len([x for x in game.foods if x.type == 'food']) > 0: game.createFood(True)
+                                else: game.createFood(False)
+                        if not selfRectalCollisionAllowed:
+                            for i, part in enumerate(headPart.relatedSnakeParts):
+                                # Passes if it is a head part
+                                if part.type == 'head': continue
+                                if game.checkRectalCollision(headPart.pos, part.pos): part.alive = False
+                        if not otherRectalCollisionAllowed:  
+                            unrelatedSnakeParts = [x for x in game.snakeParts if x not in headPart.relatedSnakeParts]
+                            for unrelatedPart in unrelatedSnakeParts:
+                                if game.checkRectalCollision(part.pos,unrelatedPart.pos): part.alive, unrelatedPart.alive = False, False
+                
+
         # Snakes' constant movement
         for headPart in headParts:
             headPart.getRelatedSnakeParts()
             for i, part in enumerate(headPart.relatedSnakeParts):
-                if part.movementPeriod:
-                    part.prevPos, part.prevVelocity = (part.pos[0],part.pos[1]), pg.Vector2((part.velocity.x,part.velocity.y))
-                    if part.prevMoveMoment:
+                if part.movementPeriod and part.prevMoveMoment:
                         if (game.now - part.prevMoveMoment) >= part.movementPeriod*game.dt:
+                            part.prevPos, part.prevVelocity = (part.pos[0],part.pos[1]), pg.Vector2((part.velocity.x,part.velocity.y))
                             game.moveSnakePart(part,part.pos,part.velocity)
                             if part.type != 'head': part.velocity = pg.Vector2(headPart.relatedSnakeParts[i-1].prevVelocity)
                             if part.type == 'head': part.changedDirection = False
-                    else: game.moveSnakePart(part,part.pos,part.velocity)
                 else: game.moveSnakePart(part,part.pos,part.velocity)
         for headPart in headParts:
+            headPart.getRelatedSnakeParts()
             for i, part in enumerate(headPart.relatedSnakeParts):
                 if part.type == 'head' and part.changedDirection == True: 
                     game.screen.blit(part.sprite, (part.rect.x, part.rect.y))
@@ -80,64 +108,25 @@ def main():
                 part.getAngle().rotateSprite(part.angle)
                 game.screen.blit(part.sprite, (part.rect.x, part.rect.y))
 
-        # Checks if snake's head has the same position with a food
-        for headPart in headParts:
-            headPart.getRelatedSnakeParts()
-            for i, part in enumerate(headPart.relatedSnakeParts):
-                for food in game.foods:
-                    if game.checkRectalCollision(part.pos, food.pos):
-                        headPart.relatedSnakeParts = [x for x in game.snakeParts if x.snakeIndex == part.snakeIndex]
-                        if food.type == 'food':
-                            lastSnakePart = headPart.relatedSnakeParts[-1]
-                            game.foods.remove(food)
-                            game.createSnakePart('body',part.snakeIndex,part.color,lastSnakePart.prevMoveMoment, lastSnakePart.prevPos, pg.Vector2(lastSnakePart.prevVelocity))
-                        if food.type == 'poison':
-                            lastSnakePart = headPart.relatedSnakeParts[-1]
-                            game.foods.remove(food)
-                            if len(headPart.relatedSnakeParts) > 1:
-                                game.snakeParts.remove(lastSnakePart)
-                        if len([x for x in game.foods if x.type == 'food']) > 0: game.createFood(True)
-                        else: game.createFood(False)
-        # Checks whether any part of a snake hits another
-        if not otherRectalCollisionAllowed:      
-            for headPart in headParts:
-                headPart.getRelatedSnakeParts()
-                for i, part in enumerate(headPart.relatedSnakeParts):
-                    unrelatedSnakeParts = [x for x in game.snakeParts if x not in headPart.relatedSnakeParts]
-                    for unrelatedPart in unrelatedSnakeParts:
-                        if game.checkRectalCollision(part.pos,unrelatedPart.pos): part.alive, unrelatedPart.alive = False, False
-        # Checks whether any part of a snake hits itself
-        if not selfRectalCollisionAllowed:
-            for headPart in headParts:
-                headPart.getRelatedSnakeParts()
-                for i, part in enumerate(headPart.relatedSnakeParts):
-                    # Passes if it is a head part
-                    if part.type == 'head': continue
-                    if game.checkRectalCollision(headPart.pos, part.pos): part.alive = False
-
         # Draws elements
         # Draws the walls
         pg.draw.rect(game.screen, wallColor,game.topBorder)
         pg.draw.rect(game.screen, wallColor,game.bottomBorder)
         pg.draw.rect(game.screen, wallColor,game.leftBorder)
         pg.draw.rect(game.screen, wallColor,game.rightBorder)
-        # Draws the rects if the setting is enabled
+        
+        # Draws the rects if visible
         rects = game.playfield.rects
         if drawPlayfieldRects:
             for col in rects:
                 for rect in col:
                     pg.draw.rect(game.screen, wallColor,rect, 1)
-        # Draws snakes' part hitboxes
+        # Draws snakes' part hitboxes if visible
         if hitboxesVisible:
             for part in game.snakeParts:
-                # pg.draw.rect(game.screen, part.color,part, 5)
-                game.screen.blit(part.sprite, (part.rect.x, part.rect.y))
-        # Draws foods
-        for food in game.foods:
-            if food.type == 'food':
-                pg.draw.rect(game.screen, foodColor, food.rect, 5)
-            if food.type == 'poison':
-                pg.draw.rect(game.screen, poisonousFoodColor, food.rect, 5)
+                pg.draw.rect(game.screen, part.color,part, 5)
+                # game.screen.blit(part.sprite, (part.rect.x, part.rect.y))
+        
         game.update()
 
 # Game restart/quit screen
