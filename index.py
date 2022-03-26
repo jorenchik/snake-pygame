@@ -114,7 +114,6 @@ def main():
         pg.draw.rect(game.screen, wallColor,game.bottomBorder)
         pg.draw.rect(game.screen, wallColor,game.leftBorder)
         pg.draw.rect(game.screen, wallColor,game.rightBorder)
-        
         # Draws the rects if visible
         rects = game.playfield.rects
         if drawPlayfieldRects:
@@ -126,7 +125,12 @@ def main():
             for part in game.snakeParts:
                 pg.draw.rect(game.screen, part.color,part, 5)
                 # game.screen.blit(part.sprite, (part.rect.x, part.rect.y))
-        
+        # Draws foods
+        for food in game.foods:
+            if food.type == 'food':
+                pg.draw.rect(game.screen, foodColor, food.rect, 5)
+            if food.type == 'poison':
+                pg.draw.rect(game.screen, poisonousFoodColor, food.rect, 5)
         game.update()
 
 # Game restart/quit screen
