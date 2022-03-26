@@ -25,11 +25,6 @@ def main():
     while game.active:
         # Updates game state
         game.onUpdate()
-        if game.isSnakeDead():
-            game.snakeParts.clear()
-            game.foods.clear()
-            gameOver()
-            break
 
         game.getPlayersScore()
         # Add score text
@@ -65,6 +60,36 @@ def main():
                     headParts[1].changedDirection = True
                     game.player2ChangedDir = True
 
+
+        # Snakes' constant movement
+        if not game.isSnakeDead():
+            if game.isEvent(game.moveEvent):
+                for headPart in headParts:
+                    headPart.getRelatedSnakeParts()
+                    for i, part in enumerate(headPart.relatedSnakeParts):
+                        part.prevPos, part.prevVelocity = (part.pos[0],part.pos[1]), pg.Vector2((part.velocity.x,part.velocity.y))
+                        game.moveSnakePart(part,part.pos,part.velocity)
+                        if part.type != 'head': part.velocity = pg.Vector2(headPart.relatedSnakeParts[i-1].prevVelocity)
+                        if part.type == 'head':
+                            part.changedDirection = False
+                            if part.snakeIndex == 0:
+                                game.player1ChangedDir = False
+                            if part.snakeIndex == 1:
+                                game.player2ChangedDir = False
+            for headPart in headParts:
+                headPart.getRelatedSnakeParts()
+                for i, part in enumerate(headPart.relatedSnakeParts):
+                    if part.type == 'head' and part.changedDirection == True: 
+                        game.screen.blit(part.sprite, (part.rect.x, part.rect.y))
+                        continue
+                    if part.type == 'head':
+                        part.getAngle().rotateSprite(part.angle)
+                    else:
+                        prevAngle = part.angle
+                        part.getAngle()
+                        if part.angle != prevAngle: part.rotateSprite(part.angle)
+                        part.getAngle().rotateSprite(part.angle)
+                    game.screen.blit(part.sprite, (part.rect.x, part.rect.y))
         if game.isEvent(game.moveEvent):
             for headPart in headParts:
                 for i, part in enumerate(headPart.relatedSnakeParts):
@@ -98,35 +123,14 @@ def main():
                                 if game.checkRectalCollision(part.pos,unrelatedPart.pos): part.alive, unrelatedPart.alive = False, False
                 
 
-        # Snakes' constant movement
-        if not game.isSnakeDead():
-            if game.isEvent(game.moveEvent):
-                for headPart in headParts:
-                    headPart.getRelatedSnakeParts()
-                    for i, part in enumerate(headPart.relatedSnakeParts):
-                        part.prevPos, part.prevVelocity = (part.pos[0],part.pos[1]), pg.Vector2((part.velocity.x,part.velocity.y))
-                        game.moveSnakePart(part,part.pos,part.velocity)
-                        if part.type != 'head': part.velocity = pg.Vector2(headPart.relatedSnakeParts[i-1].prevVelocity)
-                        if part.type == 'head':
-                            part.changedDirection = False
-                            if part.snakeIndex == 0:
-                                game.player1ChangedDir = False
-                            if part.snakeIndex == 1:
-                                game.player2ChangedDir = False
-            for headPart in headParts:
-                headPart.getRelatedSnakeParts()
-                for i, part in enumerate(headPart.relatedSnakeParts):
-                    if part.type == 'head' and part.changedDirection == True: 
-                        game.screen.blit(part.sprite, (part.rect.x, part.rect.y))
-                        continue
-                    if part.type == 'head':
-                        part.getAngle().rotateSprite(part.angle)
-                    else:
-                        prevAngle = part.angle
-                        part.getAngle()
-                        if part.angle != prevAngle: part.rotateSprite(part.angle)
-                        part.getAngle().rotateSprite(part.angle)
-                    game.screen.blit(part.sprite, (part.rect.x, part.rect.y))
+        
+
+        if game.isSnakeDead():
+            game.snakeParts.clear()
+            game.foods.clear()
+            gameOver()
+            break
+
 
         # Draws elements
         # Draws the walls
