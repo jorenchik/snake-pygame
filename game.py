@@ -146,6 +146,11 @@ class SnakePart():
             if deg == 180: self.loadPartImage(pilImageToSurface(partColoredImgs['headLeft'][self.colorKey]))
             if deg == 270: self.loadPartImage(pilImageToSurface(partColoredImgs['headDown'][self.colorKey]))
             return self
+        if self.type == 'tail':
+            if deg == 0: self.loadPartImage(pilImageToSurface(partColoredImgs['tailLeft'][self.colorKey]))
+            if deg == 90: self.loadPartImage(pilImageToSurface(partColoredImgs['tailDown'][self.colorKey]))
+            if deg == 180: self.loadPartImage(pilImageToSurface(partColoredImgs['tailRight'][self.colorKey]))
+            if deg == 270: self.loadPartImage(pilImageToSurface(partColoredImgs['tailUp'][self.colorKey]))
         turn = self.isTurning()
         if turn:
             if turn == 1: self.loadPartImage(pilImageToSurface(partColoredImgs['topRight'][self.colorKey]))

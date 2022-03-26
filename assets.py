@@ -23,10 +23,10 @@ partImgs = {
     'bottomRight': pb.Path(assets/'parts/body_bottomright.png'),
     'topLeft': pb.Path(assets/'parts/body_topleft.png'),
     'bottomLeft': pb.Path(assets/'parts/body_bottomleft.png'),
-    'tail-right':pb.Path(assets/'parts/tail_right.png'),
-    'tail-up':pb.Path(assets/'parts/tail_up.png'),
-    'tail-left':pb.Path(assets/'parts/tail_left.png'),
-    'tail-down':pb.Path(assets/'parts/tail_down.png'),
+    'tailRight':pb.Path(assets/'parts/tail_right.png'),
+    'tailUp':pb.Path(assets/'parts/tail_up.png'),
+    'tailLeft':pb.Path(assets/'parts/tail_left.png'),
+    'tailDown':pb.Path(assets/'parts/tail_down.png'),
 }
 
 foodImgs = {

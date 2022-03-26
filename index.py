@@ -6,12 +6,13 @@ import pygame as pg
 def main():
     # Creates Snake #1
     headPart = game.createSnakePart('head',0,game.player1Color,False)
-    game.createSnakePart('body',0,game.player1Color,False, (headPart.pos[0]-1,headPart.pos[1]))
+    game.createSnakePart('tail',0,game.player1Color,False, (headPart.pos[0]-1,headPart.pos[1]))
     for snakePart in game.snakeParts: game.moveSnakePart(snakePart,snakePart.pos)
 
     # Creates Snake #2
     if game.multiplayer:
-        game.createSnakePart('head',1,game.player2Color,False)
+        headPart = game.createSnakePart('head',1,game.player2Color,False)
+        game.createSnakePart('tail',1,game.player2Color,False, (headPart.pos[0]-1,headPart.pos[1]))
         for snakePart in game.snakeParts: game.moveSnakePart(snakePart,snakePart.pos)
 
     # Adding first food
@@ -32,15 +33,14 @@ def main():
 
         game.getPlayersScore()
         # Add score text
-        score1Text = game.gameOverFont.render(f'P1 SCORE: {game.player1Score}', True, game.player1Color)
+        score1Text = game.gameOverFont.render(f'P1 SCORE: {game.player1Score-1}', True, game.player1Color)
         game.screen.blit(score1Text, game.score1Pos)
         if game.multiplayer:
-            score2Text = game.gameOverFont.render(f'P2 SCORE: {game.player2Score}', True, game.player2Color)
+            score2Text = game.gameOverFont.render(f'P2 SCORE: {game.player2Score-1}', True, game.player2Color)
             game.screen.blit(score2Text, (game.score2Pos[0]-score2Text.get_width(), game.score2Pos[1]))
 
         # Events
         headParts = [x for x in game.snakeParts if x.type == 'head']
-        # Quit
         if game.isQuit(): quit()
 
         # Dont move unsless movement button's been pressed
@@ -69,12 +69,13 @@ def main():
                                 headPart.relatedSnakeParts = [x for x in game.snakeParts if x.snakeIndex == part.snakeIndex]
                                 if food.type == 'food':
                                     lastSnakePart = headPart.relatedSnakeParts[-1]
+                                    lastSnakePart.type = 'body'
                                     game.foods.remove(food)
-                                    game.createSnakePart('body',part.snakeIndex,part.color,lastSnakePart.prevMoveMoment, lastSnakePart.prevPos, pg.Vector2(lastSnakePart.prevVelocity))
+                                    game.createSnakePart('tail',part.snakeIndex,part.color,lastSnakePart.prevMoveMoment, lastSnakePart.prevPos, pg.Vector2(lastSnakePart.prevVelocity))
                                 if food.type == 'poison':
                                     lastSnakePart = headPart.relatedSnakeParts[-1]
                                     game.foods.remove(food)
-                                    if len(headPart.relatedSnakeParts) > 1:
+                                    if len(headPart.relatedSnakeParts) > 2:
                                         game.snakeParts.remove(lastSnakePart)
                                 if len([x for x in game.foods if x.type == 'food']) > 0: game.createFood(True)
                                 else: game.createFood(False)
