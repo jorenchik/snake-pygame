@@ -1,6 +1,6 @@
 from game import game,degrees,pl1Keys,pl2Keys,get_key
 import pygame as pg
-from settings import white, snakeColors
+from settings import white, snakeColors, config
 
 # Game itself
 def main():
@@ -201,13 +201,19 @@ def settingsMenu():
             else: game.menuPointingTo += 1
         if game.isKey(pg.K_RETURN) and game.menuPointingTo == menuItems.index(colorPlayer1Btn):
             game.getPlayerNextColor(0)
+            game.setConfig('GAMEPLAY', 'player1Color', get_key(game.player1Color, snakeColors))
         if game.isKey(pg.K_RETURN) and game.menuPointingTo == menuItems.index(wallMode): 
             game.portalWalls = not game.portalWalls
+            val = 'True' if game.portalWalls == True else 'False'
+            game.setConfig('GAMEPLAY', 'portalWalls', val)
         if game.multiplayer:
             if game.isKey(pg.K_RETURN) and game.menuPointingTo == menuItems.index(colorPlayer2Btn): 
                 game.getPlayerNextColor(1)
+                game.setConfig('GAMEPLAY', 'player2Color', get_key(game.player2Color, snakeColors))
         if game.isKey(pg.K_RETURN) and game.menuPointingTo == menuItems.index(multiplayerOn): 
             game.multiplayer = not game.multiplayer
+            val = 'True' if game.multiplayer == True else 'False'
+            game.setConfig('GAMEPLAY', 'multiplayer', val)
         if game.isKey(pg.K_RETURN) and game.menuPointingTo == menuItems.index(backBtn): break
         game.update()
 

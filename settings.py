@@ -1,12 +1,32 @@
+import configparser
+import pathlib as pl
+
+absPath = pl.Path.cwd()
+configFile = pl.Path(absPath/'config.ini')
+if not configFile.exists():
+    config = configparser.ConfigParser()
+    config['GAMEPLAY'] = {
+        'multiplayer':False,
+        'player1Color': 'white',
+        'player2Color': 'magenta',
+        'portalWalls': False
+    }
+
+    with open('config.ini', 'w') as configfile:
+        config.write(configfile)
+    configFile = pl.Path(absPath/'config.ini')
+
+config = configparser.ConfigParser()
+config.read(configFile)
 
 # Game caption
 caption = 'Snake game'
 
 # Gameplay
-portalWalls = False
+portalWalls = True if config['GAMEPLAY']['portalWalls'] == 'True' else False
 selfRectalCollisionAllowed = False
 otherRectalCollisionAllowed = False
-multiplayer = False
+multiplayer = True if config['GAMEPLAY']['multiplayer'] == 'True' else False
 hitboxesVisible = False
 initialMovingPeriod = 250
 snakeBaseVelocity = (1,0)
@@ -39,8 +59,8 @@ lime = (0,255,0)
 blue = (0,0,255)
 snakeColors = {'white':white,'magenta':magenta,'blue':blue,'yellow':yellow,'cyan':cyan}
 foodColors = {'food':green, 'poison': red}
-player1Color = white
-player2Color = magenta
+player1Color = snakeColors[config['GAMEPLAY']['player1Color']]
+player2Color = snakeColors[config['GAMEPLAY']['player2Color']]
 snakeBaseColor = (91,123,249)
 foodBaseColor = (218,72,15)
 

@@ -2,6 +2,7 @@ from pathlib import Path
 import string
 from turtle import position
 from typing import List
+from fontTools import configLogger
 from matplotlib.style import available
 import pygame as pg
 from settings import *
@@ -11,8 +12,7 @@ import random as rd
 from PIL import Image
 import numpy as np
 import ctypes
-
-
+import configparser
 
 # keys -> angle
 pl1Keys = [pg.K_RIGHT,pg.K_UP,pg.K_LEFT,pg.K_DOWN]
@@ -237,7 +237,7 @@ class Game:
         self.score1Pos = (self.SCREEN_WIDTH*self.sidePadding,(self.SCREEN_HEIGHT*(self.topPadding)+self.SCREEN_HEIGHT*playfieldYOffset)/2)
         self.score2Pos = (self.SCREEN_WIDTH-self.SCREEN_WIDTH*self.sidePadding,(self.SCREEN_HEIGHT*(self.topPadding)+self.SCREEN_HEIGHT*playfieldYOffset)/2)
         self.player1Score, self.player2Score = 0, 0
-        self.player1Color, self.player2Color = white, magenta
+        self.player1Color, self.player2Color = player1Color,player2Color
         self.setPlayerColorIndex()
         self.player1ChangedDir = False
         self.player2ChangedDir = False
@@ -410,7 +410,11 @@ class Game:
         if playerIndex == 0: game.player1Color = nextColor
         else: game.player2Color = nextColor
         return self
-
+    def setConfig(self,section,field,val):
+        config.set(section,field, val)
+        with open(configFile, 'w') as cf:
+            config.write(cf)
+        return self
 
 # Game initialization
 playfieldWidth, playfieldHeight = res[0] * playfieldSize[0], res[1] * playfieldSize[1]
