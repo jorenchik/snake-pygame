@@ -89,30 +89,31 @@ def main():
                 
 
         # Snakes' constant movement
-        for headPart in headParts:
-            headPart.getRelatedSnakeParts()
-            for i, part in enumerate(headPart.relatedSnakeParts):
-                if part.movementPeriod and part.prevMoveMoment:
-                        if (game.now - part.prevMoveMoment) >= part.movementPeriod*game.dt:
-                            part.prevPos, part.prevVelocity = (part.pos[0],part.pos[1]), pg.Vector2((part.velocity.x,part.velocity.y))
-                            game.moveSnakePart(part,part.pos,part.velocity)
-                            if part.type != 'head': part.velocity = pg.Vector2(headPart.relatedSnakeParts[i-1].prevVelocity)
-                            if part.type == 'head': part.changedDirection = False
-                else: game.moveSnakePart(part,part.pos,part.velocity)
-        for headPart in headParts:
-            headPart.getRelatedSnakeParts()
-            for i, part in enumerate(headPart.relatedSnakeParts):
-                if part.type == 'head' and part.changedDirection == True: 
+        if not game.isSnakeDead():
+            for headPart in headParts:
+                headPart.getRelatedSnakeParts()
+                for i, part in enumerate(headPart.relatedSnakeParts):
+                    if part.movementPeriod and part.prevMoveMoment:
+                            if (game.now - part.prevMoveMoment) >= part.movementPeriod*game.dt:
+                                part.prevPos, part.prevVelocity = (part.pos[0],part.pos[1]), pg.Vector2((part.velocity.x,part.velocity.y))
+                                game.moveSnakePart(part,part.pos,part.velocity)
+                                if part.type != 'head': part.velocity = pg.Vector2(headPart.relatedSnakeParts[i-1].prevVelocity)
+                                if part.type == 'head': part.changedDirection = False
+                    else: game.moveSnakePart(part,part.pos,part.velocity)
+            for headPart in headParts:
+                headPart.getRelatedSnakeParts()
+                for i, part in enumerate(headPart.relatedSnakeParts):
+                    if part.type == 'head' and part.changedDirection == True: 
+                        game.screen.blit(part.sprite, (part.rect.x, part.rect.y))
+                        continue
+                    if part.type == 'head':
+                        part.getAngle().rotateSprite(part.angle)
+                    else:
+                        prevAngle = part.angle
+                        part.getAngle()
+                        if part.angle != prevAngle: part.rotateSprite(part.angle)
+                        part.getAngle().rotateSprite(part.angle)
                     game.screen.blit(part.sprite, (part.rect.x, part.rect.y))
-                    continue
-                if part.type == 'head':
-                    part.getAngle().rotateSprite(part.angle)
-                else:
-                    prevAngle = part.angle
-                    part.getAngle()
-                    if part.angle != prevAngle: part.rotateSprite(part.angle)
-                    part.getAngle().rotateSprite(part.angle)
-                game.screen.blit(part.sprite, (part.rect.x, part.rect.y))
 
         # Draws elements
         # Draws the walls
