@@ -199,7 +199,7 @@ class Game:
         """
         pg.init()
         pg.display.set_caption(caption)
-        self.gameOverFont, self.scoreFont, self.menuFont  = pg.font.SysFont(font, gameOverFontSize), pg.font.SysFont(font, scoreFontSize), pg.font.SysFont(font, menuFontSize)
+        self.gameOverFont, self.scoreFont, self.menuFont, self.fpsFont  = pg.font.SysFont(font, gameOverFontSize), pg.font.SysFont(font, scoreFontSize), pg.font.SysFont(font, menuFontSize), pg.font.SysFont(font, fpsFontSize)
         pg.font.init()
         self.gameIcon = pg.image.load(icon)
         self.screen = pg.display.set_mode(resolution, pg.FULLSCREEN if fullscreen else 0)
