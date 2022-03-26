@@ -8,8 +8,8 @@ selfRectalCollisionAllowed = False
 otherRectalCollisionAllowed = False
 multiplayer = False
 hitboxesVisible = False
-
-snakeBaseVelocity = (80,0)
+initialMovingPeriod = 250
+snakeBaseVelocity = (1,0)
 
 # Screen
 res = (1920,1080)

@@ -236,8 +236,13 @@ class Game:
         self.player1Score, self.player2Score = 0, 0
         self.player1Color, self.player2Color = white, magenta
         self.setPlayerColorIndex()
+        self.player1ChangedDir = False
+        self.player2ChangedDir = False
         # Menu state
         self.menuPointingTo = 0
+        # Events
+        self.moveEvent = pg.USEREVENT + 1
+        self.movementPeriod = initialMovingPeriod
     def setBackground(self):
         """
         Sets the background as either an icon or a color.
@@ -250,6 +255,11 @@ class Game:
     def getEvents(self):
         self.events = pg.event.get()
         return self
+    def isEvent(self, eventType):
+        for e in self.events:
+            if e.type == eventType:
+                return True
+        return False
     def isQuit(self):
         """
         Checks if the player wants to exit or not by checking whether esc of exit button is pressed.
@@ -283,11 +293,6 @@ class Game:
         self.setBackground().clock.tick(self.fps)
         self.now = t.time()
         self.prevTime, self.dt = self.now, (self.now - self.prevTime) * 1000
-        # if self.active:
-        #     for pos in self.snakeParts:
-        #         self.occupiedPositions.append(pos)
-        #     for pos in self.foods:
-        #         self.occupiedPositions.append(pos)
         self.getEvents().setPlayerColorIndex()
         return self
     def moveSnakePart(self,snakePart:SnakePart,pos:tuple,velocity:pg.Vector2=False):
@@ -330,7 +335,8 @@ class Game:
     def createSnakePart(self,type,snakeIndex,color,prevMoveMoment,pos=False,velocity=False):
         snakePart = SnakePart(type,snakeIndex,color,prevMoveMoment,pos if pos else False, velocity if velocity else False)
         self.snakeParts.append(snakePart)
-        self.availablePositions.remove(snakePart.pos)
+        if snakePart.pos in self.availablePositions:
+            self.availablePositions.remove(snakePart.pos)
         return snakePart
     def checkRectalCollision(self,pos1:tuple,pos2:tuple):
         if pos1[0] == pos2[0] and pos1[1] == pos2[1]: return True

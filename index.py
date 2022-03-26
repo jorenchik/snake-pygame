@@ -44,26 +44,31 @@ def main():
         if game.isQuit(): quit()
 
         # Dont move unsless movement button's been pressed
-        if (game.isKey(pg.K_RIGHT) or game.isKey(pg.K_UP) or game.isKey(pg.K_LEFT) or game.isKey(pg.K_DOWN)) and headParts[0].velocity.length() == 0: game.setBaseVelocity()
-        if game.multiplayer:
-            if (game.isKey(pg.K_d) or game.isKey(pg.K_w) or game.isKey(pg.K_a) or game.isKey(pg.K_s)) and headParts[0].velocity.length() == 0: game.setBaseVelocity()
+        if (game.isKey(pg.K_RIGHT) or game.isKey(pg.K_UP) or game.isKey(pg.K_LEFT) or game.isKey(pg.K_DOWN)) and headParts[0].velocity.length() == 0: 
+            pg.time.set_timer(game.moveEvent, game.movementPeriod)
+            game.setBaseVelocity()
+        if game.multiplayer and (game.isKey(pg.K_d) or game.isKey(pg.K_w) or game.isKey(pg.K_a) or game.isKey(pg.K_s)) and headParts[0].velocity.length() == 0:
+            pg.time.set_timer(game.moveEvent, game.movementPeriod)
+            game.setBaseVelocity()
 
         # Changes snakes direction
-        if (not game.previousDirChange or game.now - game.previousDirChange >= headParts[0].movementPeriod/2):
+        if not game.player1ChangedDir:
             for i,key in enumerate(pl1Keys):
                 if game.isKey(key):
                     headParts[0].changeDirToAnAngle(degrees[i])
                     headParts[0].changedDirection = True
-            if game.multiplayer:
-                for i,key in enumerate(pl2Keys):
-                    if game.isKey(key):
-                        headParts[1].changeDirToAnAngle(degrees[i])
-                        headParts[1].changedDirection = True
+                    game.player1ChangedDir = True
+        if not game.player1ChangedDir and game.multiplayer:
+            for i,key in enumerate(pl2Keys):
+                if game.isKey(key):
+                    headParts[1].changeDirToAnAngle(degrees[i])
+                    headParts[1].changedDirection = True
+                    game.player2ChangedDir = True
 
-        for headPart in headParts:
-            for i, part in enumerate(headPart.relatedSnakeParts):
-                if part.movementPeriod and part.prevMoveMoment:
-                    if (game.now - part.prevMoveMoment) >= part.movementPeriod*game.dt:
+        if game.isEvent(game.moveEvent):
+            for headPart in headParts:
+                for i, part in enumerate(headPart.relatedSnakeParts):
+                    if part.movementPeriod and part.prevMoveMoment:
                         for food in game.foods:
                             if game.checkRectalCollision(part.pos, food.pos):
                                 headPart.relatedSnakeParts = [x for x in game.snakeParts if x.snakeIndex == part.snakeIndex]
@@ -92,16 +97,19 @@ def main():
 
         # Snakes' constant movement
         if not game.isSnakeDead():
-            for headPart in headParts:
-                headPart.getRelatedSnakeParts()
-                for i, part in enumerate(headPart.relatedSnakeParts):
-                    if part.movementPeriod and part.prevMoveMoment:
-                            if (game.now - part.prevMoveMoment) >= part.movementPeriod*game.dt:
-                                part.prevPos, part.prevVelocity = (part.pos[0],part.pos[1]), pg.Vector2((part.velocity.x,part.velocity.y))
-                                game.moveSnakePart(part,part.pos,part.velocity)
-                                if part.type != 'head': part.velocity = pg.Vector2(headPart.relatedSnakeParts[i-1].prevVelocity)
-                                if part.type == 'head': part.changedDirection = False
-                    else: game.moveSnakePart(part,part.pos,part.velocity)
+            if game.isEvent(game.moveEvent):
+                for headPart in headParts:
+                    headPart.getRelatedSnakeParts()
+                    for i, part in enumerate(headPart.relatedSnakeParts):
+                        part.prevPos, part.prevVelocity = (part.pos[0],part.pos[1]), pg.Vector2((part.velocity.x,part.velocity.y))
+                        game.moveSnakePart(part,part.pos,part.velocity)
+                        if part.type != 'head': part.velocity = pg.Vector2(headPart.relatedSnakeParts[i-1].prevVelocity)
+                        if part.type == 'head':
+                            part.changedDirection = False
+                            if part.snakeIndex == 0:
+                                game.player1ChangedDir = False
+                            if part.snakeIndex == 1:
+                                game.player2ChangedDir = False
             for headPart in headParts:
                 headPart.getRelatedSnakeParts()
                 for i, part in enumerate(headPart.relatedSnakeParts):
@@ -127,19 +135,12 @@ def main():
         rects = game.playfield.rects
         if drawPlayfieldRects:
             for col in rects:
-                for rect in col:
-                    pg.draw.rect(game.screen, wallColor,rect, 1)
+                for rect in col: pg.draw.rect(game.screen, wallColor,rect, 1)
         # Draws snakes' part hitboxes if visible
         if hitboxesVisible:
-            for part in game.snakeParts:
-                pg.draw.rect(game.screen, part.color,part, 5)
+            for part in game.snakeParts: pg.draw.rect(game.screen, part.color,part, 5)
         # Draws foods
-        for food in game.foods:
-            game.screen.blit(food.sprite, (food.rect.x, food.rect.y))
-            # if food.type == 'food':
-            #     pg.draw.rect(game.screen, foodColor, food.rect, 5)
-            # if food.type == 'poison':
-            #     pg.draw.rect(game.screen, poisonousFoodColor, food.rect, 5)
+        for food in game.foods: game.screen.blit(food.sprite, (food.rect.x, food.rect.y))
         game.update()
 
 # Game restart/quit screen
