@@ -1,6 +1,6 @@
 from game import game,degrees,pl1Keys,pl2Keys,get_key
 import pygame as pg
-from settings import white, snakeColors, config
+from settings import white, snakeColors, config, initialMovementPeriod
 
 # Game itself
 def main():
@@ -26,18 +26,22 @@ def main():
         # Updates game state
         game.onUpdate()
 
+        if game.speedIncAfterEat and (game.isEvent(game.snake1PartAdded) or game.isEvent(game.snake2PartAdded)):
+            game.movementPeriod = game.movementPeriod * .95
+
         # Add score text
         game.getPlayersScore()
         prePlayer1Text = 'P1' if game.multiplayer else ''
-        score1Text = game.gameOverFont.render(f'{prePlayer1Text}SCORE: {game.player1Score-1}', True, game.player1Color)
+        score1Text = game.gameOverFont.render(f'{"P1 " if game.multiplayer else ""}SCORE: {game.player1Score-1}', True, game.player1Color)
         game.screen.blit(score1Text, game.score1Pos)
         if game.multiplayer:
             score2Text = game.gameOverFont.render(f'P2 SCORE: {game.player2Score-1}', True, game.player2Color)
             game.screen.blit(score2Text, (game.score2Pos[0]-score2Text.get_width(), game.score2Pos[1]))
         # FPS
-        fpsText = game.fpsFont.render(str(int(game.clock.get_fps())),True, game.player1Color)
+        fpsText = game.fpsFont.render(f'FPS: {str(int(game.clock.get_fps()))}',True, game.player1Color)
+        movementPeriodText = game.fpsFont.render(f'T: {str(int(game.movementPeriod))}',True, game.player1Color)
         game.screen.blit(fpsText,(0,0))
-
+        game.screen.blit(movementPeriodText,(0,movementPeriodText.get_height()))
 
         # Events
         headParts = [x for x in game.snakeParts if x.type == 'head']
@@ -48,7 +52,7 @@ def main():
             pg.time.set_timer(game.moveEvent, game.movementPeriod)
             game.setBaseVelocity()
         if game.multiplayer and (game.isKey(pg.K_d) or game.isKey(pg.K_w) or game.isKey(pg.K_a) or game.isKey(pg.K_s)) and headParts[0].velocity.length() == 0:
-            pg.time.set_timer(game.moveEvent, game.movementPeriod)
+            pg.time.set_timer(game.moveEvent, int(game.movementPeriod))
             game.setBaseVelocity()
 
         # Changes snakes direction
@@ -64,7 +68,6 @@ def main():
                     headParts[1].changeDirToAnAngle(degrees[i])
                     headParts[1].changedDirection = True
                     game.player2ChangedDir = True
-
 
         # Snakes' movement
         if not game.isSnakeDead():
@@ -113,7 +116,6 @@ def main():
                                     game.snakeParts.remove(lastSnakePart)
                                     part.relatedSnakeParts.remove(lastSnakePart)
                                     headPart.relatedSnakeParts[-1].type = 'tail'
-
                             if len([x for x in game.foods if x.type == 'food']) > 0: game.createFood(True)
                             else: game.createFood(False)
                     if not game.selfRectalCollisionAllowed:
@@ -129,6 +131,7 @@ def main():
         if game.isSnakeDead():
             game.snakeParts.clear()
             game.foods.clear()
+            game.movementPeriod = initialMovementPeriod
             gameOver()
             break
 

@@ -244,7 +244,7 @@ class Game:
         self.moveEvent = pg.USEREVENT + 1
         self.snake1PartAdded = pg.USEREVENT + 2
         self.snake2PartAdded = pg.USEREVENT + 3
-        self.movementPeriod = initialMovingPeriod
+        self.movementPeriod = initialMovementPeriod
     def setBackground(self):
         """
         Sets the background as either an icon or a color.
