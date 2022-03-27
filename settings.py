@@ -14,8 +14,8 @@ except:
 
 settings = {
     'multiplayer':False,
-    'player1Color': 'white',
-    'player2Color': 'magenta',
+    'player1Color': 'blue',
+    'player2Color': 'purple',
     'portalWalls': False,
     'speedIncAfterEat': False,
     'initialMovementPeriod': 250,
@@ -70,6 +70,7 @@ font = 'Arial'
 
 # Colors
 background = (37,38,33)
+blue = (0,0,255)
 red = (210,27,27)
 white = (255,255,255)
 grey = (31,31,47)
@@ -79,8 +80,10 @@ magenta = (255,0,255)
 cyan = (0,255,255)
 yellow = (255,255,0)
 lime = (0,255,0)
-blue = (0,0,255)
-snakeColors = {'white':white,'magenta':magenta,'blue':blue,'yellow':yellow,'cyan':cyan}
+purple = (238,130,238)
+orange = (255,215,0)
+brown = (165,42,42)
+snakeColors = {'blue':blue,'purple':purple,'lime':lime,'orange':orange,'brown':brown,'white':white,'magenta':magenta,'blue':blue,'yellow':yellow,'cyan':cyan}
 foodColors = {'food':green, 'poison': red}
 player1Color = snakeColors[config['GAMEPLAY']['player1Color']]
 player2Color = snakeColors[config['GAMEPLAY']['player2Color']]

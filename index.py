@@ -37,8 +37,8 @@ def main():
             score2Text = game.gameOverFont.render(f'P2 SCORE: {game.player2Score-1}', True, game.player2Color)
             game.screen.blit(score2Text, (game.score2Pos[0]-score2Text.get_width(), game.score2Pos[1]))
         # FPS
-        fpsText = game.fpsFont.render(f'FPS: {str(int(game.clock.get_fps()))}',True, game.player1Color)
-        movementPeriodText = game.fpsFont.render(f'T: {str(int(game.movementPeriod))}',True, game.player1Color)
+        fpsText = game.fpsFont.render(f'FPS: {str(int(game.clock.get_fps()))}',True, white)
+        movementPeriodText = game.fpsFont.render(f'T: {str(int(game.movementPeriod))}',True, white)
         game.screen.blit(fpsText,(0,0))
         game.screen.blit(movementPeriodText,(0,movementPeriodText.get_height()))
 
