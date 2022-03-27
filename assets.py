@@ -1,8 +1,6 @@
 import pathlib as pb
 from PIL import Image
-import numpy as np
 from settings import snakeBaseColor, foodBaseColor, snakeColors, foodColors
-import pygame as pg
 
 
 absPath = pb.Path.cwd()

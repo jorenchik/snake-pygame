@@ -1,18 +1,12 @@
 from pathlib import Path
 import string
-from turtle import position
 from typing import List
-from fontTools import configLogger
-from matplotlib.style import available
 import pygame as pg
 from settings import *
 from assets import *
 import time as t
 import random as rd
-from PIL import Image
-import numpy as np
 import ctypes
-import configparser
 
 # keys -> angle
 pl1Keys = [pg.K_RIGHT,pg.K_UP,pg.K_LEFT,pg.K_DOWN]

@@ -1,6 +1,6 @@
 from game import game,degrees,pl1Keys,pl2Keys,get_key
 import pygame as pg
-from settings import white, snakeColors, config, initialMovementPeriod, maxInitialSpeed
+from settings import white, snakeColors, maxInitialSpeed
 
 # Game itself
 def main():
