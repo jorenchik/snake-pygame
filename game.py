@@ -158,10 +158,6 @@ class SnakePart():
     def getRelatedSnakeParts(self):
         self.relatedSnakeParts = [x for x in game.snakeParts if x.snakeIndex == self.snakeIndex]
         return self
-    def getMovementPeriod(self):
-        if self.velocity.length() > 0: self.movementPeriod = 1/self.velocity.length()
-        else: self.movementPeriod = False
-        return self
     def getAngle(self):
         if(self.velocity.x > 0): self.angle = 0
         if(self.velocity.x < 0): self.angle = 180
@@ -359,7 +355,6 @@ class Game:
         """
         for part in game.snakeParts: 
             part.velocity = pg.Vector2(snakeBaseVelocity)
-            part.getMovementPeriod()  
     def createMenuItem(self, text:string, color:tuple=menuFontColor):
         return game.menuFont.render(text, True, color)
     def showMenuItems(self, items:List[pg.Surface]):
