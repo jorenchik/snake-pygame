@@ -108,7 +108,7 @@ class SnakePart():
     Represents a part of a snake that can be either alive or not.
     The class has two types - the 'head' and the 'body'.
     """
-    def __init__(self,type:string,snakeIndex:int,color:tuple,prevMoveMoment:bool=False,pos:tuple=False,velocity:pg.Vector2=False):
+    def __init__(self,type:string,snakeIndex:int,color:tuple,pos:tuple=False,velocity:pg.Vector2=False):
         # General fields
         self.type, self.snakeIndex = type, snakeIndex
         self.getRelatedSnakeParts()
@@ -118,18 +118,13 @@ class SnakePart():
         self.prevPos, self.prevVelocity = pos, velocity
         self.x, self.y = game.getCoords(self.pos)[0], game.getCoords(self.pos)[1]
         self.velocity = pg.Vector2(0,0) if not velocity else velocity
-        self.prevMoveMoment = False if not prevMoveMoment else prevMoveMoment
-        self.getMovementPeriod()
         # Appearance
         self.rect = pg.Rect(self.x,self.y,game.playfield.rectSize[0],game.playfield.rectSize[1])
-        self.color = color
-        self.colorKey = get_key(color, snakeColors)
-        self.rotateSprite(0)
+        self.color, self.colorKey = color, get_key(color, snakeColors)
         self.angle = 0
+        self.rotateSprite()
         # State
-        self.alive = True
-        self.timeSinceTurned = game.now
-        self.changedDirection = False
+        self.alive, self.changedDirection = True, False
     def changeDirToAnAngle(self, angle:int in range(0,361)):
         """
         Changes the velocity of the head to an absolute angle.
@@ -139,7 +134,8 @@ class SnakePart():
         if angle == 180 and self.velocity.x <= 0: (self.velocity.y, self.velocity.x, self.angle) = (0, -self.velocity.length(),angle)
         if angle == 270 and self.velocity.y >= 0: (self.velocity.y, self.velocity.x, self.angle) = (self.velocity.length(), 0,angle)
         return self
-    def rotateSprite(self,deg:int in range(0,361)):
+    def rotateSprite(self):
+        deg = self.angle
         if self.type == 'head':
             if deg == 0: self.loadPartImage(pilImageToSurface(partColoredImgs['headRight'][self.colorKey]))
             if deg == 90: self.loadPartImage(pilImageToSurface(partColoredImgs['headUp'][self.colorKey]))
@@ -246,6 +242,8 @@ class Game:
         self.menuPointingTo = 0
         # Events
         self.moveEvent = pg.USEREVENT + 1
+        self.snake1PartAdded = pg.USEREVENT + 2
+        self.snake2PartAdded = pg.USEREVENT + 3
         self.movementPeriod = initialMovingPeriod
     def setBackground(self):
         """
@@ -336,8 +334,8 @@ class Game:
         self.foods.append(food)
         self.availablePositions.remove(food.pos)
         return self
-    def createSnakePart(self,type,snakeIndex,color,prevMoveMoment,pos=False,velocity=False):
-        snakePart = SnakePart(type,snakeIndex,color,prevMoveMoment,pos if pos else False, velocity if velocity else False)
+    def createSnakePart(self,type,snakeIndex,color,pos=False,velocity=False):
+        snakePart = SnakePart(type,snakeIndex,color,pos if pos else False, velocity if velocity else False)
         self.snakeParts.append(snakePart)
         if snakePart.pos in self.availablePositions:
             self.availablePositions.remove(snakePart.pos)

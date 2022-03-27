@@ -6,13 +6,13 @@ from settings import white, snakeColors, config
 def main():
     # Creates Snake #1
     headPart = game.createSnakePart('head',0,game.player1Color,False)
-    game.createSnakePart('tail',0,game.player1Color,False, (headPart.pos[0]-1,headPart.pos[1]))
+    game.createSnakePart('tail',0,game.player1Color, (headPart.pos[0]-1,headPart.pos[1]))
     for snakePart in game.snakeParts: game.moveSnakePart(snakePart,snakePart.pos)
 
     # Creates Snake #2
     if game.multiplayer:
         headPart = game.createSnakePart('head',1,game.player2Color,False)
-        game.createSnakePart('tail',1,game.player2Color,False, (headPart.pos[0]-1,headPart.pos[1]))
+        game.createSnakePart('tail',1,game.player2Color,(headPart.pos[0]-1,headPart.pos[1]))
         for snakePart in game.snakeParts: game.moveSnakePart(snakePart,snakePart.pos)
 
     # Adding first food
@@ -84,49 +84,48 @@ def main():
             for headPart in headParts:
                 headPart.getRelatedSnakeParts()
                 for i, part in enumerate(headPart.relatedSnakeParts):
-                    if part.type == 'head' and part.changedDirection == True: 
-                        game.screen.blit(part.sprite, (part.rect.x, part.rect.y))
-                        continue
-                    if part.type == 'head':
-                        part.getAngle().rotateSprite(part.angle)
-                    else:
-                        prevAngle = part.angle
-                        part.getAngle()
-                        if part.angle != prevAngle: part.rotateSprite(part.angle)
-                        part.getAngle().rotateSprite(part.angle)
+                    if game.isEvent(game.moveEvent):
+                        if part.type == 'head' and part.changedDirection == True: 
+                            game.screen.blit(part.sprite, (part.rect.x, part.rect.y))
+                            continue
+                        part.getAngle().rotateSprite()
+                    elif (game.isEvent(game.snake1PartAdded if headPart.snakeIndex == 0 else game.snake2PartAdded) and part.type != 'head'):
+                        part.getAngle().rotateSprite()
                     game.screen.blit(part.sprite, (part.rect.x, part.rect.y))
         if game.isEvent(game.moveEvent):
             for headPart in headParts:
                 for i, part in enumerate(headPart.relatedSnakeParts):
-                    if part.movementPeriod and part.prevMoveMoment:
-                        for food in game.foods:
-                            if game.checkRectalCollision(part.pos, food.pos):
-                                headPart.relatedSnakeParts = [x for x in game.snakeParts if x.snakeIndex == part.snakeIndex]
-                                if food.type == 'food':
-                                    lastSnakePart = headPart.relatedSnakeParts[-1]
-                                    lastSnakePart.type = 'body'
-                                    game.foods.remove(food)
-                                    game.createSnakePart('tail',part.snakeIndex,part.color,lastSnakePart.prevMoveMoment, lastSnakePart.prevPos, pg.Vector2(lastSnakePart.prevVelocity))
-                                if food.type == 'poison':
-                                    lastSnakePart = headPart.relatedSnakeParts[-1]
-                                    game.foods.remove(food)
-                                    if len(headPart.relatedSnakeParts) > 2:
-                                        game.snakeParts.remove(lastSnakePart)
-                                        part.relatedSnakeParts.remove(lastSnakePart)
-                                        headPart.relatedSnakeParts[-1].type = 'tail'
+                    for food in game.foods:
+                        if game.checkRectalCollision(part.pos, food.pos):
+                            headPart.relatedSnakeParts = [x for x in game.snakeParts if x.snakeIndex == part.snakeIndex]
+                            if food.type == 'food':
+                                lastSnakePart = headPart.relatedSnakeParts[-1]
+                                lastSnakePart.type = 'body'
+                                game.foods.remove(food)
+                                game.createSnakePart('tail',part.snakeIndex,part.color,lastSnakePart.prevPos,pg.Vector2(lastSnakePart.prevVelocity))
+                                if  part.snakeIndex == 0: event = pg.event.Event(game.snake1PartAdded)
+                                else: event = pg.event.Event(game.snake2PartAdded)
+                                pg.event.post(event)
+                            if food.type == 'poison':
+                                lastSnakePart = headPart.relatedSnakeParts[-1]
+                                game.foods.remove(food)
+                                if len(headPart.relatedSnakeParts) > 2:
+                                    game.snakeParts.remove(lastSnakePart)
+                                    part.relatedSnakeParts.remove(lastSnakePart)
+                                    headPart.relatedSnakeParts[-1].type = 'tail'
 
-                                if len([x for x in game.foods if x.type == 'food']) > 0: game.createFood(True)
-                                else: game.createFood(False)
-                        if not game.selfRectalCollisionAllowed:
-                            for i, part in enumerate(headPart.relatedSnakeParts):
-                                # Passes if it is a head part
-                                if part.type == 'head': continue
-                                if game.checkRectalCollision(headPart.pos, part.pos): part.alive = False
-                        if not game.otherRectalCollisionAllowed:  
-                            unrelatedSnakeParts = [x for x in game.snakeParts if x not in headPart.relatedSnakeParts]
-                            for unrelatedPart in unrelatedSnakeParts:
-                                if game.checkRectalCollision(part.pos,unrelatedPart.pos): part.alive, unrelatedPart.alive = False, False
-                
+                            if len([x for x in game.foods if x.type == 'food']) > 0: game.createFood(True)
+                            else: game.createFood(False)
+                    if not game.selfRectalCollisionAllowed:
+                        for i, part in enumerate(headPart.relatedSnakeParts):
+                            # Passes if it is a head part
+                            if part.type == 'head': continue
+                            if game.checkRectalCollision(headPart.pos, part.pos): part.alive = False
+                    if not game.otherRectalCollisionAllowed:  
+                        unrelatedSnakeParts = [x for x in game.snakeParts if x not in headPart.relatedSnakeParts]
+                        for unrelatedPart in unrelatedSnakeParts:
+                            if game.checkRectalCollision(part.pos,unrelatedPart.pos): part.alive, unrelatedPart.alive = False, False
+            
         if game.isSnakeDead():
             game.snakeParts.clear()
             game.foods.clear()
