@@ -3,21 +3,35 @@ import pathlib as pl
 
 absPath = pl.Path.cwd()
 configFile = pl.Path(absPath/'config.ini')
-if not configFile.exists():
-    config = configparser.ConfigParser()
-    config['GAMEPLAY'] = {
-        'multiplayer':False,
-        'player1Color': 'white',
-        'player2Color': 'magenta',
-        'portalWalls': False
-    }
+config = configparser.ConfigParser()
+try: 
+    config.read(configFile)
+except:
+    print('Error related to the config file, replacing the contents of it.')
+    with open(configFile, 'w') as f:
+        f.write('')
+    config.read(configFile)
 
+settings = {
+    'multiplayer':False,
+    'player1Color': 'white',
+    'player2Color': 'magenta',
+    'portalWalls': False,
+    'speedIncAfterEat': False
+}
+
+valid = True
+if not config.has_section('GAMEPLAY'): valid = False
+for op in settings.keys():
+    if not config.has_option('GAMEPLAY', op):
+        valid = False
+        break
+
+if not configFile.exists() or not valid:
+    config['GAMEPLAY'] = settings
     with open('config.ini', 'w') as configfile:
         config.write(configfile)
     configFile = pl.Path(absPath/'config.ini')
-
-config = configparser.ConfigParser()
-config.read(configFile)
 
 # Game caption
 caption = 'Snake game'
@@ -30,6 +44,7 @@ multiplayer = True if config['GAMEPLAY']['multiplayer'] == 'True' else False
 hitboxesVisible = False
 initialMovingPeriod = 250
 snakeBaseVelocity = (1,0)
+speedIncAfterEat = True if config['GAMEPLAY']['speedIncAfterEat'] == 'True' else False
 
 # Screen
 res = (1920,1080)

@@ -214,6 +214,7 @@ class Game:
         self.wallColor = wallColor
         self.hitboxesVisible = hitboxesVisible
         self.drawPlayfieldRects = drawPlayfieldRects
+        self.speedIncAfterEat = speedIncAfterEat
         # Clock
         self.clock = pg.time.Clock()
         self.prevTime = t.time()

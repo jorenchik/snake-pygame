@@ -191,10 +191,12 @@ def settingsMenu():
         if game.multiplayer:
             if(game.player1Color == game.player2Color): game.getPlayerNextColor(1)
             colorPlayer2Btn = game.createMenuItem(f'PLAYER 2 COLOR: {get_key(game.player2Color, snakeColors).upper()}')
+        speedIncAfterEatBtn = game.createMenuItem(f'SPEED INCREASE AFTER EATING: {"ON" if game.speedIncAfterEat else "OFF"}')
         backBtn = game.createMenuItem('BACK')
         menuItems.extend([wallMode, multiplayerOn,colorPlayer1Btn])
         if game.multiplayer:
             menuItems.append(colorPlayer2Btn)
+        menuItems.extend([speedIncAfterEatBtn])
         menuItems.append(backBtn)
         game.showMenuItems(menuItems)
         if game.isKey(pg.K_UP):
@@ -218,6 +220,10 @@ def settingsMenu():
             game.multiplayer = not game.multiplayer
             val = 'True' if game.multiplayer == True else 'False'
             game.setConfig('GAMEPLAY', 'multiplayer', val)
+        if game.isKey(pg.K_RETURN) and game.menuPointingTo == menuItems.index(speedIncAfterEatBtn): 
+            game.speedIncAfterEat = not game.speedIncAfterEat
+            val = 'True' if game.speedIncAfterEat == True else 'False'
+            game.setConfig('GAMEPLAY', 'speedIncAfterEat', val)
         if game.isKey(pg.K_RETURN) and game.menuPointingTo == menuItems.index(backBtn): break
         game.update()
 
