@@ -18,7 +18,8 @@ settings = {
     'player2Color': 'magenta',
     'portalWalls': False,
     'speedIncAfterEat': False,
-    'initialMovementPeriod': 250
+    'initialMovementPeriod': 250,
+    'initialSpeed': 1
 }
 
 valid = True
@@ -43,9 +44,14 @@ selfRectalCollisionAllowed = False
 otherRectalCollisionAllowed = False
 multiplayer = True if config['GAMEPLAY']['multiplayer'] == 'True' else False
 hitboxesVisible = False
+initialSpeed = int(config['GAMEPLAY']['initialSpeed'])
+speedUnit = 20
+# initialMovementPeriod = int(config['GAMEPLAY']['initialMovementPeriod']) - (initialSpeed-1) * speedUnit
 initialMovementPeriod = int(config['GAMEPLAY']['initialMovementPeriod'])
 snakeBaseVelocity = (1,0)
 speedIncAfterEat = True if config['GAMEPLAY']['speedIncAfterEat'] == 'True' else False
+minInitialSpeed = 1
+maxInitialSpeed = 10
 
 # Screen
 res = (1920,1080)

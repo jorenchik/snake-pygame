@@ -1,6 +1,6 @@
 from game import game,degrees,pl1Keys,pl2Keys,get_key
 import pygame as pg
-from settings import white, snakeColors, config, initialMovementPeriod
+from settings import white, snakeColors, config, initialMovementPeriod, maxInitialSpeed
 
 # Game itself
 def main():
@@ -31,7 +31,6 @@ def main():
 
         # Add score text
         game.getPlayersScore()
-        prePlayer1Text = 'P1' if game.multiplayer else ''
         score1Text = game.gameOverFont.render(f'{"P1 " if game.multiplayer else ""}SCORE: {game.player1Score-1}', True, game.player1Color)
         game.screen.blit(score1Text, game.score1Pos)
         if game.multiplayer:
@@ -131,7 +130,7 @@ def main():
         if game.isSnakeDead():
             game.snakeParts.clear()
             game.foods.clear()
-            game.movementPeriod = initialMovementPeriod
+            game.getMovementPeriod()
             gameOver()
             break
 
@@ -194,12 +193,12 @@ def settingsMenu():
             if(game.player1Color == game.player2Color): game.getPlayerNextColor(1)
             colorPlayer2Btn = game.createMenuItem(f'PLAYER 2 COLOR: {get_key(game.player2Color, snakeColors).upper()}')
         speedIncAfterEatBtn = game.createMenuItem(f'SPEED INCREASE AFTER EATING: {"ON" if game.speedIncAfterEat else "OFF"}')
+        initialSpeedBtn = game.createMenuItem(f'INITIAL SPEED: {game.initialSpeed}')
         backBtn = game.createMenuItem('BACK')
         menuItems.extend([wallMode, multiplayerOn,colorPlayer1Btn])
         if game.multiplayer:
             menuItems.append(colorPlayer2Btn)
-        menuItems.extend([speedIncAfterEatBtn])
-        menuItems.append(backBtn)
+        menuItems.extend([speedIncAfterEatBtn, initialSpeedBtn,backBtn])
         game.showMenuItems(menuItems)
         if game.isKey(pg.K_UP):
             if game.menuPointingTo == 0: game.menuPointingTo = len(menuItems)-1
@@ -226,6 +225,12 @@ def settingsMenu():
             game.speedIncAfterEat = not game.speedIncAfterEat
             val = 'True' if game.speedIncAfterEat == True else 'False'
             game.setConfig('GAMEPLAY', 'speedIncAfterEat', val)
+        if game.isKey(pg.K_RIGHT) and game.menuPointingTo == menuItems.index(initialSpeedBtn):
+            if game.initialSpeed != maxInitialSpeed: game.initialSpeed += 1
+            game.setConfig('GAMEPLAY', 'initialSpeed', str(game.initialSpeed))
+        if game.isKey(pg.K_LEFT) and game.menuPointingTo == menuItems.index(initialSpeedBtn):
+            if game.initialSpeed > 1: game.initialSpeed -= 1
+            game.setConfig('GAMEPLAY', 'initialSpeed', str(game.initialSpeed))
         if game.isKey(pg.K_RETURN) and game.menuPointingTo == menuItems.index(backBtn): break
         game.update()
 

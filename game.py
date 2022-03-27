@@ -211,6 +211,8 @@ class Game:
         self.hitboxesVisible = hitboxesVisible
         self.drawPlayfieldRects = drawPlayfieldRects
         self.speedIncAfterEat = speedIncAfterEat
+        self.initialSpeed = initialSpeed
+        self.getMovementPeriod()
         # Clock
         self.clock = pg.time.Clock()
         self.prevTime = t.time()
@@ -244,7 +246,6 @@ class Game:
         self.moveEvent = pg.USEREVENT + 1
         self.snake1PartAdded = pg.USEREVENT + 2
         self.snake2PartAdded = pg.USEREVENT + 3
-        self.movementPeriod = initialMovementPeriod
     def setBackground(self):
         """
         Sets the background as either an icon or a color.
@@ -413,6 +414,9 @@ class Game:
         config.set(section,field, val)
         with open(configFile, 'w') as cf:
             config.write(cf)
+        return self
+    def getMovementPeriod(self):
+        self.movementPeriod = initialMovementPeriod - (initialSpeed-1) * speedUnit
         return self
 
 # Game initialization
