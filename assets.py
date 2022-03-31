@@ -1,6 +1,8 @@
+import os
 import pathlib as pb
 from PIL import Image
 from settings import snakeBaseColor, foodBaseColor, snakeColors, foodColors
+import pickle as pc
 
 absPath = pb.Path.cwd()
 # Assets path
@@ -56,3 +58,29 @@ for k,img in foodImgs.items():
     for key,col in foodColors.items():
         color=changeImgColor(img,col,foodBaseColor)
         foodColoredImgs[key] = color
+
+
+spHighcoreFile = pb.Path(absPath/'sp_highscores.pkl')
+mpHighcoreFile = pb.Path(absPath/'mp_highscores.pkl')
+
+
+highScores = {'someone': 20, 'anyone':20}
+if not spHighcoreFile.exists():
+    with open("sp_highscores.pkl","wb") as out:
+        pc.dump(highScores, out)
+if not mpHighcoreFile.exists():
+    with open("mp_highscores.pkl","wb") as out:
+        pc.dump(highScores, out)
+
+spHighscores = {}
+mpHighscores = {}
+
+if os.path.getsize(spHighcoreFile) > 0:      
+    with open(spHighcoreFile, "rb") as f:
+        unpickler = pc.Unpickler(f)
+        spHighscores = unpickler.load()
+
+if os.path.getsize(mpHighcoreFile) > 0:      
+    with open(mpHighcoreFile, "rb") as f:
+        unpickler = pc.Unpickler(f)
+        mpHighscores = unpickler.load()

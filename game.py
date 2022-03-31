@@ -7,6 +7,11 @@ from assets import *
 import time as t
 import random as rd
 import ctypes
+import pickle as pc
+import collections
+
+# Score tuple
+Score = collections.namedtuple("Score", ["name","score"])
 
 # keys -> angle
 pl1Keys = [pg.K_RIGHT,pg.K_UP,pg.K_LEFT,pg.K_DOWN]
@@ -185,7 +190,7 @@ class Game:
         """
         pg.init()
         pg.display.set_caption(caption)
-        self.gameOverFont, self.scoreFont, self.menuFont, self.fpsFont  = pg.font.SysFont(font, gameOverFontSize), pg.font.SysFont(font, scoreFontSize), pg.font.SysFont(font, menuFontSize), pg.font.SysFont(font, fpsFontSize)
+        self.gameOverFont, self.scoreFont, self.menuFont, self.fpsFont, self.scoreboardFont  = pg.font.SysFont(font, gameOverFontSize), pg.font.SysFont(font, scoreFontSize), pg.font.SysFont(font, menuFontSize), pg.font.SysFont(font, fpsFontSize),pg.font.SysFont(font, scoreboardFontSize)
         pg.font.init()
         self.gameIcon = pg.image.load(icon)
         self.screen = pg.display.set_mode(resolution, pg.FULLSCREEN if fullscreen else 0)
@@ -232,6 +237,8 @@ class Game:
         self.player2ChangedDir = False
         # Menu state
         self.menuPointingTo = 0
+        self.player1EnteredName = ''
+        self.player2EnteredName = ''
         # Events
         self.moveEvent = pg.USEREVENT + 1
         self.snake1PartAdded = pg.USEREVENT + 2
@@ -253,14 +260,14 @@ class Game:
             if e.type == eventType:
                 return True
         return False
-    def isQuit(self):
+    def isQuit(self, isEscape=False):
         """
         Checks if the player wants to exit or not by checking whether esc of exit button is pressed.
         """
         for event in self.events:
             if event.type == pg.QUIT: return True
             if hasattr(event, 'key'):
-                if self.isKey(pg.K_ESCAPE): return True
+                if self.isKey(pg.K_ESCAPE) and isEscape: return True
         return False
     def isKey(self, key:pg.key):
         """
@@ -278,6 +285,11 @@ class Game:
         for event in self.events:
             if event.type == pg.KEYDOWN:
                 return True
+        return False
+    def getKey(self):
+        for event in self.events:
+            if event.type == pg.KEYDOWN:
+                return event.unicode
         return False
     def onUpdate(self):
         """
@@ -319,17 +331,18 @@ class Game:
                 (snakePart.rect.x, snakePart.rect.y) = snakeCoords
                 snakePart.prevMoveMoment = t.time()
     def getCoords(self, pos):
-        return (self.playfield.rects[pos[0]][pos[1]].x,self.playfield.rects[pos[0]][pos[1]].y+game.SCREEN_HEIGHT*playfieldYOffset)
+        return (self.playfield.rects[pos[0]][pos[1]].x,self.playfield.rects[pos[0]][pos[1]].y+self.SCREEN_HEIGHT*playfieldYOffset)
     def createFood(self, isPoisonous):
         food = Food(isPoisonous)
         self.foods.append(food)
         self.availablePositions.remove(food.pos)
         return self
-    def createSnakePart(self,type,snakeIndex,color,pos=False,velocity=False):
+    def createSnakePart(self,type,snakeIndex,color,pos=False,velocity=False,intialCreate=False):
         snakePart = SnakePart(type,snakeIndex,color,pos if pos else False, velocity if velocity else False)
         self.snakeParts.append(snakePart)
         if snakePart.pos in self.availablePositions:
             self.availablePositions.remove(snakePart.pos)
+            if not snakePart.pos[0] == rectDims[0]-1 and intialCreate: self.availablePositions.remove((snakePart.pos[0]+1,snakePart.pos[1]))
         return snakePart
     def checkRectalCollision(self,pos1:tuple,pos2:tuple):
         if pos1[0] == pos2[0] and pos1[1] == pos2[1]: return True
@@ -353,11 +366,11 @@ class Game:
         """
         Sets the starting velocity of all starting parts of snakes.
         """
-        for part in game.snakeParts: 
+        for part in self.snakeParts: 
             part.velocity = pg.Vector2(snakeBaseVelocity)
     def createMenuItem(self, text:string, color:tuple=menuFontColor):
-        return game.menuFont.render(text, True, color)
-    def showMenuItems(self, items:List[pg.Surface]):
+        return self.menuFont.render(text, True, color)
+    def showMenuItems(self, items:List[pg.Surface], caret=True):
         """
         Displays the given menu items.
         """
@@ -366,13 +379,13 @@ class Game:
             heights += it.get_height()
             if i != 0: margins += 1
         height = heights + margins*menuItemMargin
-        topMargin = (game.SCREEN_HEIGHT-height)/2
+        topMargin = (self.SCREEN_HEIGHT-height)/2
         for i,it in enumerate(items):
             offset = (menuItemMargin * i) + (it.get_height()*i) if i != 0 else 0
-            if game.menuPointingTo == i:
-                pointerCoords = (game.SCREEN_WIDTH/2-it.get_width()/2-pointerSize[0]- pointerLeftMargin, topMargin+offset+pointerSize[1]/4)
+            if self.menuPointingTo == i and caret:
+                pointerCoords = (self.SCREEN_WIDTH/2-it.get_width()/2-pointerSize[0]- pointerLeftMargin, topMargin+offset+pointerSize[1]/4)
                 pg.draw.polygon(self.screen,menuFontColor,[(pointerCoords[0],pointerCoords[1]), (pointerCoords[0]+pointerSize[0]*pointerSizeMult,pointerCoords[1]+pointerSize[0]*pointerSizeMult), (pointerCoords[0],pointerCoords[1]+pointerSize[1]*pointerSizeMult)])
-            self.screen.blit(it, (game.SCREEN_WIDTH/2-it.get_width()/2, topMargin+offset))
+            self.screen.blit(it, (self.SCREEN_WIDTH/2-it.get_width()/2, topMargin+offset))
         return self
     def getAvailablePlayerColors(self):
         if self.multiplayer: return [x for x in snakeColors.values() if x != self.player1Color and x != self.player2Color]
@@ -382,8 +395,8 @@ class Game:
         self.player2ColorIndex = list(snakeColors.values()).index(self.player2Color)
         return self
     def getPlayerNextColor(self, playerIndex:int in range(0,2)):
-        availableColors = game.getAvailablePlayerColors()
-        playerColorIndex = game.player1ColorIndex if playerIndex == 0 else game.player2ColorIndex
+        availableColors = self.getAvailablePlayerColors()
+        playerColorIndex = self.player1ColorIndex if playerIndex == 0 else self.player2ColorIndex
         nextColor = False
         while not nextColor:
             allColors = list(snakeColors.values())
@@ -396,8 +409,8 @@ class Game:
             else:
                 nextColor = allColors[0]
             playerColorIndex += 1
-        if playerIndex == 0: game.player1Color = nextColor
-        else: game.player2Color = nextColor
+        if playerIndex == 0: self.player1Color = nextColor
+        else: self.player2Color = nextColor
         return self
     def setConfig(self,section,field,val):
         config.set(section,field, val)
@@ -406,6 +419,14 @@ class Game:
         return self
     def getMovementPeriod(self):
         self.movementPeriod = initialMovementPeriod - (initialSpeed-1) * speedUnit
+        return self
+    def storeScore(self,file,nickname,score):
+        with open("highscores.pkl","rb") as in_:
+            self.highScores = pc.load(in_)
+        if new_scores.name not in high_scores:
+            high_scores[new_scores.name] = new_scores.score
+        with open("highscores.pkl","wb") as out:
+            pickle.dump(high_scores, out)
         return self
 
 # Game initialization

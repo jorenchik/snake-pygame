@@ -1,3 +1,5 @@
+from numpy import unicode_
+from soupsieve import escape
 from game import game,degrees,pl1Keys,pl2Keys,get_key
 import pygame as pg
 from settings import white, snakeColors, maxInitialSpeed
@@ -5,13 +7,13 @@ from settings import white, snakeColors, maxInitialSpeed
 # Game itself
 def main():
     # Creates Snake #1
-    headPart = game.createSnakePart('head',0,game.player1Color,False)
+    headPart = game.createSnakePart('head',0,game.player1Color,False,False,True)
     game.createSnakePart('tail',0,game.player1Color, (headPart.pos[0]-1,headPart.pos[1]))
     for snakePart in game.snakeParts: game.moveSnakePart(snakePart,snakePart.pos)
 
     # Creates Snake #2
     if game.multiplayer:
-        headPart = game.createSnakePart('head',1,game.player2Color,False)
+        headPart = game.createSnakePart('head',1,game.player2Color,False,False,True)
         game.createSnakePart('tail',1,game.player2Color,(headPart.pos[0]-1,headPart.pos[1]))
         for snakePart in game.snakeParts: game.moveSnakePart(snakePart,snakePart.pos)
 
@@ -44,7 +46,7 @@ def main():
 
         # Events
         headParts = [x for x in game.snakeParts if x.type == 'head']
-        if game.isQuit(): quit()
+        if game.isQuit(True): quit()
 
         # Dont move unsless movement button's been pressed
         if (game.isKey(pg.K_RIGHT) or game.isKey(pg.K_UP) or game.isKey(pg.K_LEFT) or game.isKey(pg.K_DOWN)) and headParts[0].velocity.length() == 0: 
@@ -152,10 +154,16 @@ def main():
 def gameOver():
     while True:
         game.onUpdate().setBackground()
-        text = game.gameOverFont.render('GAME OVER | PRESS ANY KEY TO RETURN TO MAIN MENU', True, white)
-        game.screen.blit(text, (game.SCREEN_WIDTH/2-text.get_width()/2, game.SCREEN_HEIGHT/2-text.get_height()/2))
+        gameOverText = game.createMenuItem(f'GAME OVER | {("SCORE: "+str(game.player1Score-1)) if not game.multiplayer else ("P1 SCORE: "+str(game.player1Score-1)+" | P2 SCORE: "+str(game.player2Score-1))}', white)
+        escapeText = game.createMenuItem('PRESS ESC TO RETURN TO MAIN MENU', white)
+        scoreboardSuggestText = game.createMenuItem('PRESS ANY KEY TO SAVE YOUR SCORE', white)
+        menuItems = [gameOverText,escapeText]
+        if(game.player1Score > 1 or game.player2Score > 1): menuItems.append(scoreboardSuggestText)
+        game.showMenuItems(menuItems, False)
         if game.isQuit(): quit()
-        if game.isAnyKey(): break
+        if game.isAnyKey():
+            nameField()
+            break
         game.update()
 
 def gameMenu():
@@ -165,8 +173,9 @@ def gameMenu():
         menuItems = []
         startBtn = game.createMenuItem('START')
         settingsBtn = game.createMenuItem('SETTINGS')
+        scoreboardBtn = game.createMenuItem('SCOREBOARD')
         exitBtn = game.createMenuItem('EXIT')
-        menuItems.extend([startBtn, settingsBtn, exitBtn])
+        menuItems.extend([startBtn,settingsBtn,scoreboardBtn,exitBtn])
         game.showMenuItems(menuItems)
         if game.isKey(pg.K_UP):
             if game.menuPointingTo == 0: game.menuPointingTo = len(menuItems)-1
@@ -178,7 +187,26 @@ def gameMenu():
         if game.isKey(pg.K_RETURN) and game.menuPointingTo == menuItems.index(settingsBtn): 
             settingsMenu()
             game.menuPointingTo = 0
+        if game.isKey(pg.K_RETURN) and game.menuPointingTo == menuItems.index(scoreboardBtn):
+            scoreboard()
+            game.menuPointingTo = 0
         if game.isKey(pg.K_RETURN) and game.menuPointingTo == menuItems.index(exitBtn): exit()
+        game.update()
+
+def scoreboard():
+    while True: 
+        game.onUpdate().setBackground()
+        scoreboardColumns = []
+        singleplayerScoreboard = []
+        multiplayerScoreboard = []
+        singleplayerScoreboard.append(game.scoreboardFont.render('SINGLE PLAYER', True, white))
+        multiplayerScoreboard.append(game.scoreboardFont.render('MULTIPLAYER', True, white))
+        scoreboardColumns.extend([singleplayerScoreboard, multiplayerScoreboard])
+        colCount = len(scoreboardColumns)
+        for i,c in enumerate(scoreboardColumns):
+            for ind,t in enumerate(c):
+                game.screen.blit(t, (game.SCREEN_WIDTH/(colCount*2)*(1+i*2)-t.get_width(), game.SCREEN_HEIGHT/2-t.get_height()))
+        if game.isQuit(True): quit()
         game.update()
 
 def settingsMenu():
@@ -233,6 +261,36 @@ def settingsMenu():
             game.setConfig('GAMEPLAY', 'initialSpeed', str(game.initialSpeed))
         if game.isKey(pg.K_RETURN) and game.menuPointingTo == menuItems.index(backBtn): break
         game.update()
+
+
+def nameField():
+    while True:
+        game.onUpdate().setBackground()
+        menuItems = []
+        player1NameField = game.createMenuItem(f'{"PLAYER 1 " if game.multiplayer else ""}NICKNAME (MAX 10): {game.player1EnteredName}')
+        menuItems.extend([player1NameField])
+        game.showMenuItems(menuItems,False)
+        if game.isQuit(True): quit()
+        if game.isAnyKey():
+            if game.isKey(pg.K_RETURN): break
+            if game.isKey(pg.K_BACKSPACE): game.player1EnteredName = game.player1EnteredName[:-1]
+            key = game.getKey()
+            if (key.isalpha() or key.isdigit()) and len(game.player1EnteredName) < 10: game.player1EnteredName += key.upper()
+        game.update()
+    if game.multiplayer:
+        while True:
+            game.onUpdate().setBackground()
+            menuItems = []
+            player2NameField = game.createMenuItem(f'PLAYER 2 NICKNAME (MAX 10): {game.player2EnteredName}')
+            menuItems.extend([player2NameField])
+            game.showMenuItems(menuItems,False)
+            if game.isQuit(True): quit()
+            if game.isAnyKey():
+                if game.isKey(pg.K_RETURN): break
+                if game.isKey(pg.K_BACKSPACE): game.player2EnteredName = game.player2EnteredName[:-1]
+                key = game.getKey()
+                if (key.isalpha() or key.isdigit()) and len(game.player2EnteredName) < 10: game.player2EnteredName += key.upper()
+            game.update()
 
 # Starting the game's main loop
 while True:

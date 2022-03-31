@@ -66,6 +66,7 @@ fps = 60
 scoreFontSize = 50
 gameOverFontSize = 50
 fpsFontSize = 30
+scoreboardFontSize = 25
 font = 'Arial'
 
 # Colors
