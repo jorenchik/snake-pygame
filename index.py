@@ -272,7 +272,7 @@ def nameField():
         game.showMenuItems(menuItems,False)
         if game.isQuit(True): quit()
         if game.isAnyKey():
-            if game.isKey(pg.K_RETURN): break
+            if game.isKey(pg.K_RETURN) and len(game.player1EnteredName) > 0: break
             if game.isKey(pg.K_BACKSPACE): game.player1EnteredName = game.player1EnteredName[:-1]
             key = game.getKey()
             if (key.isalpha() or key.isdigit()) and len(game.player1EnteredName) < 10: game.player1EnteredName += key.upper()
@@ -286,11 +286,12 @@ def nameField():
             game.showMenuItems(menuItems,False)
             if game.isQuit(True): quit()
             if game.isAnyKey():
-                if game.isKey(pg.K_RETURN): break
+                if game.isKey(pg.K_RETURN) and len(game.player2EnteredName) > 0: break
                 if game.isKey(pg.K_BACKSPACE): game.player2EnteredName = game.player2EnteredName[:-1]
                 key = game.getKey()
                 if (key.isalpha() or key.isdigit()) and len(game.player2EnteredName) < 10: game.player2EnteredName += key.upper()
             game.update()
+    print(game.player1EnteredName,game.player2EnteredName)
 
 # Starting the game's main loop
 while True:

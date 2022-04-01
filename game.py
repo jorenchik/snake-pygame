@@ -235,6 +235,7 @@ class Game:
         self.setPlayerColorIndex()
         self.player1ChangedDir = False
         self.player2ChangedDir = False
+        self.getScores()
         # Menu state
         self.menuPointingTo = 0
         self.player1EnteredName = ''
@@ -420,13 +421,19 @@ class Game:
     def getMovementPeriod(self):
         self.movementPeriod = initialMovementPeriod - (initialSpeed-1) * speedUnit
         return self
-    def storeScore(self,file,nickname,score):
+    def getScores(self):
+        with open("sp_highscores.pkl","rb") as in_:
+            highScores = pc.load(in_)
+            print(highScores.content())
+    def storeScore(self,nickname,score):
         with open("highscores.pkl","rb") as in_:
-            self.highScores = pc.load(in_)
-        if new_scores.name not in high_scores:
-            high_scores[new_scores.name] = new_scores.score
-        with open("highscores.pkl","wb") as out:
-            pickle.dump(high_scores, out)
+            highScores = pc.load(in_)
+            print(highScores.content())
+        self.highScores = []
+        # if nickname not in self.highScores:
+        #     self.highScores[self.highScores.nickname] = 
+        # with open("highscores.pkl","wb") as out:
+        #     pickle.dump(high_scores, out)
         return self
 
 # Game initialization
