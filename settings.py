@@ -68,7 +68,7 @@ fullscreen = True
 drawPlayfieldRects = False
 
 # Fps and time
-fps = 100
+fps = 240
 
 # Font
 scoreFontSize = 50
