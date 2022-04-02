@@ -59,6 +59,8 @@ for k,img in foodImgs.items():
         color=changeImgColor(img,col,foodBaseColor)
         foodColoredImgs[key] = color
 
+wall = pb.Path(assets/'walls/wall-pattern-2.png')
+
 
 spHighcoreFile = pb.Path(absPath/'sp_highscores.pkl')
 mpHighcoreFile = pb.Path(absPath/'mp_highscores.pkl')
@@ -68,11 +70,4 @@ if not spHighcoreFile.exists():
 if not mpHighcoreFile.exists():
     with open("mp_highscores.pkl","wb") as out:
         pc.dump({}, out)
-# if os.path.getsize(spHighcoreFile) > 0:      
-#     with open(spHighcoreFile, "rb") as f:
-#         unpickler = pc.Unpickler(f)
-#         spHighscores = unpickler.load()
-# if os.path.getsize(mpHighcoreFile) > 0:      
-#     with open(mpHighcoreFile, "rb") as f:
-#         unpickler = pc.Unpickler(f)
-#         mpHighscores = unpickler.load()
+

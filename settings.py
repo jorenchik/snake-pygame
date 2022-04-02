@@ -49,7 +49,6 @@ multiplayer = True if config['GAMEPLAY']['multiplayer'] == 'True' else False
 hitboxesVisible = False
 initialSpeed = int(config['GAMEPLAY']['initialSpeed'])
 speedUnit = 20
-# initialMovementPeriod = int(config['GAMEPLAY']['initialMovementPeriod']) - (initialSpeed-1) * speedUnit
 initialMovementPeriod = int(config['GAMEPLAY']['initialMovementPeriod'])
 snakeBaseVelocity = (1,0)
 speedIncAfterEat = True if config['GAMEPLAY']['speedIncAfterEat'] == 'True' else False
@@ -59,6 +58,8 @@ poisonousFoodCount = int(config['GAMEPLAY']['poisonousFoodCount'])
 foodCount = int(config['GAMEPLAY']['foodCount'])
 poisonousFoodRespawn = True if config['GAMEPLAY']['poisonousFoodRespawn'] == 'True' else False
 foodLimit = 10
+wallWidth = 15
+wallHeight = 15
 
 # Screen
 res = (1920,1080)

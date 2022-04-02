@@ -155,10 +155,13 @@ def main():
             break
 
         # Draws elements
-        pg.draw.rect(game.screen, game.wallColor,game.topBorder)
-        pg.draw.rect(game.screen, game.wallColor,game.bottomBorder)
-        pg.draw.rect(game.screen, game.wallColor,game.leftBorder)
-        pg.draw.rect(game.screen, game.wallColor,game.rightBorder)
+        game.screen.blit(game.topWallSprite,game.topBorder)
+        game.screen.blit(game.bottomWallSprite,game.bottomBorder)
+        game.screen.blit(game.leftWallSprite,game.leftBorder)
+        game.screen.blit(game.rightWallSprite,game.rightBorder)
+        # pg.draw.rect(game.screen, game.wallColor,game.bottomBorder)
+        # pg.draw.rect(game.screen, game.wallColor,game.leftBorder)
+        # pg.draw.rect(game.screen, game.wallColor,game.rightBorder)
         rects = game.playfield.rects
         if game.drawPlayfieldRects:
             for col in rects:
