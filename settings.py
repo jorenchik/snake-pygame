@@ -1,7 +1,10 @@
 import configparser
 import pathlib as pl
 
+# Absolute path
 absPath = pl.Path.cwd()
+
+# Config load / set up
 configFile = pl.Path(absPath/'config.ini')
 config = configparser.ConfigParser()
 try: 
@@ -24,14 +27,12 @@ settings = {
     'foodCount': 3,
     'poisonousFoodRespawn': True
 }
-
 valid = True
 if not config.has_section('GAMEPLAY'): valid = False
 for op in settings.keys():
     if not config.has_option('GAMEPLAY', op):
         valid = False
         break
-
 if not configFile.exists() or not valid:
     config['GAMEPLAY'] = settings
     with open('config.ini', 'w') as configfile:
@@ -43,32 +44,31 @@ caption = 'Snake game'
 
 # Gameplay
 portalWalls = True if config['GAMEPLAY']['portalWalls'] == 'True' else False
-selfRectalCollisionAllowed = False
-otherRectalCollisionAllowed = False
 multiplayer = True if config['GAMEPLAY']['multiplayer'] == 'True' else False
-hitboxesVisible = False
 initialSpeed = int(config['GAMEPLAY']['initialSpeed'])
-speedUnit = 20
 initialMovementPeriod = int(config['GAMEPLAY']['initialMovementPeriod'])
-snakeBaseVelocity = (1,0)
 speedIncAfterEat = True if config['GAMEPLAY']['speedIncAfterEat'] == 'True' else False
-minInitialSpeed = 1
-maxInitialSpeed = 10
 poisonousFoodCount = int(config['GAMEPLAY']['poisonousFoodCount'])
 foodCount = int(config['GAMEPLAY']['foodCount'])
-poisonousFoodRespawn = True if config['GAMEPLAY']['poisonousFoodRespawn'] == 'True' else False
 foodLimit = 10
+poisonousFoodRespawn = True if config['GAMEPLAY']['poisonousFoodRespawn'] == 'True' else False
+selfRectalCollisionAllowed = False
+otherRectalCollisionAllowed = False
+hitboxesVisible = False
+speedUnit = 20
+snakeBaseVelocity = (1,0)
+minInitialSpeed = 1
+maxInitialSpeed = 7
 wallWidth = 15
 wallHeight = 15
 
 # Screen
 res = (1920,1080)
-# res = (800,600)
 fullscreen = True
 drawPlayfieldRects = False
 
-# Fps and time
-fps = 240
+# Fps
+fps = 120
 
 # Font
 scoreFontSize = 50
@@ -92,12 +92,12 @@ lime = (0,255,0)
 purple = (238,130,238)
 orange = (255,215,0)
 brown = (165,42,42)
+snakeBaseColor = (91,123,249)
+foodBaseColor = (218,72,15)
 snakeColors = {'blue':blue,'purple':purple,'lime':lime,'orange':orange,'brown':brown,'white':white,'magenta':magenta,'blue':blue,'yellow':yellow,'cyan':cyan}
 foodColors = {'food':green, 'poison': red}
 player1Color = snakeColors[config['GAMEPLAY']['player1Color']]
 player2Color = snakeColors[config['GAMEPLAY']['player2Color']]
-snakeBaseColor = (91,123,249)
-foodBaseColor = (218,72,15)
 
 # Game colors
 hitboxColor = red
@@ -108,7 +108,6 @@ poisonousFoodColor = red
 
 # Playfield
 rectDims = (30,20)
-    # percentages
 playfieldSize = (.8,.8)
 playfieldYOffset = (.03)
 

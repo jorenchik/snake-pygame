@@ -281,7 +281,7 @@ class Game:
             if e.type == eventType:
                 return True
         return False
-    def isQuit(self, isEscape=False):
+    def isQuit(self, isEscape:bool=False):
         """
         Checks if the player wants to exit or not by checking whether esc of exit button is pressed.
         """
@@ -351,14 +351,14 @@ class Game:
                 snakePart.x, snakePart.y = snakeCoords
                 (snakePart.rect.x, snakePart.rect.y) = snakeCoords
                 snakePart.prevMoveMoment = t.time()
-    def getCoords(self, pos):
+    def getCoords(self,pos:tuple):
         return (self.playfield.rects[pos[0]][pos[1]].x,self.playfield.rects[pos[0]][pos[1]].y+self.SCREEN_HEIGHT*playfieldYOffset)
-    def createFood(self, isPoisonous):
+    def createFood(self, isPoisonous:bool):
         food = Food(isPoisonous)
         self.foods.append(food)
         self.availablePositions.remove(food.pos)
         return self
-    def createSnakePart(self,type,snakeIndex,color,pos=False,velocity=False,intialCreate=False):
+    def createSnakePart(self,type:string,snakeIndex:int,color:tuple,pos:tuple=False,velocity:pg.Vector2=False,intialCreate:bool=False):
         snakePart = SnakePart(type,snakeIndex,color,pos if pos else False, velocity if velocity else False)
         self.snakeParts.append(snakePart)
         if snakePart.pos in self.availablePositions:
@@ -368,12 +368,12 @@ class Game:
     def checkRectalCollision(self,pos1:tuple,pos2:tuple):
         if pos1[0] == pos2[0] and pos1[1] == pos2[1]: return True
         else: return False
-    def getRandomAvailablePos(self, xRange=False):
+    def getRandomAvailablePos(self, xRange:range=False):
         if len(self.availablePositions) == 0: return False
         if xRange: availablePositions = [x for x in self.availablePositions if x[0] in range(xRange[0],xRange[1])]
         else: availablePositions = self.availablePositions
         return rd.choice(availablePositions)
-    def getRandomFood(self, isPoisonous=False):
+    def getRandomFood(self, isPoisonous:bool=False):
         if isPoisonous:
             return rd.choice([x for x in self.foods if x.type == 'poison'])
         if not isPoisonous:
@@ -394,9 +394,9 @@ class Game:
         """
         for part in self.snakeParts: 
             part.velocity = pg.Vector2(snakeBaseVelocity)
-    def createMenuItem(self, text:string, color:tuple=menuFontColor):
-        return self.menuFont.render(text, True, color)
-    def showMenuItems(self, items:List[pg.Surface], caret=True):
+    def createMenuItem(self,text:string,color:tuple=menuFontColor):
+        return self.menuFont.render(text,True,color)
+    def showMenuItems(self,items:List[pg.Surface],caret:bool=True):
         """
         Displays the given menu items.
         """
@@ -420,7 +420,7 @@ class Game:
         self.player1ColorIndex = list(snakeColors.values()).index(self.player1Color)
         self.player2ColorIndex = list(snakeColors.values()).index(self.player2Color)
         return self
-    def getPlayerNextColor(self, playerIndex:int in range(0,2)):
+    def getPlayerNextColor(self,playerIndex:int in range(0,2)):
         availableColors = self.getAvailablePlayerColors()
         playerColorIndex = self.player1ColorIndex if playerIndex == 0 else self.player2ColorIndex
         nextColor = False
@@ -451,7 +451,7 @@ class Game:
             self.singleplayerHighscores = pc.load(f)
         with open("mp_highscores.pkl","rb") as f:
             self.multiplayerHighscores = pc.load(f)
-    def storeScore(self,nickname,score,nickname_=False,score_=False):
+    def storeScore(self,nickname:string,score:int,nickname_:string=False,score_:int=False):
         self.getHighscores()
         if not game.multiplayer:
             with open("sp_highscores.pkl","wb") as f:
