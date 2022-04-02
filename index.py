@@ -161,7 +161,7 @@ def main():
 def gameOver():
     while True:
         game.onUpdate().setBackground()
-        gameOverText = game.createMenuItem(f'GAME OVER | {("SCORE: "+str((game.player1Score-1)*10)) if not game.multiplayer else ("P1 SCORE: "+str((game.player2Score-1)*10)+" | P2 SCORE: "+str(game.player2Score-1))}', white)
+        gameOverText = game.createMenuItem(f'GAME OVER | {("SCORE: "+str((game.player1Score-1)*10)) if not game.multiplayer else ("P1 SCORE: "+str((game.player1Score-1)*10)+" | P2 SCORE: "+str((game.player2Score-1)*10))}', white)
         escapeText = game.createMenuItem('PRESS ESC TO RETURN TO MAIN MENU', white)
         scoreboardSuggestText = game.createMenuItem('PRESS ANY KEY TO SAVE YOUR SCORE', white)
         menuItems = [gameOverText,escapeText]
