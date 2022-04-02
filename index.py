@@ -34,10 +34,10 @@ def main():
 
         # Add score text
         game.getPlayersScore()
-        score1Text = game.gameOverFont.render(f'{"P1 " if game.multiplayer else ""}SCORE: {game.player1Score-1}', True, game.player1Color)
+        score1Text = game.gameOverFont.render(f'{"P1 " if game.multiplayer else ""}SCORE: {(game.player1Score-1)*10}', True, game.player1Color)
         game.screen.blit(score1Text, game.score1Pos)
         if game.multiplayer:
-            score2Text = game.gameOverFont.render(f'P2 SCORE: {game.player2Score-1}', True, game.player2Color)
+            score2Text = game.gameOverFont.render(f'P2 SCORE: {(game.player2Score-1)*10}', True, game.player2Color)
             game.screen.blit(score2Text, (game.score2Pos[0]-score2Text.get_width(), game.score2Pos[1]))
         # FPS
         fpsText = game.fpsFont.render(f'FPS: {str(int(game.clock.get_fps()))}',True, white)
@@ -161,7 +161,7 @@ def main():
 def gameOver():
     while True:
         game.onUpdate().setBackground()
-        gameOverText = game.createMenuItem(f'GAME OVER | {("SCORE: "+str(game.player1Score-1)) if not game.multiplayer else ("P1 SCORE: "+str(game.player1Score-1)+" | P2 SCORE: "+str(game.player2Score-1))}', white)
+        gameOverText = game.createMenuItem(f'GAME OVER | {("SCORE: "+str((game.player1Score-1)*10)) if not game.multiplayer else ("P1 SCORE: "+str((game.player2Score-1)*10)+" | P2 SCORE: "+str(game.player2Score-1))}', white)
         escapeText = game.createMenuItem('PRESS ESC TO RETURN TO MAIN MENU', white)
         scoreboardSuggestText = game.createMenuItem('PRESS ANY KEY TO SAVE YOUR SCORE', white)
         menuItems = [gameOverText,escapeText]
@@ -334,9 +334,9 @@ def nameField():
                 if (key.isalpha() or key.isdigit()) and len(game.player2EnteredName) < 10: game.player2EnteredName += key.upper()
             game.update()
     if not game.multiplayer:
-        game.storeScore(game.player1EnteredName,game.player1Score-1)
+        game.storeScore(game.player1EnteredName,(game.player1Score-1)*10)
     if game.multiplayer:
-        game.storeScore(game.player1EnteredName,game.player1Score-1,game.player2EnteredName,game.player2Score-1)
+        game.storeScore(game.player1EnteredName,(game.player1Score-1)*10,game.player2EnteredName,(game.player2Score-1)*10)
 
 # Starting the game's main loop
 while True:
