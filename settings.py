@@ -19,7 +19,10 @@ settings = {
     'portalWalls': False,
     'speedIncAfterEat': False,
     'initialMovementPeriod': 250,
-    'initialSpeed': 1
+    'initialSpeed': 1,
+    'poisonousFoodCount': 3,
+    'foodCount': 3,
+    'poisonousFoodRespawn': True
 }
 
 valid = True
@@ -52,6 +55,10 @@ snakeBaseVelocity = (1,0)
 speedIncAfterEat = True if config['GAMEPLAY']['speedIncAfterEat'] == 'True' else False
 minInitialSpeed = 1
 maxInitialSpeed = 10
+poisonousFoodCount = int(config['GAMEPLAY']['poisonousFoodCount'])
+foodCount = int(config['GAMEPLAY']['foodCount'])
+poisonousFoodRespawn = True if config['GAMEPLAY']['poisonousFoodRespawn'] == 'True' else False
+foodLimit = 10
 
 # Screen
 res = (1920,1080)

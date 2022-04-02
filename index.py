@@ -18,10 +18,12 @@ def main():
         for snakePart in game.snakeParts: game.moveSnakePart(snakePart,snakePart.pos)
 
     # Adding first food
-    game.createFood(False)
+    for i in range(game.foodCount):
+        game.createFood(False)
     # Adding first poisonous food
-    game.createFood(True)
-    
+    for i in range(game.poisonousFoodCount):
+        game.createFood(True)
+        
     game.getMovementPeriod()
     # Active action loop
     game.active = True
@@ -108,19 +110,26 @@ def main():
                                 lastSnakePart = headPart.relatedSnakeParts[-1]
                                 lastSnakePart.type = 'body'
                                 game.foods.remove(food)
+                                poisonousFood = game.getRandomFood(True)
+                                if game.poisonousFoodRespawn:
+                                    game.foods.remove(poisonousFood)
                                 game.createSnakePart('tail',part.snakeIndex,part.color,lastSnakePart.prevPos,pg.Vector2(lastSnakePart.prevVelocity))
                                 if  part.snakeIndex == 0: event = pg.event.Event(game.snake1PartAdded)
                                 else: event = pg.event.Event(game.snake2PartAdded)
                                 pg.event.post(event)
+                                game.createFood(False)
+                                if game.poisonousFoodRespawn:
+                                    game.createFood(True)
                             if food.type == 'poison':
                                 lastSnakePart = headPart.relatedSnakeParts[-1]
                                 game.foods.remove(food)
                                 if len(headPart.relatedSnakeParts) > 2:
-                                    game.snakeParts.remove(lastSnakePart)
-                                    part.relatedSnakeParts.remove(lastSnakePart)
+                                    if lastSnakePart in game.snakeParts:
+                                        game.snakeParts.remove(lastSnakePart)
+                                    if lastSnakePart in part.relatedSnakeParts:
+                                        part.relatedSnakeParts.remove(lastSnakePart)
                                     headPart.relatedSnakeParts[-1].type = 'tail'
-                            if len([x for x in game.foods if x.type == 'food']) > 0: game.createFood(True)
-                            else: game.createFood(False)
+                                game.createFood(True)
                     if not game.selfRectalCollisionAllowed:
                         for i, part in enumerate(headPart.relatedSnakeParts):
                             # Passes if it is a head part
@@ -261,11 +270,14 @@ def settingsMenu():
             colorPlayer2Btn = game.createMenuItem(f'PLAYER 2 COLOR: {get_key(game.player2Color, snakeColors).upper()}')
         speedIncAfterEatBtn = game.createMenuItem(f'SPEED INCREASE AFTER EATING: {"ON" if game.speedIncAfterEat else "OFF"}')
         initialSpeedBtn = game.createMenuItem(f'INITIAL SPEED: {game.initialSpeed}')
+        foodCountBtn = game.createMenuItem(f'FOOD COUNT: {game.foodCount}')
+        poisonousFoodCountBtn = game.createMenuItem(f'POISONOUS FOOD COUNT: {game.poisonousFoodCount}')
+        poisonousFoodRespawnBtn = game.createMenuItem(f'POISONOUS FOOD RESPAWN: {"ON" if game.poisonousFoodRespawn else "OFF"}')
         backBtn = game.createMenuItem('BACK')
         menuItems.extend([wallMode, multiplayerOn,colorPlayer1Btn])
         if game.multiplayer:
             menuItems.append(colorPlayer2Btn)
-        menuItems.extend([speedIncAfterEatBtn, initialSpeedBtn,backBtn])
+        menuItems.extend([speedIncAfterEatBtn,foodCountBtn,poisonousFoodCountBtn,initialSpeedBtn,poisonousFoodRespawnBtn,backBtn])
         game.showMenuItems(menuItems)
         if game.isKey(pg.K_UP):
             if game.menuPointingTo == 0: game.menuPointingTo = len(menuItems)-1
@@ -292,12 +304,28 @@ def settingsMenu():
             game.speedIncAfterEat = not game.speedIncAfterEat
             val = 'True' if game.speedIncAfterEat == True else 'False'
             game.setConfig('GAMEPLAY', 'speedIncAfterEat', val)
+        if game.isKey(pg.K_RIGHT) and game.menuPointingTo == menuItems.index(poisonousFoodCountBtn):
+            if game.poisonousFoodCount < game.foodLimit: game.poisonousFoodCount += 1
+            game.setConfig('GAMEPLAY', 'poisonousFoodCount', str(game.foodCount))
+        if game.isKey(pg.K_LEFT) and game.menuPointingTo == menuItems.index(poisonousFoodCountBtn):
+            if game.poisonousFoodCount > 1: game.poisonousFoodCount -= 1
+            game.setConfig('GAMEPLAY', 'poisonousFoodCount', str(game.poisonousFoodCount))
+        if game.isKey(pg.K_LEFT) and game.menuPointingTo == menuItems.index(foodCountBtn):
+            if game.foodCount > 1: game.foodCount -= 1
+            game.setConfig('GAMEPLAY', 'foodCount', str(game.foodCount))
+        if game.isKey(pg.K_RIGHT) and game.menuPointingTo == menuItems.index(foodCountBtn):
+            if game.foodCount < game.foodLimit: game.foodCount += 1
+            game.setConfig('GAMEPLAY', 'foodCount', str(game.foodCount))
         if game.isKey(pg.K_RIGHT) and game.menuPointingTo == menuItems.index(initialSpeedBtn):
-            if game.initialSpeed != maxInitialSpeed: game.initialSpeed += 1
+            if game.initialSpeed != maxInitialSpeed: game.foodCount += 1
             game.setConfig('GAMEPLAY', 'initialSpeed', str(game.initialSpeed))
         if game.isKey(pg.K_LEFT) and game.menuPointingTo == menuItems.index(initialSpeedBtn):
             if game.initialSpeed > 1: game.initialSpeed -= 1
             game.setConfig('GAMEPLAY', 'initialSpeed', str(game.initialSpeed))
+        if game.isKey(pg.K_RETURN) and game.menuPointingTo == menuItems.index(poisonousFoodRespawnBtn): 
+            game.poisonousFoodRespawn = not game.poisonousFoodRespawn
+            val = 'True' if game.poisonousFoodRespawn == True else 'False'
+            game.setConfig('GAMEPLAY', 'poisonousFoodRespawn', val)
         if game.isKey(pg.K_RETURN) and game.menuPointingTo == menuItems.index(backBtn): break
         game.update()
 

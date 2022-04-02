@@ -207,6 +207,10 @@ class Game:
         self.drawPlayfieldRects = drawPlayfieldRects
         self.speedIncAfterEat = speedIncAfterEat
         self.initialSpeed = initialSpeed
+        self.poisonousFoodCount = poisonousFoodCount
+        self.foodCount = foodCount
+        self.foodLimit = foodLimit
+        self.poisonousFoodRespawn = poisonousFoodRespawn
         self.getMovementPeriod()
         # Clock
         self.clock = pg.time.Clock()
@@ -353,6 +357,11 @@ class Game:
         if xRange: availablePositions = [x for x in self.availablePositions if x[0] in range(xRange[0],xRange[1])]
         else: availablePositions = self.availablePositions
         return rd.choice(availablePositions)
+    def getRandomFood(self, isPoisonous=False):
+        if isPoisonous:
+            return rd.choice([x for x in self.foods if x.type == 'poison'])
+        if not isPoisonous:
+            return rd.choice([x for x in self.foods if x.type == 'food'])
     def isSnakeDead(self):
         if self.multiplayer: 
             snake1Alive = True if len([x for x in self.snakeParts if x.alive == False and x.snakeIndex == 0]) > 0 else False
