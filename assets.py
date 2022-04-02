@@ -62,25 +62,17 @@ for k,img in foodImgs.items():
 
 spHighcoreFile = pb.Path(absPath/'sp_highscores.pkl')
 mpHighcoreFile = pb.Path(absPath/'mp_highscores.pkl')
-
-
-highScores = {'someone': 20, 'anyone':20}
 if not spHighcoreFile.exists():
     with open("sp_highscores.pkl","wb") as out:
-        pc.dump(highScores, out)
+        pc.dump({}, out)
 if not mpHighcoreFile.exists():
     with open("mp_highscores.pkl","wb") as out:
-        pc.dump(highScores, out)
-
-spHighscores = {}
-mpHighscores = {}
-
-if os.path.getsize(spHighcoreFile) > 0:      
-    with open(spHighcoreFile, "rb") as f:
-        unpickler = pc.Unpickler(f)
-        spHighscores = unpickler.load()
-
-if os.path.getsize(mpHighcoreFile) > 0:      
-    with open(mpHighcoreFile, "rb") as f:
-        unpickler = pc.Unpickler(f)
-        mpHighscores = unpickler.load()
+        pc.dump({}, out)
+# if os.path.getsize(spHighcoreFile) > 0:      
+#     with open(spHighcoreFile, "rb") as f:
+#         unpickler = pc.Unpickler(f)
+#         spHighscores = unpickler.load()
+# if os.path.getsize(mpHighcoreFile) > 0:      
+#     with open(mpHighcoreFile, "rb") as f:
+#         unpickler = pc.Unpickler(f)
+#         mpHighscores = unpickler.load()

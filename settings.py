@@ -60,7 +60,7 @@ fullscreen = True
 drawPlayfieldRects = False
 
 # Fps and time
-fps = 10
+fps = 30
 
 # Font
 scoreFontSize = 50
@@ -111,3 +111,4 @@ menuItemMargin = 40
 pointerSizeMult = 1
 pointerSize = (15,30)
 pointerLeftMargin = 20
+scoreboardMargin = 20

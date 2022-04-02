@@ -2,7 +2,7 @@ from numpy import unicode_
 from soupsieve import escape
 from game import game,degrees,pl1Keys,pl2Keys,get_key
 import pygame as pg
-from settings import white, snakeColors, maxInitialSpeed
+from settings import white, snakeColors, maxInitialSpeed, scoreboardMargin
 
 # Game itself
 def main():
@@ -46,7 +46,8 @@ def main():
 
         # Events
         headParts = [x for x in game.snakeParts if x.type == 'head']
-        if game.isQuit(True): quit()
+        if game.isQuit(False): quit()
+        
 
         # Dont move unsless movement button's been pressed
         if (game.isKey(pg.K_RIGHT) or game.isKey(pg.K_UP) or game.isKey(pg.K_LEFT) or game.isKey(pg.K_DOWN)) and headParts[0].velocity.length() == 0: 
@@ -135,6 +136,11 @@ def main():
             game.getMovementPeriod()
             gameOver()
             break
+        if game.isKey(pg.K_ESCAPE):
+            game.snakeParts.clear()
+            game.foods.clear()
+            game.getMovementPeriod()
+            break
 
         # Draws elements
         pg.draw.rect(game.screen, game.wallColor,game.topBorder)
@@ -158,12 +164,16 @@ def gameOver():
         escapeText = game.createMenuItem('PRESS ESC TO RETURN TO MAIN MENU', white)
         scoreboardSuggestText = game.createMenuItem('PRESS ANY KEY TO SAVE YOUR SCORE', white)
         menuItems = [gameOverText,escapeText]
-        if(game.player1Score > 1 or game.player2Score > 1): menuItems.append(scoreboardSuggestText)
+        if(game.player1Score > 1 or game.player2Score > 1):
+            menuItems.append(scoreboardSuggestText)
+            if game.isAnyKey():
+                nameField()
+                break
+        else:
+            if game.isAnyKey():
+                break
         game.showMenuItems(menuItems, False)
-        if game.isQuit(): quit()
-        if game.isAnyKey():
-            nameField()
-            break
+        if game.isQuit(False): quit()
         game.update()
 
 def gameMenu():
@@ -194,19 +204,47 @@ def gameMenu():
         game.update()
 
 def scoreboard():
+    scoreboardColumns = []
+    singleplayerScoreboard = []
+    multiplayerScoreboard = []
+    singleplayerScoreboard.append(game.scoreboardFont.render('SINGLE PLAYER', True, white))
+    records = []
+    for id in game.singleplayerHighscores:
+        record = game.singleplayerHighscores[id]
+        records.append(record)
+    records = sorted(records, key=lambda d: d['score'],reverse=True)
+    singleplayerRecordTexts = [] 
+    for rec in records:
+        nickname = rec['nickname']
+        score = rec['score']
+        singleplayerRecordTexts.append(game.scoreboardFont.render(f'{nickname}: {score}', True, white))
+    if len(singleplayerRecordTexts) > 0: singleplayerScoreboard.extend(singleplayerRecordTexts)
+    multiplayerScoreboard.append(game.scoreboardFont.render('MULTIPLAYER', True, white))
+    records = []
+    for id in game.multiplayerHighscores:
+        record = game.multiplayerHighscores[id]
+        records.append(record)
+    records = sorted(records, key=lambda d: d['score']+d['score_'],reverse=True)
+    multiplayerRecordTexts = []
+    for record in records:
+        nickname = record['nickname']
+        score = record['score']
+        nickname_ = record['nickname_']
+        score_ = record['score_']
+        multiplayerRecordTexts.append(game.scoreboardFont.render(f'{nickname}: {score} {nickname_}: {score_}', True, white))
+    if len(multiplayerRecordTexts) > 0: multiplayerScoreboard.extend(multiplayerRecordTexts)
+    scoreboardColumns.extend([singleplayerScoreboard, multiplayerScoreboard])
+    colCount = len(scoreboardColumns)
     while True: 
         game.onUpdate().setBackground()
-        scoreboardColumns = []
-        singleplayerScoreboard = []
-        multiplayerScoreboard = []
-        singleplayerScoreboard.append(game.scoreboardFont.render('SINGLE PLAYER', True, white))
-        multiplayerScoreboard.append(game.scoreboardFont.render('MULTIPLAYER', True, white))
-        scoreboardColumns.extend([singleplayerScoreboard, multiplayerScoreboard])
-        colCount = len(scoreboardColumns)
         for i,c in enumerate(scoreboardColumns):
+            textHeight = c[0].get_height()
+            blockHeight = textHeight * len(c)
             for ind,t in enumerate(c):
-                game.screen.blit(t, (game.SCREEN_WIDTH/(colCount*2)*(1+i*2)-t.get_width(), game.SCREEN_HEIGHT/2-t.get_height()))
-        if game.isQuit(True): quit()
+                game.screen.blit(t, (game.SCREEN_WIDTH/(colCount*2)*(1+i*2)-t.get_width()/2, game.SCREEN_HEIGHT/2-t.get_height()-blockHeight/2+(textHeight+scoreboardMargin)*ind))
+        if game.isKey(pg.K_ESCAPE):
+            break
+        if game.isQuit(False): quit()
         game.update()
 
 def settingsMenu():
@@ -264,13 +302,16 @@ def settingsMenu():
 
 
 def nameField():
+    game.player1EnteredName = ''
+    game.player2EnteredName = ''
     while True:
         game.onUpdate().setBackground()
         menuItems = []
         player1NameField = game.createMenuItem(f'{"PLAYER 1 " if game.multiplayer else ""}NICKNAME (MAX 10): {game.player1EnteredName}')
         menuItems.extend([player1NameField])
         game.showMenuItems(menuItems,False)
-        if game.isQuit(True): quit()
+        if game.isQuit(False): quit()
+        if game.isKey(pg.K_ESCAPE): break
         if game.isAnyKey():
             if game.isKey(pg.K_RETURN) and len(game.player1EnteredName) > 0: break
             if game.isKey(pg.K_BACKSPACE): game.player1EnteredName = game.player1EnteredName[:-1]
@@ -291,7 +332,10 @@ def nameField():
                 key = game.getKey()
                 if (key.isalpha() or key.isdigit()) and len(game.player2EnteredName) < 10: game.player2EnteredName += key.upper()
             game.update()
-    print(game.player1EnteredName,game.player2EnteredName)
+    if not game.multiplayer:
+        game.storeScore(game.player1EnteredName,game.player1Score-1)
+    if game.multiplayer:
+        game.storeScore(game.player1EnteredName,game.player1Score-1,game.player2EnteredName,game.player2Score-1)
 
 # Starting the game's main loop
 while True:

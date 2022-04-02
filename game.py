@@ -235,7 +235,7 @@ class Game:
         self.setPlayerColorIndex()
         self.player1ChangedDir = False
         self.player2ChangedDir = False
-        self.getScores()
+        self.getHighscores()
         # Menu state
         self.menuPointingTo = 0
         self.player1EnteredName = ''
@@ -421,19 +421,49 @@ class Game:
     def getMovementPeriod(self):
         self.movementPeriod = initialMovementPeriod - (initialSpeed-1) * speedUnit
         return self
-    def getScores(self):
-        with open("sp_highscores.pkl","rb") as in_:
-            highScores = pc.load(in_)
-            print(highScores.content())
-    def storeScore(self,nickname,score):
-        with open("highscores.pkl","rb") as in_:
-            highScores = pc.load(in_)
-            print(highScores.content())
-        self.highScores = []
-        # if nickname not in self.highScores:
-        #     self.highScores[self.highScores.nickname] = 
-        # with open("highscores.pkl","wb") as out:
-        #     pickle.dump(high_scores, out)
+    def getHighscores(self):
+        with open("sp_highscores.pkl","rb") as f:
+            self.singleplayerHighscores = pc.load(f)
+        with open("mp_highscores.pkl","rb") as f:
+            self.multiplayerHighscores = pc.load(f)
+    def storeScore(self,nickname,score,nickname_=False,score_=False):
+        self.getHighscores()
+        if not game.multiplayer:
+            with open("sp_highscores.pkl","wb") as f:
+                pickler = pc.Pickler(f)
+                dublicate = False
+                for x in self.singleplayerHighscores:
+                    record = self.singleplayerHighscores[x]
+                    if record['nickname'] == nickname: dublicate = record
+                if dublicate:
+                    dublicateRecord = self.singleplayerHighscores[get_key(dublicate, self.singleplayerHighscores)]
+                    if dublicateRecord['score']<score:
+                        dublicateRecord['nickname'] = nickname
+                        dublicateRecord['score'] = score
+                else:
+                    id = rd.randint(111111,999999)
+                    self.singleplayerHighscores[id] = {'nickname':nickname,'score': score}
+                pickler.dump(self.singleplayerHighscores)
+        if game.multiplayer:
+            with open("mp_highscores.pkl","wb") as f:
+                pickler = pc.Pickler(f)
+                dublicate = False
+                for x in self.multiplayerHighscores:
+                    record = self.multiplayerHighscores[x]
+                    if record['nickname'] == nickname and record['nickname_'] == nickname_: dublicate = record
+                if dublicate:
+                    dublicateRecord = self.multiplayerHighscores[get_key(dublicate, self.multiplayerHighscores)]
+                    recScoreSum = dublicateRecord['score'] + dublicateRecord['score_']
+                    scoreSum = score + score_
+                    if recScoreSum < scoreSum:
+                        dublicateRecord['nickname'] = nickname
+                        dublicateRecord['score'] = score
+                        dublicateRecord['nickname_'] = nickname_
+                        dublicateRecord['score_'] = score_
+                else:
+                    id = rd.randint(111111,999999)
+                    self.multiplayerHighscores[id] = {'nickname':nickname,'score': score, 'nickname_':nickname_,'score_':score_}
+                pickler.dump(self.multiplayerHighscores)
         return self
 
 # Game initialization
