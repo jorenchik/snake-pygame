@@ -22,6 +22,7 @@ def main():
     # Adding first poisonous food
     game.createFood(True)
     
+    game.getMovementPeriod()
     # Active action loop
     game.active = True
     while game.active:

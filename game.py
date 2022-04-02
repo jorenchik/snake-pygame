@@ -419,7 +419,7 @@ class Game:
             config.write(cf)
         return self
     def getMovementPeriod(self):
-        self.movementPeriod = initialMovementPeriod - (initialSpeed-1) * speedUnit
+        self.movementPeriod = initialMovementPeriod - ((self.initialSpeed-1) * speedUnit)
         return self
     def getHighscores(self):
         with open("sp_highscores.pkl","rb") as f:
