@@ -363,7 +363,7 @@ class Game:
         self.snakeParts.append(snakePart)
         if snakePart.pos in self.availablePositions:
             self.availablePositions.remove(snakePart.pos)
-            if not snakePart.pos[0] == rectDims[0]-1 and intialCreate: self.availablePositions.remove((snakePart.pos[0]+1,snakePart.pos[1]))
+            if not snakePart.pos[0] == rectDims[0]-1 and intialCreate and (snakePart.pos[0]+1,snakePart.pos[1]) in self.availablePositions: self.availablePositions.remove((snakePart.pos[0]+1,snakePart.pos[1]))
         return snakePart
     def checkRectalCollision(self,pos1:tuple,pos2:tuple):
         if pos1[0] == pos2[0] and pos1[1] == pos2[1]: return True

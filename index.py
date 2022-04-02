@@ -181,6 +181,8 @@ def gameOver():
         menuItems = [gameOverText,escapeText]
         if(game.player1Score > 1 or game.player2Score > 1):
             menuItems.append(scoreboardSuggestText)
+            if game.isKey(pg.K_ESCAPE):
+                break
             if game.isAnyKey():
                 nameField()
                 break
@@ -345,7 +347,9 @@ def nameField():
         menuItems.extend([player1NameField])
         game.showMenuItems(menuItems,False)
         if game.isQuit(False): quit()
-        if game.isKey(pg.K_ESCAPE): break
+        if game.isKey(pg.K_ESCAPE): 
+            game.player1EnteredName = ''
+            break
         if game.isAnyKey():
             if game.isKey(pg.K_RETURN) and len(game.player1EnteredName) > 0: break
             if game.isKey(pg.K_BACKSPACE): game.player1EnteredName = game.player1EnteredName[:-1]
@@ -360,16 +364,18 @@ def nameField():
             menuItems.extend([player2NameField])
             game.showMenuItems(menuItems,False)
             if game.isQuit(False): quit()
-            if game.isKey(pg.K_ESCAPE): break
+            if game.isKey(pg.K_ESCAPE): 
+                game.player1EnteredName, game.player2EnteredName = '',''
+                break
             if game.isAnyKey():
                 if game.isKey(pg.K_RETURN) and len(game.player2EnteredName) > 0: break
                 if game.isKey(pg.K_BACKSPACE): game.player2EnteredName = game.player2EnteredName[:-1]
                 key = game.getKey()
                 if (key.isalpha() or key.isdigit()) and len(game.player2EnteredName) < 10: game.player2EnteredName += key.upper()
             game.update()
-    if not game.multiplayer:
+    if not game.multiplayer and len(game.player1EnteredName) > 0:
         game.storeScore(game.player1EnteredName,(game.player1Score-1)*10)
-    if game.multiplayer:
+    if game.multiplayer and len(game.player1EnteredName) > 0 and len(game.player2EnteredName) > 0:
         game.storeScore(game.player1EnteredName,(game.player1Score-1)*10,game.player2EnteredName,(game.player2Score-1)*10)
 
 # Starting the game's main loop
