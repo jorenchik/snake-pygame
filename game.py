@@ -175,12 +175,15 @@ class SnakePart():
         if not self in relatedParts: relatedParts.append(self)
         partIndex = relatedParts.index(self)
         if partIndex == 0 or partIndex == len(self.relatedSnakeParts)-1: return False
-        nextPart, prevPart =  relatedParts[partIndex+1], relatedParts[partIndex-1]
-        # LEFT and TOP
+        prevPart, nextPart =  relatedParts[partIndex+1], relatedParts[partIndex-1]
         if (prevPart.pos == (self.pos[0]+1, self.pos[1]) and nextPart.pos == (self.pos[0], self.pos[1]-1)) or (prevPart.pos ==(self.pos[0], self.pos[1]-1) and nextPart.pos == (self.pos[0]+1, self.pos[1])): return 1
+        if (prevPart.pos == (self.pos[0], self.pos[1]-1) and nextPart.pos == (self.pos[0]+1-playfield.rectDims[0], self.pos[1])) or (prevPart.pos == (self.pos[0]+1, self.pos[1]) and nextPart.pos == (self.pos[0], self.pos[1]-1+playfield.rectDims[1])): return 1
         if (prevPart.pos == (self.pos[0]+1, self.pos[1]) and nextPart.pos == (self.pos[0], self.pos[1]+1)) or (prevPart.pos ==(self.pos[0], self.pos[1]+1) and nextPart.pos == (self.pos[0]+1, self.pos[1])): return 2
+        if (prevPart.pos == (self.pos[0]+1, self.pos[1]) and nextPart.pos == (self.pos[0], self.pos[1]+1-playfield.rectDims[1])) or (prevPart.pos == (self.pos[0], self.pos[1]+1) and nextPart.pos == (self.pos[0]+1-playfield.rectDims[0], self.pos[1])): return 2
         if (prevPart.pos == (self.pos[0]-1, self.pos[1]) and nextPart.pos == (self.pos[0], self.pos[1]-1)) or (prevPart.pos ==(self.pos[0], self.pos[1]-1) and nextPart.pos == (self.pos[0]-1, self.pos[1])): return 3
+        if (prevPart.pos ==(self.pos[0]-1, self.pos[1]) and nextPart.pos == (self.pos[0], self.pos[1]-1+playfield.rectDims[1])) or (prevPart.pos ==(self.pos[0], self.pos[1]-1) and nextPart.pos == (self.pos[0]-1+playfield.rectDims[0], self.pos[1])): return 3
         if (prevPart.pos == (self.pos[0]-1, self.pos[1]) and nextPart.pos == (self.pos[0], self.pos[1]+1)) or (prevPart.pos ==(self.pos[0], self.pos[1]+1) and nextPart.pos == (self.pos[0]-1, self.pos[1])): return 4
+        if (prevPart.pos == (self.pos[0]-1, self.pos[1]) and nextPart.pos == (self.pos[0], self.pos[1]+1-playfield.rectDims[1])) or (prevPart.pos == (self.pos[0], self.pos[1]+1) and nextPart.pos == (self.pos[0]-1+playfield.rectDims[0], self.pos[1])): return 4
         return False
 
 class Game:

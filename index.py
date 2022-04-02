@@ -319,7 +319,7 @@ def settingsMenu():
             if game.foodCount < game.foodLimit: game.foodCount += 1
             game.setConfig('GAMEPLAY', 'foodCount', str(game.foodCount))
         if game.isKey(pg.K_RIGHT) and game.menuPointingTo == menuItems.index(initialSpeedBtn):
-            if game.initialSpeed != maxInitialSpeed: game.foodCount += 1
+            if game.initialSpeed != maxInitialSpeed: game.initialSpeed += 1
             game.setConfig('GAMEPLAY', 'initialSpeed', str(game.initialSpeed))
         if game.isKey(pg.K_LEFT) and game.menuPointingTo == menuItems.index(initialSpeedBtn):
             if game.initialSpeed > 1: game.initialSpeed -= 1
