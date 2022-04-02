@@ -356,7 +356,8 @@ def nameField():
             player2NameField = game.createMenuItem(f'PLAYER 2 NICKNAME (MAX 10): {game.player2EnteredName}')
             menuItems.extend([player2NameField])
             game.showMenuItems(menuItems,False)
-            if game.isQuit(True): quit()
+            if game.isQuit(False): quit()
+            if game.isKey(pg.K_ESCAPE): break
             if game.isAnyKey():
                 if game.isKey(pg.K_RETURN) and len(game.player2EnteredName) > 0: break
                 if game.isKey(pg.K_BACKSPACE): game.player2EnteredName = game.player2EnteredName[:-1]
