@@ -60,6 +60,7 @@ for k,img in foodImgs.items():
         foodColoredImgs[key] = color
 
 wall = pb.Path(assets/'walls/wall-pattern-2.png')
+sideWall = pb.Path(assets/'walls/wall-pattern-3.png')
 
 
 spHighcoreFile = pb.Path(absPath/'sp_highscores.pkl')

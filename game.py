@@ -232,24 +232,24 @@ class Game:
         self.wallWidth = wallWidth
         self.wallHeight = wallHeight
         self.sidePadding, self.topPadding = round((1-playfieldSize[0])/2, 3), round((1-playfieldSize[1])/2, 3)
-        self.topBorder = pg.Rect(self.SCREEN_WIDTH*self.sidePadding-self.wallWidth,self.SCREEN_HEIGHT*(self.topPadding)+self.SCREEN_HEIGHT*playfieldYOffset-self.wallHeight,self.SCREEN_WIDTH*playfieldSize[0]+self.wallWidth,self.wallHeight)
-        self.bottomBorder = pg.Rect(self.SCREEN_WIDTH*self.sidePadding-self.wallWidth,self.SCREEN_HEIGHT*(playfieldSize[1]+self.topPadding)+self.SCREEN_HEIGHT*playfieldYOffset,self.SCREEN_WIDTH*playfieldSize[0]+self.wallWidth,self.wallHeight)
-        self.leftBorder = pg.Rect(self.SCREEN_WIDTH*self.sidePadding-self.wallWidth,self.SCREEN_HEIGHT*self.topPadding+self.SCREEN_HEIGHT*playfieldYOffset,self.wallWidth,self.SCREEN_HEIGHT*(playfieldSize[1]))
-        self.rightBorder = pg.Rect(self.SCREEN_WIDTH*(playfieldSize[0]+self.sidePadding)-self.wallWidth,self.SCREEN_HEIGHT*self.topPadding+self.SCREEN_HEIGHT*playfieldYOffset,self.wallWidth,self.SCREEN_HEIGHT*playfieldSize[1])
+        self.topBorder = pg.Rect(self.SCREEN_WIDTH*self.sidePadding,self.SCREEN_HEIGHT*(self.topPadding)+self.SCREEN_HEIGHT*playfieldYOffset-self.wallHeight,self.SCREEN_WIDTH*playfieldSize[0],self.wallHeight)
+        self.bottomBorder = pg.Rect(self.SCREEN_WIDTH*self.sidePadding,self.SCREEN_HEIGHT*(playfieldSize[1]+self.topPadding)+self.SCREEN_HEIGHT*playfieldYOffset,self.SCREEN_WIDTH*playfieldSize[0],self.wallHeight)
+        self.leftBorder = pg.Rect(self.SCREEN_WIDTH*self.sidePadding-self.wallWidth,self.SCREEN_HEIGHT*self.topPadding+self.SCREEN_HEIGHT*playfieldYOffset-self.wallHeight,self.wallWidth,self.SCREEN_HEIGHT*(playfieldSize[1])+self.wallHeight*2)
+        self.rightBorder = pg.Rect(self.SCREEN_WIDTH*(playfieldSize[0]+self.sidePadding),self.SCREEN_HEIGHT*self.topPadding+self.SCREEN_HEIGHT*playfieldYOffset-self.wallHeight,self.wallWidth,self.SCREEN_HEIGHT*playfieldSize[1]+self.wallHeight*2)
         self.snakeParts, self.foods, self.events, self.availablePositions = [],[],[],[]
         self.playfield = playfield
-        self.topWallSprite = pg.transform.scale(pg.image.load(wall), (self.topBorder.w,self.topBorder.h))
+        self.topWallSprite = pg.transform.smoothscale(pg.image.load(wall), (self.topBorder.w,self.topBorder.h))
         self.bottomWallSprite = pg.transform.scale(pg.image.load(wall), (self.bottomBorder.w,self.bottomBorder.h))
-        self.leftWallSprite = pg.transform.scale(pg.image.load(wall), (self.leftBorder.w,self.leftBorder.h))
-        self.rightWallSprite = pg.transform.scale(pg.image.load(wall), (self.leftBorder.w,self.leftBorder.h))
+        self.leftWallSprite = pg.transform.smoothscale(pg.image.load(sideWall), (self.leftBorder.w,self.leftBorder.h))
+        self.rightWallSprite = pg.transform.scale(pg.image.load(sideWall), (self.leftBorder.w,self.leftBorder.h))
         for i, col in enumerate(playfield.rects):
             for rect in col:
                 self.availablePositions.append(rect.pos)
         # State
         self.snakeAlive, self.gameWon, self.active = True, False, True
         # Player fields
-        self.score1Pos = (self.SCREEN_WIDTH*self.sidePadding,(self.SCREEN_HEIGHT*(self.topPadding)+self.SCREEN_HEIGHT*playfieldYOffset)/2)
-        self.score2Pos = (self.SCREEN_WIDTH-self.SCREEN_WIDTH*self.sidePadding,(self.SCREEN_HEIGHT*(self.topPadding)+self.SCREEN_HEIGHT*playfieldYOffset)/2)
+        self.score1Pos = (self.SCREEN_WIDTH*self.sidePadding-self.wallWidth,(self.SCREEN_HEIGHT*(self.topPadding)+self.SCREEN_HEIGHT*playfieldYOffset)/2)
+        self.score2Pos = (self.SCREEN_WIDTH-self.SCREEN_WIDTH*self.sidePadding-self.wallWidth,(self.SCREEN_HEIGHT*(self.topPadding)+self.SCREEN_HEIGHT*playfieldYOffset)/2)
         self.player1Score, self.player2Score = 0, 0
         self.player1Color, self.player2Color = player1Color,player2Color
         self.setPlayerColorIndex()
