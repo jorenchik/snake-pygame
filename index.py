@@ -128,7 +128,9 @@ def main():
                                         game.snakeParts.remove(lastSnakePart)
                                     if lastSnakePart in part.relatedSnakeParts:
                                         part.relatedSnakeParts.remove(lastSnakePart)
-                                    headPart.relatedSnakeParts[-1].type = 'tail'
+                                    lastPart = headPart.relatedSnakeParts[-1]
+                                    lastPart.type = 'tail'
+                                    lastPart.getAngle().rotateSprite()
                                 game.createFood(True)
                     if not game.selfRectalCollisionAllowed:
                         for i, part in enumerate(headPart.relatedSnakeParts):
