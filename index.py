@@ -82,6 +82,10 @@ def main():
                     for i, part in enumerate(headPart.relatedSnakeParts):
                         part.prevPos, part.prevVelocity = (part.pos[0],part.pos[1]), pg.Vector2((part.velocity.x,part.velocity.y))
                         game.moveSnakePart(part,part.pos,part.velocity)
+                        if part.type == 'head':
+                            for checkPart in game.snakeParts:
+                                if (checkPart.type != 'head' or part.snakeIndex != checkPart.snakeIndex) and game.checkRectalCollision(part.pos, checkPart.pos):
+                                    part.alive = False
                         if part.type != 'head': part.velocity = pg.Vector2(headPart.relatedSnakeParts[i-1].prevVelocity)
                         if part.type == 'head':
                             part.changedDirection = False
@@ -132,15 +136,18 @@ def main():
                                     lastPart.type = 'tail'
                                     lastPart.getAngle().rotateSprite()
                                 game.createFood(True)
-                    if not game.selfRectalCollisionAllowed:
-                        for i, part in enumerate(headPart.relatedSnakeParts):
-                            # Passes if it is a head part
-                            if part.type == 'head': continue
-                            if game.checkRectalCollision(headPart.pos, part.pos): part.alive = False
-                    if not game.otherRectalCollisionAllowed:  
-                        unrelatedSnakeParts = [x for x in game.snakeParts if x not in headPart.relatedSnakeParts]
-                        for unrelatedPart in unrelatedSnakeParts:
-                            if game.checkRectalCollision(part.pos,unrelatedPart.pos): part.alive, unrelatedPart.alive = False, False
+                    # if not game.selfRectalCollisionAllowed:
+                    #     for i, part in enumerate(headPart.relatedSnakeParts):
+                    #         # Passes if it is a head part
+                    #         if part.type == 'head': continue
+                            # if game.availablePositions.count(headPart.pos) > 1:
+                            #     part.alive = False
+                            # if game.checkRectalCollision(headPart.pos, part.pos):
+                            #     part.alive = False
+                    # if not game.otherRectalCollisionAllowed:
+                    #     for part in game.snakeParts:
+                    #         if headPart.snakeIndex != part.snakeIndex and game.checkRectalCollision(headPart.pos, part.pos):
+                    #             headPart.alive, part.alive = False, False                      
             
         if game.isSnakeDead():
             game.snakeParts.clear()
@@ -335,7 +342,6 @@ def settingsMenu():
             game.setConfig('GAMEPLAY', 'poisonousFoodRespawn', val)
         if game.isKey(pg.K_RETURN) and game.menuPointingTo == menuItems.index(backBtn): break
         game.update()
-
 
 def nameField():
     game.player1EnteredName = ''

@@ -246,7 +246,8 @@ class Game:
             for rect in col:
                 self.availablePositions.append(rect.pos)
         # State
-        self.snakeAlive, self.gameWon, self.active = True, False, True
+        self.snakeAlive, self.gameWon, self.active, self.initialMove = True, False, True, True
+
         # Player fields
         self.score1Pos = (self.SCREEN_WIDTH*self.sidePadding-self.wallWidth,(self.SCREEN_HEIGHT*(self.topPadding)+self.SCREEN_HEIGHT*playfieldYOffset)/2)
         self.score2Pos = (self.SCREEN_WIDTH-self.SCREEN_WIDTH*self.sidePadding-self.wallWidth,(self.SCREEN_HEIGHT*(self.topPadding)+self.SCREEN_HEIGHT*playfieldYOffset)/2)
@@ -446,6 +447,13 @@ class Game:
     def getMovementPeriod(self):
         self.movementPeriod = initialMovementPeriod - ((self.initialSpeed-1) * speedUnit)
         return self
+    def getNextPartPos(self, pos:tuple, velocity:pg.Vector2):
+        return (int(pos[0]+velocity.x),int(pos[1]+velocity.y))
+    def isSnakePartOnPos(self,pos:tuple,snakeIndex:int):
+        for part in game.snakeParts:
+            if part.type == 'head' and part.snakeIndex == snakeIndex: continue
+            if part.pos == pos: return True
+        return False
     def getHighscores(self):
         with open("sp_highscores.pkl","rb") as f:
             self.singleplayerHighscores = pc.load(f)
