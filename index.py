@@ -301,7 +301,10 @@ def settingsMenu():
             else: game.menuPointingTo += 1
         if game.isKey(pg.K_RETURN) and game.menuPointingTo == menuItems.index(colorPlayer1Btn):
             game.getPlayerNextColor(0)
+            if game.player1Color == game.player2Color: 
+                game.getPlayerNextColor(1)
             game.setConfig('GAMEPLAY', 'player1Color', get_key(game.player1Color, snakeColors))
+            game.setConfig('GAMEPLAY', 'player2Color', get_key(game.player2Color, snakeColors))
         if game.isKey(pg.K_RETURN) and game.menuPointingTo == menuItems.index(wallMode): 
             game.portalWalls = not game.portalWalls
             val = 'True' if game.portalWalls == True else 'False'
@@ -313,6 +316,8 @@ def settingsMenu():
         if game.isKey(pg.K_RETURN) and game.menuPointingTo == menuItems.index(multiplayerOn): 
             game.multiplayer = not game.multiplayer
             val = 'True' if game.multiplayer == True else 'False'
+            game.setConfig('GAMEPLAY', 'player1Color', get_key(game.player1Color, snakeColors))
+            game.setConfig('GAMEPLAY', 'player2Color', get_key(game.player2Color, snakeColors))
             game.setConfig('GAMEPLAY', 'multiplayer', val)
         if game.isKey(pg.K_RETURN) and game.menuPointingTo == menuItems.index(speedIncAfterEatBtn): 
             game.speedIncAfterEat = not game.speedIncAfterEat
