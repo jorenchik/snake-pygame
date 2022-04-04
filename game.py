@@ -238,10 +238,10 @@ class Game:
         self.rightBorder = pg.Rect(self.SCREEN_WIDTH*(playfieldSize[0]+self.sidePadding),self.SCREEN_HEIGHT*self.topPadding+self.SCREEN_HEIGHT*playfieldYOffset-self.wallHeight,self.wallWidth,self.SCREEN_HEIGHT*playfieldSize[1]+self.wallHeight*2)
         self.snakeParts, self.foods, self.events, self.availablePositions = [],[],[],[]
         self.playfield = playfield
-        self.topWallSprite = pg.transform.smoothscale(pg.image.load(wall), (self.topBorder.w,self.topBorder.h))
-        self.bottomWallSprite = pg.transform.scale(pg.image.load(wall), (self.bottomBorder.w,self.bottomBorder.h))
-        self.leftWallSprite = pg.transform.smoothscale(pg.image.load(sideWall), (self.leftBorder.w,self.leftBorder.h))
-        self.rightWallSprite = pg.transform.scale(pg.image.load(sideWall), (self.leftBorder.w,self.leftBorder.h))
+        self.topWallSprite = pg.transform.smoothscale(pg.image.load(wall).convert_alpha(), (self.topBorder.w,self.topBorder.h))
+        self.bottomWallSprite = pg.transform.scale(pg.image.load(wall).convert_alpha(), (self.bottomBorder.w,self.bottomBorder.h))
+        self.leftWallSprite = pg.transform.smoothscale(pg.image.load(sideWall).convert_alpha(), (self.leftBorder.w,self.leftBorder.h))
+        self.rightWallSprite = pg.transform.scale(pg.image.load(sideWall).convert_alpha(), (self.leftBorder.w,self.leftBorder.h))
         for i, col in enumerate(playfield.rects):
             for rect in col:
                 self.availablePositions.append(rect.pos)
@@ -270,7 +270,7 @@ class Game:
         Sets the background as either an icon or a color.
         """
         if type(self.background).__name__ == 'tuple': self.screen.fill(self.background)
-        if type(self.background).__name__ == 'PosixPath': self.screen.blit(pg.transform.scale(pg.image.load(background), (self.SCREEN_WIDTH,self.SCREEN_HEIGHT)),(0,0))
+        if type(self.background).__name__ == 'PosixPath': self.screen.blit(pg.transform.scale(pg.image.load(background).convert_alpha(), (self.SCREEN_WIDTH,self.SCREEN_HEIGHT)),(0,0))
         return self
     def update(self):
         pg.display.update()
