@@ -67,9 +67,6 @@ res = (1920,1080)
 fullscreen = True
 drawPlayfieldRects = False
 
-# Fps
-fps = 30
-
 # Font
 scoreFontSize = 50
 gameOverFontSize = 50

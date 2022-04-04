@@ -317,7 +317,7 @@ class Game:
         """
         Does the provided things at the start of a update cycle iteration.
         """
-        self.setBackground().clock.tick(self.fps)
+        self.setBackground()
         self.now = t.time()
         self.prevTime, self.dt = self.now, (self.now - self.prevTime) * 1000
         self.getEvents().setPlayerColorIndex()
