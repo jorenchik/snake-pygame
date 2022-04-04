@@ -52,9 +52,6 @@ poisonousFoodCount = int(config['GAMEPLAY']['poisonousFoodCount'])
 foodCount = int(config['GAMEPLAY']['foodCount'])
 foodLimit = 10
 poisonousFoodRespawn = True if config['GAMEPLAY']['poisonousFoodRespawn'] == 'True' else False
-selfRectalCollisionAllowed = False
-otherRectalCollisionAllowed = False
-hitboxesVisible = False
 speedUnit = 20
 snakeBaseVelocity = (1,0)
 minInitialSpeed = 1
@@ -65,10 +62,6 @@ wallHeight = 15
 # Screen
 res = (1920,1080)
 fullscreen = True
-drawPlayfieldRects = False
-
-# Fps
-fps = 30
 
 # Font
 scoreFontSize = 50
@@ -101,7 +94,6 @@ player2Color = snakeColors[config['GAMEPLAY']['player2Color']]
 
 # Game colors
 hitboxColor = red
-wallColor = white
 snakeColor = grey
 foodColor = green
 poisonousFoodColor = red

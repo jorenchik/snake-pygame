@@ -207,30 +207,10 @@ class Game:
         self.screen = pg.display.set_mode(resolution, pg.FULLSCREEN if fullscreen else 0)
         self.SCREEN_WIDTH, self.SCREEN_HEIGHT = pg.display.get_window_size()[0], pg.display.get_window_size()[1]
         # Settings
-        self.background = background
-        self.hitboxColor = hitboxColor
-        self.multiplayer = multiplayer
-        self.portalWalls = portalWalls
-        self.selfRectalCollisionAllowed = selfRectalCollisionAllowed
-        self.otherRectalCollisionAllowed = otherRectalCollisionAllowed
-        self.wallColor = wallColor
-        self.hitboxesVisible = hitboxesVisible
-        self.drawPlayfieldRects = drawPlayfieldRects
-        self.speedIncAfterEat = speedIncAfterEat
-        self.initialSpeed = initialSpeed
-        self.poisonousFoodCount = poisonousFoodCount
-        self.foodCount = foodCount
-        self.foodLimit = foodLimit
-        self.poisonousFoodRespawn = poisonousFoodRespawn
+        self.background, self.multiplayer, self.portalWalls, self.speedIncAfterEat, self.initialSpeed, self.foodCount, self.poisonousFoodCount, self.foodLimit, self.poisonousFoodRespawn = background, multiplayer, portalWalls, speedIncAfterEat, initialSpeed, foodCount,poisonousFoodCount,foodLimit,poisonousFoodRespawn
         self.getMovementPeriod()
-        # Clock
-        self.clock = pg.time.Clock()
-        self.prevTime = t.time()
-        self.fps = fps
-        self.now,self.dt,self.previousDirChange = False,False,False
         # Playfield
-        self.wallWidth = wallWidth
-        self.wallHeight = wallHeight
+        self.wallWidth, self.wallHeight = wallWidth, wallHeight
         self.sidePadding, self.topPadding = round((1-playfieldSize[0])/2, 3), round((1-playfieldSize[1])/2, 3)
         self.topBorder = pg.Rect(self.SCREEN_WIDTH*self.sidePadding,self.SCREEN_HEIGHT*(self.topPadding)+self.SCREEN_HEIGHT*playfieldYOffset-self.wallHeight,self.SCREEN_WIDTH*playfieldSize[0],self.wallHeight)
         self.bottomBorder = pg.Rect(self.SCREEN_WIDTH*self.sidePadding,self.SCREEN_HEIGHT*(playfieldSize[1]+self.topPadding)+self.SCREEN_HEIGHT*playfieldYOffset,self.SCREEN_WIDTH*playfieldSize[0],self.wallHeight)
@@ -242,6 +222,7 @@ class Game:
         self.bottomWallSprite = pg.transform.scale(pg.image.load(wall).convert_alpha(), (self.bottomBorder.w,self.bottomBorder.h))
         self.leftWallSprite = pg.transform.smoothscale(pg.image.load(sideWall).convert_alpha(), (self.leftBorder.w,self.leftBorder.h))
         self.rightWallSprite = pg.transform.scale(pg.image.load(sideWall).convert_alpha(), (self.leftBorder.w,self.leftBorder.h))
+        # Get available rects
         for i, col in enumerate(playfield.rects):
             for rect in col:
                 self.availablePositions.append(rect.pos)

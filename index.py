@@ -3,7 +3,6 @@ from game import game,degrees,pl1Keys,pl2Keys,get_key
 from settings import white, snakeColors, maxInitialSpeed, scoreboardMargin
 from profilehooks import profile
 
-# Game itself
 @profile
 def main():
     # Creates Snake #1
@@ -30,10 +29,9 @@ def main():
     while game.active:
         # Updates game state
         game.onUpdate()
-
+        # Snake speed increment
         if game.speedIncAfterEat and (game.snake1PartAddedFired or game.snake2PartAddedFired):
             game.movementPeriod = game.movementPeriod * .95
-
         # Add score text
         game.getPlayersScore()
         score1Text = game.gameOverFont.render(f'{"P1 " if game.multiplayer else ""}SCORE: {(game.player1Score-1)*10}', True, white)
@@ -41,16 +39,9 @@ def main():
         if game.multiplayer:
             score2Text = game.gameOverFont.render(f'P2 SCORE: {(game.player2Score-1)*10}', True, game.player2Color)
             game.screen.blit(score2Text, (game.score2Pos[0]-score2Text.get_width(), game.score2Pos[1]))
-        # FPS
-        fpsText = game.fpsFont.render(f'FPS: {str(int(game.clock.get_fps()))}',True, white)
-        movementPeriodText = game.fpsFont.render(f'T: {str(int(game.movementPeriod))}',True, white)
-        game.screen.blit(fpsText,(0,0))
-        game.screen.blit(movementPeriodText,(0,movementPeriodText.get_height()))
-
         # Events
         headParts = [x for x in game.snakeParts if x.type == 'head']
         if game.isQuit(False): quit()
-        
 
         # Dont move unsless movement button's been pressed
         if (game.isKey(pg.K_RIGHT) or game.isKey(pg.K_UP) or game.isKey(pg.K_LEFT) or game.isKey(pg.K_DOWN)) and headParts[0].velocity.length() == 0: 
@@ -59,7 +50,6 @@ def main():
         if game.multiplayer and (game.isKey(pg.K_d) or game.isKey(pg.K_w) or game.isKey(pg.K_a) or game.isKey(pg.K_s)) and headParts[0].velocity.length() == 0:
             pg.time.set_timer(game.moveEvent, int(game.movementPeriod))
             game.setBaseVelocity()
-
         # Changes snakes direction
         if not game.player1ChangedDir:
             for i,key in enumerate(pl1Keys):
@@ -73,7 +63,6 @@ def main():
                     headParts[1].changeDirToAnAngle(degrees[i])
                     headParts[1].changedDirection = True
                     game.player2ChangedDir = True
-
         # Snakes' movement
         if not game.isSnakeDead():
             if game.moveEventFired:
@@ -135,7 +124,7 @@ def main():
                                     lastPart.getAngle().rotateSprite()
                                 game.createFood(True)
                     # Check snake collision
-                    if not game.selfRectalCollisionAllowed:
+                    if game.moveEventFired:
                         for i, part in enumerate(headPart.relatedSnakeParts):
                             # Passes if it is a head part
                             if part.type == 'head': continue
@@ -143,7 +132,6 @@ def main():
                                 part.alive = False
                             if game.checkRectalCollision(headPart.pos, part.pos):
                                 part.alive = False
-                    if not game.otherRectalCollisionAllowed:
                         for part in game.snakeParts:
                             if headPart.snakeIndex != part.snakeIndex and game.checkRectalCollision(headPart.pos, part.pos):
                                 headPart.alive, part.alive = False, False                      
@@ -167,11 +155,6 @@ def main():
         game.screen.blit(game.leftWallSprite,game.leftBorder)
         game.screen.blit(game.rightWallSprite,game.rightBorder)
         rects = game.playfield.rects
-        if game.drawPlayfieldRects:
-            for col in rects:
-                for rect in col: pg.draw.rect(game.screen, game.wallColor,rect, 1)
-        if game.hitboxesVisible:
-            for part in game.snakeParts: pg.draw.rect(game.screen, part.color,part, 5)
         for food in game.foods: game.screen.blit(food.sprite, (food.rect.x, food.rect.y))
 
         # Event firing
