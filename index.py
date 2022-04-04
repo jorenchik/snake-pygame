@@ -31,7 +31,7 @@ def main():
         # Updates game state
         game.onUpdate()
 
-        if game.speedIncAfterEat and (game.isEvent(game.snake1PartAdded) or game.isEvent(game.snake2PartAdded)):
+        if game.speedIncAfterEat and (game.snake1PartAddedFired or game.snake2PartAddedFired):
             game.movementPeriod = game.movementPeriod * .95
 
         # Add score text
@@ -76,7 +76,7 @@ def main():
 
         # Snakes' movement
         if not game.isSnakeDead():
-            if game.isEvent(game.moveEvent):
+            if game.moveEventFired:
                 for headPart in headParts:
                     headPart.getRelatedSnakeParts()
                     for i, part in enumerate(headPart.relatedSnakeParts):
@@ -93,15 +93,15 @@ def main():
             for headPart in headParts:
                 headPart.getRelatedSnakeParts()
                 for i, part in enumerate(headPart.relatedSnakeParts):
-                    if game.isEvent(game.moveEvent):
+                    if game.moveEventFired:
                         if part.type == 'head' and part.changedDirection == True: 
                             game.screen.blit(part.sprite, (part.rect.x, part.rect.y))
                             continue
                         part.getAngle().rotateSprite()
-                    elif (game.isEvent(game.snake1PartAdded if headPart.snakeIndex == 0 else game.snake2PartAdded) and part.type != 'head'):
+                    elif ((game.snake1PartAddedFired if headPart.snakeIndex == 0 else game.snake2PartAddedFired) and part.type != 'head'):
                         part.getAngle().rotateSprite()
                     game.screen.blit(part.sprite, (part.rect.x, part.rect.y))
-        if game.isEvent(game.moveEvent):
+        if game.moveEventFired:
             for headPart in headParts:
                 for i, part in enumerate(headPart.relatedSnakeParts):
                     # Check food collision
@@ -173,6 +173,14 @@ def main():
         if game.hitboxesVisible:
             for part in game.snakeParts: pg.draw.rect(game.screen, part.color,part, 5)
         for food in game.foods: game.screen.blit(food.sprite, (food.rect.x, food.rect.y))
+
+        # Event firing
+        if game.moveEventFired: game.moveEventFired = False
+        if game.isEvent(game.moveEvent): game.moveEventFired = True
+        if game.snake1PartAddedFired: game.snake1PartAddedFired = False
+        if game.isEvent(game.snake1PartAdded): game.snake1PartAddedFired = True
+        if game.snake2PartAddedFired: game.snake2PartAddedFired = False
+        if game.isEvent(game.snake2PartAdded): game.snake2PartAddedFired = True
         game.update()
 
 # Game restart/quit screen

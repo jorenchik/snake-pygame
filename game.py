@@ -246,8 +246,7 @@ class Game:
             for rect in col:
                 self.availablePositions.append(rect.pos)
         # State
-        self.snakeAlive, self.gameWon, self.active, self.initialMove = True, False, True, True
-
+        self.snakeAlive, self.gameWon, self.active, self.moveEventFired, self.snake1PartAddedFired, self.snake2PartAddedFired = True, False, True, False,False,False
         # Player fields
         self.score1Pos = (self.SCREEN_WIDTH*self.sidePadding-self.wallWidth,(self.SCREEN_HEIGHT*(self.topPadding)+self.SCREEN_HEIGHT*playfieldYOffset)/2)
         self.score2Pos = (self.SCREEN_WIDTH-self.SCREEN_WIDTH*self.sidePadding-self.wallWidth,(self.SCREEN_HEIGHT*(self.topPadding)+self.SCREEN_HEIGHT*playfieldYOffset)/2)
@@ -318,8 +317,6 @@ class Game:
         Does the provided things at the start of a update cycle iteration.
         """
         self.setBackground()
-        self.now = t.time()
-        self.prevTime, self.dt = self.now, (self.now - self.prevTime) * 1000
         self.getEvents().setPlayerColorIndex()
         return self
     def moveSnakePart(self,snakePart:SnakePart,pos:tuple,velocity:pg.Vector2=False):
