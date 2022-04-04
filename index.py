@@ -1,7 +1,5 @@
-from numpy import unicode_
-from soupsieve import escape
-from game import game,degrees,pl1Keys,pl2Keys,get_key
 import pygame as pg
+from game import game,degrees,pl1Keys,pl2Keys,get_key
 from settings import white, snakeColors, maxInitialSpeed, scoreboardMargin
 
 # Game itself
@@ -89,6 +87,7 @@ def main():
                                 game.player1ChangedDir = False
                             if part.snakeIndex == 1:
                                 game.player2ChangedDir = False
+        # Snake sprite turning
             for headPart in headParts:
                 headPart.getRelatedSnakeParts()
                 for i, part in enumerate(headPart.relatedSnakeParts):
@@ -103,6 +102,7 @@ def main():
         if game.isEvent(game.moveEvent):
             for headPart in headParts:
                 for i, part in enumerate(headPart.relatedSnakeParts):
+                    # Check food collision
                     for food in game.foods:
                         if game.checkRectalCollision(part.pos, food.pos):
                             headPart.relatedSnakeParts = [x for x in game.snakeParts if x.snakeIndex == part.snakeIndex]
@@ -132,6 +132,7 @@ def main():
                                     lastPart.type = 'tail'
                                     lastPart.getAngle().rotateSprite()
                                 game.createFood(True)
+                    # Check snake collision
                     if not game.selfRectalCollisionAllowed:
                         for i, part in enumerate(headPart.relatedSnakeParts):
                             # Passes if it is a head part
@@ -145,6 +146,7 @@ def main():
                             if headPart.snakeIndex != part.snakeIndex and game.checkRectalCollision(headPart.pos, part.pos):
                                 headPart.alive, part.alive = False, False                      
             
+        # Game over condition   
         if game.isSnakeDead():
             game.snakeParts.clear()
             game.foods.clear()
@@ -157,14 +159,11 @@ def main():
             game.getMovementPeriod()
             break
 
-        # Draws elements
+        # Draws other elements
         game.screen.blit(game.topWallSprite,game.topBorder)
         game.screen.blit(game.bottomWallSprite,game.bottomBorder)
         game.screen.blit(game.leftWallSprite,game.leftBorder)
         game.screen.blit(game.rightWallSprite,game.rightBorder)
-        # pg.draw.rect(game.screen, game.wallColor,game.bottomBorder)
-        # pg.draw.rect(game.screen, game.wallColor,game.leftBorder)
-        # pg.draw.rect(game.screen, game.wallColor,game.rightBorder)
         rects = game.playfield.rects
         if game.drawPlayfieldRects:
             for col in rects:
