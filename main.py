@@ -1,9 +1,7 @@
 import pygame as pg
 from game import game,degrees,pl1Keys,pl2Keys,get_key
 from settings import white, snakeColors, maxInitialSpeed, scoreboardMargin
-from profilehooks import profile
 
-@profile
 def main():
     # Creates Snake #1
     headPart = game.createSnakePart('head',0,game.player1Color,False,False,True)
