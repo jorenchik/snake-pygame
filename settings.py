@@ -77,7 +77,7 @@ font = 'Arial'
 
 # Colors
 background = (37,38,33)
-blue = (0,0,255)
+blue = (54,79,243)
 red = (210,27,27)
 white = (255,255,255)
 grey = (31,31,47)
