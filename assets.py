@@ -1,8 +1,8 @@
-from os import mkdir
 import pathlib as pl
-from PIL import Image
-from settings import snakeBaseColor, foodBaseColor, snakeColors, foodColors
 import pickle as pc
+from os import mkdir
+from PIL import Image
+from settings import snakeBaseColor,foodBaseColor,snakeColors,foodColors
 
 # Aboslute path
 absPath = pl.Path.cwd()

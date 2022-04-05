@@ -1,18 +1,14 @@
-import sys
-import string
+import pygame as pg
 import time as t
 import random as rd
-import ctypes
 import pickle as pc
+import string
+import ctypes
 import collections
 from pathlib import Path
 from typing import List
-import pygame as pg
 from settings import *
 from assets import *
-
-# Score tuple
-Score = collections.namedtuple("Score", ["name","score"])
 
 # keys -> angle
 pl1Keys = [pg.K_RIGHT,pg.K_UP,pg.K_LEFT,pg.K_DOWN]

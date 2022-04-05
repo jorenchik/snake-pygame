@@ -1,6 +1,6 @@
 import pygame as pg
 from game import game,degrees,pl1Keys,pl2Keys,get_key
-from settings import white, snakeColors, maxInitialSpeed, scoreboardMargin
+from settings import white,snakeColors,maxInitialSpeed,scoreboardMargin
 
 def main():
     # Creates Snake #1
