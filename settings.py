@@ -1,10 +1,13 @@
 import configparser
+from os import mkdir
 import pathlib as pl
 
 # Absolute path
 absPath = pl.Path.cwd()
 # User files
 userFiles = pl.Path(absPath/'user_files')
+if not userFiles.exists():
+    mkdir('user_files')
 
 # Config load / set up
 configFile = pl.Path(userFiles/'config.ini')

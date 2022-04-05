@@ -1,3 +1,4 @@
+from os import mkdir
 import pathlib as pl
 from PIL import Image
 from settings import snakeBaseColor, foodBaseColor, snakeColors, foodColors
@@ -9,6 +10,9 @@ absPath = pl.Path.cwd()
 assets = pl.Path(absPath/'assets')
 # User files path
 userFiles = pl.Path(absPath/'user_files')
+if not userFiles.exists():
+    mkdir('user_files')
+
 # Game icon
 gameIcon = pl.Path(assets/'icons/icon.png')
 
