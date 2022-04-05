@@ -1,37 +1,39 @@
-import pathlib as pb
+import pathlib as pl
 from PIL import Image
 from settings import snakeBaseColor, foodBaseColor, snakeColors, foodColors
 import pickle as pc
 
 # Aboslute path
-absPath = pb.Path.cwd()
+absPath = pl.Path.cwd()
 # Assets path
-assets = pb.Path(absPath/'assets')
+assets = pl.Path(absPath/'assets')
+# User files path
+userFiles = pl.Path(absPath/'user_files')
 # Game icon
-gameIcon = pb.Path(assets/'icons/icon.png')
+gameIcon = pl.Path(assets/'icons/icon.png')
 
 # Snake part images
 partImgs = {
-    'headRight': pb.Path(assets/'parts/head_right.png'),
-    'headUp': pb.Path(assets/'parts/head_up.png'),
-    'headLeft': pb.Path(assets/'parts/head_left.png'),
-    'headDown': pb.Path(assets/'parts/head_down.png'),
-    'bodyHor': pb.Path(assets/'parts/body_horizontal.png'),
-    'bodyVer': pb.Path(assets/'parts/body_vertical.png'),
-    'topRight': pb.Path(assets/'parts/body_topright.png'),
-    'bottomRight': pb.Path(assets/'parts/body_bottomright.png'),
-    'topLeft': pb.Path(assets/'parts/body_topleft.png'),
-    'bottomLeft': pb.Path(assets/'parts/body_bottomleft.png'),
-    'tailRight':pb.Path(assets/'parts/tail_right.png'),
-    'tailUp':pb.Path(assets/'parts/tail_up.png'),
-    'tailLeft':pb.Path(assets/'parts/tail_left.png'),
-    'tailDown':pb.Path(assets/'parts/tail_down.png'),
+    'headRight': pl.Path(assets/'parts/head_right.png'),
+    'headUp': pl.Path(assets/'parts/head_up.png'),
+    'headLeft': pl.Path(assets/'parts/head_left.png'),
+    'headDown': pl.Path(assets/'parts/head_down.png'),
+    'bodyHor': pl.Path(assets/'parts/body_horizontal.png'),
+    'bodyVer': pl.Path(assets/'parts/body_vertical.png'),
+    'topRight': pl.Path(assets/'parts/body_topright.png'),
+    'bottomRight': pl.Path(assets/'parts/body_bottomright.png'),
+    'topLeft': pl.Path(assets/'parts/body_topleft.png'),
+    'bottomLeft': pl.Path(assets/'parts/body_bottomleft.png'),
+    'tailRight':pl.Path(assets/'parts/tail_right.png'),
+    'tailUp':pl.Path(assets/'parts/tail_up.png'),
+    'tailLeft':pl.Path(assets/'parts/tail_left.png'),
+    'tailDown':pl.Path(assets/'parts/tail_down.png'),
 }
 
 # Food images
 foodImgs = {
-    'food': pb.Path(assets/'parts/apple.png'),
-    'poison': pb.Path(assets/'parts/apple.png'),
+    'food': pl.Path(assets/'foods/apple.png'),
+    'poison': pl.Path(assets/'foods/apple.png'),
 }
 
 # Changes sprite colors
@@ -64,16 +66,16 @@ for k,img in foodImgs.items():
         foodColoredImgs[key] = color
 
 # Wall sprites
-wall = pb.Path(assets/'walls/wall-pattern-2.png')
-sideWall = pb.Path(assets/'walls/wall-pattern-3.png')
+wall = pl.Path(assets/'walls/wall_pattern_horizontal.png')
+sideWall = pl.Path(assets/'walls/wall_pattern_vertical.png')
 
 # Highscore set up
-spHighcoreFile = pb.Path(absPath/'sp_highscores.pkl')
-mpHighcoreFile = pb.Path(absPath/'mp_highscores.pkl')
+spHighcoreFile = pl.Path(userFiles/'sp_highscores.pkl')
+mpHighcoreFile = pl.Path(userFiles/'mp_highscores.pkl')
 if not spHighcoreFile.exists():
-    with open("sp_highscores.pkl","wb") as out:
+    with open(spHighcoreFile,"wb") as out:
         pc.dump({}, out)
 if not mpHighcoreFile.exists():
-    with open("mp_highscores.pkl","wb") as out:
+    with open(mpHighcoreFile,"wb") as out:
         pc.dump({}, out)
 

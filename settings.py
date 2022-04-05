@@ -3,9 +3,12 @@ import pathlib as pl
 
 # Absolute path
 absPath = pl.Path.cwd()
+# User files
+userFiles = pl.Path(absPath/'user_files')
 
 # Config load / set up
-configFile = pl.Path(absPath/'config.ini')
+configFile = pl.Path(userFiles/'config.ini')
+print(configFile)
 config = configparser.ConfigParser()
 try: 
     config.read(configFile)
@@ -35,9 +38,8 @@ for op in settings.keys():
         break
 if not configFile.exists() or not valid:
     config['GAMEPLAY'] = settings
-    with open('config.ini', 'w') as configfile:
+    with open(configFile, 'w') as configfile:
         config.write(configfile)
-    configFile = pl.Path(absPath/'config.ini')
 
 # Game caption
 caption = 'Snake game'
@@ -111,3 +113,4 @@ pointerSizeMult = 1
 pointerSize = (15,30)
 pointerLeftMargin = 20
 scoreboardMargin = 20
+scoreBottomPadding = 15

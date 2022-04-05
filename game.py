@@ -1,14 +1,15 @@
-from pathlib import Path
+import sys
 import string
-from typing import List
-import pygame as pg
-from settings import *
-from assets import *
 import time as t
 import random as rd
 import ctypes
 import pickle as pc
 import collections
+from pathlib import Path
+from typing import List
+import pygame as pg
+from settings import *
+from assets import *
 
 # Score tuple
 Score = collections.namedtuple("Score", ["name","score"])
@@ -201,7 +202,7 @@ class Game:
         """
         pg.init()
         pg.display.set_caption(caption)
-        self.gameOverFont, self.scoreFont, self.menuFont, self.fpsFont, self.scoreboardFont  = pg.font.SysFont(font, gameOverFontSize), pg.font.SysFont(font, scoreFontSize), pg.font.SysFont(font, menuFontSize), pg.font.SysFont(font, fpsFontSize),pg.font.SysFont(font, scoreboardFontSize)
+        self.gameOverFont, self.scoreFont, self.menuFont, self.scoreboardFont  = pg.font.SysFont(font, gameOverFontSize), pg.font.SysFont(font, scoreFontSize), pg.font.SysFont(font, menuFontSize),pg.font.SysFont(font, scoreboardFontSize)
         pg.font.init()
         self.gameIcon = pg.image.load(icon)
         self.screen = pg.display.set_mode(resolution, pg.FULLSCREEN if fullscreen else 0)
@@ -229,8 +230,8 @@ class Game:
         # State
         self.snakeAlive, self.gameWon, self.active, self.moveEventFired, self.snake1PartAddedFired, self.snake2PartAddedFired = True, False, True, False,False,False
         # Player fields
-        self.score1Pos = (self.SCREEN_WIDTH*self.sidePadding-self.wallWidth,(self.SCREEN_HEIGHT*(self.topPadding)+self.SCREEN_HEIGHT*playfieldYOffset)/2)
-        self.score2Pos = (self.SCREEN_WIDTH-self.SCREEN_WIDTH*self.sidePadding-self.wallWidth,(self.SCREEN_HEIGHT*(self.topPadding)+self.SCREEN_HEIGHT*playfieldYOffset)/2)
+        self.score1Pos = (self.SCREEN_WIDTH*self.sidePadding-self.wallWidth,(self.SCREEN_HEIGHT*(self.topPadding)+self.SCREEN_HEIGHT*playfieldYOffset-scoreBottomPadding)/2)
+        self.score2Pos = (self.SCREEN_WIDTH-self.SCREEN_WIDTH*self.sidePadding-self.wallWidth,(self.SCREEN_HEIGHT*(self.topPadding)+self.SCREEN_HEIGHT*playfieldYOffset-scoreBottomPadding)/2)
         self.player1Score, self.player2Score = 0, 0
         self.player1Color, self.player2Color = player1Color,player2Color
         self.setPlayerColorIndex()
@@ -433,14 +434,14 @@ class Game:
             if part.pos == pos: return True
         return False
     def getHighscores(self):
-        with open("sp_highscores.pkl","rb") as f:
+        with open(spHighcoreFile,"rb") as f:
             self.singleplayerHighscores = pc.load(f)
-        with open("mp_highscores.pkl","rb") as f:
+        with open(mpHighcoreFile,"rb") as f:
             self.multiplayerHighscores = pc.load(f)
     def storeScore(self,nickname:string,score:int,nickname_:string=False,score_:int=False):
         self.getHighscores()
         if not game.multiplayer:
-            with open("sp_highscores.pkl","wb") as f:
+            with open(spHighcoreFile,"wb") as f:
                 pickler = pc.Pickler(f)
                 dublicate = False
                 for x in self.singleplayerHighscores:
@@ -456,7 +457,7 @@ class Game:
                     self.singleplayerHighscores[id] = {'nickname':nickname,'score': score}
                 pickler.dump(self.singleplayerHighscores)
         if game.multiplayer:
-            with open("mp_highscores.pkl","wb") as f:
+            with open(mpHighcoreFile,"wb") as f:
                 pickler = pc.Pickler(f)
                 dublicate = False
                 for x in self.multiplayerHighscores:
